@@ -20,7 +20,7 @@ export function useUpdateUserRole() {
     mutationFn: ({ id, role }: { id: string; role: Role }) =>
       updateUserRole(id, role),
     onSuccess: (user) => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      void queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success(`Role updated for ${user.email}`);
     },
     onError: (error) => {

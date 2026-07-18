@@ -15,7 +15,7 @@ export function useLogin() {
     onSuccess: ({ accessToken, user }) => {
       setAuth(accessToken, user);
       toast.success(`Welcome back, ${user.name ?? user.email}`);
-      navigate('/', { replace: true });
+      void navigate('/', { replace: true });
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, 'Login failed'));
@@ -32,7 +32,7 @@ export function useRegister() {
     onSuccess: ({ accessToken, user }) => {
       setAuth(accessToken, user);
       toast.success('Account created');
-      navigate('/', { replace: true });
+      void navigate('/', { replace: true });
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, 'Registration failed'));

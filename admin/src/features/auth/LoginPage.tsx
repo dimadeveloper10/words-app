@@ -43,7 +43,7 @@ export function LoginPage() {
           </CardDescription>
         </CardHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}>
             <CardContent className="grid gap-4">
               <FormField
                 control={form.control}

@@ -15,7 +15,7 @@ export function AppLayout() {
   const handleLogout = () => {
     clear();
     queryClient.clear();
-    navigate('/login', { replace: true });
+    void navigate('/login', { replace: true });
   };
 
   return (
