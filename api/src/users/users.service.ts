@@ -58,4 +58,10 @@ export class UsersService {
   findAll(): Promise<User[]> {
     return this.usersRepository.find({ order: { createdAt: 'DESC' } });
   }
+
+  async updateRole(id: string, role: Role): Promise<User> {
+    const user = await this.findById(id);
+    user.role = role;
+    return this.usersRepository.save(user);
+  }
 }

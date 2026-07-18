@@ -45,6 +45,11 @@ class EnvironmentVariables {
   @IsNotEmpty()
   JWT_EXPIRES_IN!: string;
 
+  // Comma-separated list of allowed CORS origins for the admin panel / clients.
+  @IsOptional()
+  @IsString()
+  CORS_ORIGIN?: string;
+
   // Only required when running the seed script.
   @IsOptional()
   @IsString()
