@@ -10,6 +10,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { validateEnv } from './config/env.validation';
 import { buildDataSourceOptions } from './database/data-source';
 import { UsersModule } from './users/users.module';
+import { WordsModule } from './words/words.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UsersModule } from './users/users.module';
     }),
     UsersModule,
     AuthModule,
+    WordsModule,
   ],
   controllers: [AppController],
   providers: [
