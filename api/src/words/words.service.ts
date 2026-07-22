@@ -7,9 +7,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { CreateWordDto } from './dto/create-word.dto';
 import { UpdateWordDto } from './dto/update-word.dto';
-import { WordForm } from './entities/word-form.entity';
-import { WordTranslation } from './entities/word-translation.entity';
 import { Word } from './entities/word.entity';
+import {
+  buildExample,
+  buildForm,
+  buildTranslation,
+  normalizeWord,
+} from './words.service.helper';
+import { WordTranslation } from './entities/word-translation.entity';
+import { WordForm } from './entities/word-form.entity';
+import { WordExample } from './entities/word-example.entity';
 
 @Injectable()
 export class WordsService {
@@ -20,7 +27,7 @@ export class WordsService {
 
   findAll(): Promise<Word[]> {
     return this.wordsRepository.find({
-      relations: { translations: true, forms: true },
+      relations: { translations: true, forms: true, examples: true },
       order: { word: 'ASC' },
     });
   }
@@ -28,7 +35,7 @@ export class WordsService {
   async findOne(id: string): Promise<Word> {
     const word = await this.wordsRepository.findOne({
       where: { id },
-      relations: { translations: true, forms: true },
+      relations: { translations: true, forms: true, examples: true },
     });
     if (!word) {
       throw new NotFoundException('Word not found');
@@ -46,6 +53,7 @@ export class WordsService {
       imageUrl: dto.imageUrl ?? null,
       translations: dto.translations.map(buildTranslation),
       forms: (dto.forms ?? []).map(buildForm),
+      examples: (dto.examples ?? []).map(buildExample),
     });
 
     const saved = await this.wordsRepository.save(word);
@@ -53,28 +61,37 @@ export class WordsService {
   }
 
   async update(id: string, dto: UpdateWordDto): Promise<Word> {
-    const word = await this.findOne(id);
+    const word = await this.findOne(id); // 404, якщо немає
 
-    if (dto.word !== undefined) {
-      const headword = normalizeWord(dto.word);
-      await this.ensureUniqueWord(headword, id);
-      word.word = headword;
-    }
-    if (dto.transcription !== undefined) {
-      word.transcription = dto.transcription ?? null;
-    }
-    if (dto.imageUrl !== undefined) {
-      word.imageUrl = dto.imageUrl ?? null;
-    }
-    // Reassigning a collection replaces it wholesale (orphaned rows are deleted).
-    if (dto.translations !== undefined) {
-      word.translations = dto.translations.map(buildTranslation);
-    }
-    if (dto.forms !== undefined) {
-      word.forms = dto.forms.map(buildForm);
-    }
+    await this.wordsRepository.manager.transaction(async (manager) => {
+      if (dto.word !== undefined) {
+        const headword = normalizeWord(dto.word);
+        await this.ensureUniqueWord(headword, id);
+        word.word = headword;
+      }
+      if (dto.transcription !== undefined) {
+        word.transcription = dto.transcription ?? null;
+      }
+      if (dto.imageUrl !== undefined) {
+        word.imageUrl = dto.imageUrl ?? null;
+      }
 
-    await this.wordsRepository.save(word);
+      if (dto.translations !== undefined) {
+        await manager.delete(WordTranslation, { word: { id } });
+        word.translations = dto.translations.map(buildTranslation);
+      }
+      if (dto.forms !== undefined) {
+        await manager.delete(WordForm, { word: { id } });
+        word.forms = dto.forms.map(buildForm);
+      }
+      if (dto.examples !== undefined) {
+        await manager.delete(WordExample, { word: { id } });
+        word.examples = dto.examples.map(buildExample);
+      }
+
+      await manager.save(word);
+    });
+
     return this.findOne(id);
   }
 
@@ -97,26 +114,4 @@ export class WordsService {
       throw new ConflictException('Word already exists');
     }
   }
-}
-
-function normalizeWord(word: string): string {
-  return word.toLowerCase().trim();
-}
-
-function buildTranslation(
-  dto: CreateWordDto['translations'][number],
-): WordTranslation {
-  const translation = new WordTranslation();
-  translation.partOfSpeech = dto.partOfSpeech;
-  translation.text = dto.text.trim();
-  translation.isPrimary = dto.isPrimary ?? false;
-  translation.sortOrder = dto.sortOrder ?? 0;
-  return translation;
-}
-
-function buildForm(dto: NonNullable<CreateWordDto['forms']>[number]): WordForm {
-  const form = new WordForm();
-  form.form = dto.form.trim();
-  form.sortOrder = dto.sortOrder ?? 0;
-  return form;
 }

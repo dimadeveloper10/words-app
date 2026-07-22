@@ -39,6 +39,20 @@ export class CreateFormDto {
   sortOrder?: number;
 }
 
+export class CreateExampleDto {
+  @IsString()
+  @IsNotEmpty()
+  text!: string;
+
+  @IsOptional()
+  @IsString()
+  translation?: string;
+
+  @IsOptional()
+  @IsInt()
+  sortOrder?: number;
+}
+
 export class CreateWordDto {
   @IsString()
   @IsNotEmpty()
@@ -63,4 +77,10 @@ export class CreateWordDto {
   @ValidateNested({ each: true })
   @Type(() => CreateFormDto)
   forms?: CreateFormDto[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateExampleDto)
+  examples?: CreateExampleDto[];
 }

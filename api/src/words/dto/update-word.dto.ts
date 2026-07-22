@@ -7,7 +7,11 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { CreateFormDto, CreateTranslationDto } from './create-word.dto';
+import {
+  CreateExampleDto,
+  CreateFormDto,
+  CreateTranslationDto,
+} from './create-word.dto';
 
 /**
  * All fields optional. When `translations` or `forms` is provided, the service
@@ -40,4 +44,10 @@ export class UpdateWordDto {
   @ValidateNested({ each: true })
   @Type(() => CreateFormDto)
   forms?: CreateFormDto[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateExampleDto)
+  examples?: CreateExampleDto[];
 }

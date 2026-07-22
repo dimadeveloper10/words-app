@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { WordForm } from './word-form.entity';
 import { WordTranslation } from './word-translation.entity';
+import { WordExample } from './word-example.entity';
 
 @Entity('words')
 export class Word {
@@ -36,6 +37,12 @@ export class Word {
     orphanedRowAction: 'delete',
   })
   forms!: WordForm[];
+
+  @OneToMany(() => WordExample, (example) => example.word, {
+    cascade: true,
+    orphanedRowAction: 'delete',
+  })
+  examples!: WordExample[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
