@@ -1,8 +1,8 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { getApiErrorMessage } from '@/lib/api';
-import { createWord } from './words.api';
+import { createWord, deleteWord, listWords } from './words.api';
 import type { CreateWordValues } from './words.schemas';
 
 export function useCreateWord() {
@@ -27,6 +27,29 @@ export function useCreateWord() {
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, 'Failed to create word'));
+    },
+  });
+}
+
+export function useWords() {
+  return useQuery({
+    queryKey: ['words'],
+    queryFn: listWords,
+    retry: false,
+  });
+}
+
+export function useDeleteWord() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => deleteWord(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['words'] });
+      toast.success('Word deleted');
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to delete word'));
     },
   });
 }

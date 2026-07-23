@@ -35,6 +35,8 @@ export interface Word {
   transcription: string | null;
   imageUrl: string | null;
   translations: WordTranslation[];
+  forms: WordForm[];
+  examples: WordExample[];
   createdAt: string;
   updatedAt: string;
 }
@@ -51,4 +53,17 @@ export interface CreateWordPayload {
   transcription?: string;
   imageUrl?: string;
   translations: CreateTranslationPayload[];
+}
+
+export interface WordForm {
+  id: string;
+  form: string;
+  sortOrder: number;
+}
+
+export interface WordExample {
+  id: string;
+  text: string;
+  translation: string | null;
+  sortOrder: number;
 }
