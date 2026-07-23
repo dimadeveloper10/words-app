@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { Loader2 } from 'lucide-react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { Loader2, Plus, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -27,14 +28,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { createWordSchema, type CreateWordValues } from './words.schemas';
-import { PARTS_OF_SPEECH } from './words.types';
+import {
+  createWordSchema,
+  type CreateWordValues,
+  type TranslationValues,
+} from './words.schemas';
+import { PARTS_OF_SPEECH, type PartOfSpeech } from './words.types';
 import { useCreateWord } from './useWords';
 
 interface AddWordDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+const makeTranslation = (isPrimary: boolean): TranslationValues => ({
+  partOfSpeech: undefined as unknown as PartOfSpeech,
+  text: '',
+  isPrimary,
+});
 
 export function AddWordDialog({ open, onOpenChange }: AddWordDialogProps) {
   const createWord = useCreateWord();
@@ -45,9 +56,13 @@ export function AddWordDialog({ open, onOpenChange }: AddWordDialogProps) {
       word: '',
       transcription: '',
       imageUrl: '',
-      partOfSpeech: undefined,
-      translationText: '',
+      translations: [makeTranslation(true)],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'translations',
   });
 
   const onSubmit = (values: CreateWordValues) => {
@@ -61,11 +76,14 @@ export function AddWordDialog({ open, onOpenChange }: AddWordDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        className="max-h-[85vh] overflow-y-auto sm:max-w-md"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Add word</DialogTitle>
           <DialogDescription>
-            Create a new dictionary entry with one translation.
+            Create a new dictionary entry with one or more translations.
           </DialogDescription>
         </DialogHeader>
 
@@ -116,44 +134,102 @@ export function AddWordDialog({ open, onOpenChange }: AddWordDialogProps) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="partOfSpeech"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Part of speech</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select part of speech" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {PARTS_OF_SPEECH.map((p) => (
-                        <SelectItem key={p.value} value={p.value}>
-                          {p.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="space-y-3">
+              <FormLabel>Translations</FormLabel>
 
-            <FormField
-              control={form.control}
-              name="translationText"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Translation</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Переклад українською" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {fields.map((field, index) => (
+                <div key={field.id} className="space-y-3 rounded-md border p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground text-xs font-medium">
+                      Translation {index + 1}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="size-7"
+                      disabled={fields.length === 1}
+                      onClick={() => remove(index)}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name={`translations.${index}.partOfSpeech`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Part of speech</FormLabel>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select part of speech" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {PARTS_OF_SPEECH.map((p) => (
+                              <SelectItem key={p.value} value={p.value}>
+                                {p.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`translations.${index}.text`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Translation</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Переклад українською"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`translations.${index}.isPrimary`}
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center gap-2 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Primary translation
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ))}
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => append(makeTranslation(false))}
+              >
+                <Plus className="size-4" />
+                Add translation
+              </Button>
+            </div>
 
             <DialogFooter className="mt-2">
               <Button

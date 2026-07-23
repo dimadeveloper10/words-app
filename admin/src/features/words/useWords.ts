@@ -14,14 +14,12 @@ export function useCreateWord() {
         word: values.word,
         transcription: values.transcription || undefined,
         imageUrl: values.imageUrl || undefined,
-        translations: [
-          {
-            partOfSpeech: values.partOfSpeech,
-            text: values.translationText,
-            isPrimary: true,
-            sortOrder: 0,
-          },
-        ],
+        translations: values.translations.map((t, index) => ({
+          partOfSpeech: t.partOfSpeech,
+          text: t.text,
+          isPrimary: t.isPrimary,
+          sortOrder: index,
+        })),
       }),
     onSuccess: (word) => {
       void queryClient.invalidateQueries({ queryKey: ['words'] });
