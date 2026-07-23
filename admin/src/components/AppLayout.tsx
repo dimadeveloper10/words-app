@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LogOut, Users } from 'lucide-react';
+import { BookOpen, LogOut, Users } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -24,7 +24,7 @@ export function AppLayout() {
         <div className="mb-6 px-2 text-lg font-semibold">Words Admin</div>
         <nav className="flex flex-col gap-1">
           <NavLink
-            to="/"
+            to="/users"
             end
             className={({ isActive }) =>
               cn(
@@ -37,6 +37,22 @@ export function AppLayout() {
           >
             <Users className="size-4" />
             Users
+          </NavLink>
+
+          <NavLink
+            to="/words"
+            end
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                isActive
+                  ? 'bg-accent text-accent-foreground'
+                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+              )
+            }
+          >
+            <BookOpen className="size-4" />
+            Words
           </NavLink>
         </nav>
       </aside>

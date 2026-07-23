@@ -6,6 +6,7 @@ import { PublicOnlyRoute } from '@/components/PublicOnlyRoute';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RegisterPage } from '@/features/auth/RegisterPage';
 import { UsersPage } from '@/features/users/UsersPage';
+import { WordsPage } from '@/features/words/WordsPage.tsx';
 
 export const router = createBrowserRouter([
   {
@@ -20,7 +21,11 @@ export const router = createBrowserRouter([
     children: [
       {
         element: <AppLayout />,
-        children: [{ path: '/', element: <UsersPage /> }],
+        children: [
+          { index: true, element: <Navigate to="/users" replace /> },
+          { path: '/users', element: <UsersPage /> },
+          { path: '/words', element: <WordsPage /> },
+        ],
       },
     ],
   },
