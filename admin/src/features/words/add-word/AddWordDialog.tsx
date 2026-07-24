@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { ImagePlus, Loader2, Plus, Trash2, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -32,9 +32,11 @@ import {
   createWordSchema,
   type CreateWordValues,
   type TranslationValues,
-} from './words.schemas';
-import { PARTS_OF_SPEECH, type PartOfSpeech } from './words.types';
-import { useCreateWord } from './useWords';
+} from '../words.schemas';
+import { PARTS_OF_SPEECH, type PartOfSpeech } from '../words.types';
+import { useCreateWord, useUploadWordImage } from '../useWords';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 interface AddWordDialogProps {
   open: boolean;
@@ -47,15 +49,41 @@ const makeTranslation = (isPrimary: boolean): TranslationValues => ({
   isPrimary,
 });
 
+const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png'];
+
+function validateImageFile(file: File): string | null {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    return 'Only JPEG or PNG images are allowed.';
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    return 'Image must be 2 MB or smaller.';
+  }
+  return null;
+}
+
 export function AddWordDialog({ open, onOpenChange }: AddWordDialogProps) {
   const createWord = useCreateWord();
+  const uploadImage = useUploadWordImage();
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!imageFile) {
+      setImagePreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(imageFile);
+    setImagePreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [imageFile]);
 
   const form = useForm<CreateWordValues>({
     resolver: zodResolver(createWordSchema),
     defaultValues: {
       word: '',
       transcription: '',
-      imageUrl: '',
       translations: [makeTranslation(true)],
     },
   });
@@ -65,13 +93,50 @@ export function AddWordDialog({ open, onOpenChange }: AddWordDialogProps) {
     name: 'translations',
   });
 
-  const onSubmit = (values: CreateWordValues) => {
-    createWord.mutate(values, {
-      onSuccess: () => {
-        form.reset();
-        onOpenChange(false);
-      },
-    });
+  const onSubmit = async (values: CreateWordValues) => {
+    try {
+      const word = await createWord.mutateAsync(values);
+
+      if (imageFile) {
+        try {
+          await uploadImage.mutateAsync({ id: word.id, file: imageFile });
+        } catch {
+          toast.warning(
+            `Word "${word.word}" created, but the image failed to upload.`,
+          );
+        }
+      }
+
+      closeAndReset();
+    } catch {
+      return;
+    }
+  };
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    if (file) {
+      const error = validateImageFile(file);
+      if (error) {
+        toast.error(error);
+        e.target.value = '';
+        return;
+      }
+    }
+    setImageFile(file);
+  };
+
+  const clearImage = () => {
+    setImageFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const closeAndReset = () => {
+    form.reset();
+    clearImage();
+    onOpenChange(false);
   };
 
   return (
@@ -120,19 +185,44 @@ export function AddWordDialog({ open, onOpenChange }: AddWordDialogProps) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URL (optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://…" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+            <div className="space-y-2">
+              <FormLabel>Image (optional)</FormLabel>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg"
+                className="hidden"
+                onChange={onFileChange}
+              />
+              {imagePreview ? (
+                <div className="flex items-center gap-3">
+                  <img
+                    src={imagePreview}
+                    alt="Selected preview"
+                    className="size-16 rounded-md border object-cover"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={clearImage}
+                  >
+                    <X className="size-4" />
+                    Remove
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <ImagePlus className="size-4" />
+                  Choose image
+                </Button>
               )}
-            />
+            </div>
 
             <div className="space-y-3">
               <FormLabel>Translations</FormLabel>
@@ -232,15 +322,17 @@ export function AddWordDialog({ open, onOpenChange }: AddWordDialogProps) {
             </div>
 
             <DialogFooter className="mt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={closeAndReset}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={createWord.isPending}>
-                {createWord.isPending && <Loader2 className="animate-spin" />}
+
+              <Button
+                type="submit"
+                disabled={createWord.isPending || uploadImage.isPending}
+              >
+                {(createWord.isPending || uploadImage.isPending) && (
+                  <Loader2 className="animate-spin" />
+                )}
                 Create
               </Button>
             </DialogFooter>

@@ -2,14 +2,19 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   HttpCode,
   HttpStatus,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   ParseUUIDPipe,
   Patch,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
@@ -18,6 +23,7 @@ import { UpdateWordDto } from './dto/update-word.dto';
 import { Word } from './entities/word.entity';
 import { WordsService } from './words.service';
 import { QueryWordsDto } from './dto/query-words.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('words')
 export class WordsController {
@@ -53,5 +59,23 @@ export class WordsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.wordsService.remove(id);
+  }
+
+  @Post(':id/image')
+  @Roles(Role.ADMIN)
+  @UseInterceptors(FileInterceptor('file'))
+  uploadImage(
+    @Param('id', ParseUUIDPipe) id: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }),
+          new FileTypeValidator({ fileType: /^image\/(jpeg|png)$/ }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ): Promise<Word> {
+    return this.wordsService.setImage(id, file);
   }
 }

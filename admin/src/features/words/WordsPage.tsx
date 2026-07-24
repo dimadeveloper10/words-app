@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { isAxiosError } from 'axios';
-import { AlertCircle, Loader2, Plus, Search, Trash2 } from 'lucide-react';
+import {
+  AlertCircle,
+  ImageOff,
+  Loader2,
+  Plus,
+  Search,
+  Trash2,
+} from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,7 +30,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getApiErrorMessage } from '@/lib/api';
-import { AddWordDialog } from './AddWordDialog';
+import { AddWordDialog } from './add-word/AddWordDialog';
 import { useDeleteWord, useWords } from './useWords';
 import { PARTS_OF_SPEECH } from './words.types';
 import type { Word, WordTranslation } from './words.types';
@@ -58,6 +65,23 @@ function TranslationsCell({ word }: { word: Word }) {
         </div>
       ))}
     </div>
+  );
+}
+
+function ImageCell({ word }: { word: Word }) {
+  if (!word.imageUrl) {
+    return (
+      <div className="bg-muted flex size-10 items-center justify-center rounded-md">
+        <ImageOff className="text-muted-foreground size-4" />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={`${import.meta.env.VITE_API_URL}${word.imageUrl}`}
+      alt={word.word}
+      className="size-10 rounded-md border object-cover"
+    />
   );
 }
 
@@ -129,7 +153,8 @@ export function WordsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="pl-6">Word</TableHead>
+                  <TableHead className="w-[72px] pl-6">Image</TableHead>
+                  <TableHead>Word</TableHead>
                   <TableHead>Translations</TableHead>
                   <TableHead>Forms</TableHead>
                   <TableHead>Examples</TableHead>
@@ -140,7 +165,7 @@ export function WordsPage() {
                 {words.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={5}
+                      colSpan={6}
                       className="text-muted-foreground py-12 text-center"
                     >
                       {debouncedSearch
@@ -152,6 +177,9 @@ export function WordsPage() {
                 {words.map((word) => (
                   <TableRow key={word.id}>
                     <TableCell className="pl-6 align-top">
+                      <ImageCell word={word} />
+                    </TableCell>
+                    <TableCell className="align-top">
                       <div className="font-medium">{word.word}</div>
                       {word.transcription && (
                         <div className="text-muted-foreground text-sm">

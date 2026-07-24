@@ -16,3 +16,10 @@ export async function listWords(q?: string): Promise<Word[]> {
 export async function deleteWord(id: string): Promise<void> {
   await api.delete(`/words/${id}`);
 }
+
+export async function uploadWordImage(id: string, file: File): Promise<Word> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const { data } = await api.post<Word>(`/words/${id}/image`, formData);
+  return data;
+}

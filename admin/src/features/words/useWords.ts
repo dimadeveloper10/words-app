@@ -7,7 +7,12 @@ import {
 import { toast } from 'sonner';
 
 import { getApiErrorMessage } from '@/lib/api';
-import { createWord, deleteWord, listWords } from './words.api';
+import {
+  createWord,
+  deleteWord,
+  listWords,
+  uploadWordImage,
+} from './words.api';
 import type { CreateWordValues } from './words.schemas';
 
 export function useCreateWord() {
@@ -18,7 +23,6 @@ export function useCreateWord() {
       createWord({
         word: values.word,
         transcription: values.transcription || undefined,
-        imageUrl: values.imageUrl || undefined,
         translations: values.translations.map((t, index) => ({
           partOfSpeech: t.partOfSpeech,
           text: t.text,
@@ -32,6 +36,18 @@ export function useCreateWord() {
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, 'Failed to create word'));
+    },
+  });
+}
+
+export function useUploadWordImage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, file }: { id: string; file: File }) =>
+      uploadWordImage(id, file),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['words'] });
     },
   });
 }

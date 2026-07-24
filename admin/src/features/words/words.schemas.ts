@@ -18,7 +18,6 @@ const translationSchema = z.object({
 export const createWordSchema = z.object({
   word: z.string().min(1, 'Word is required'),
   transcription: z.string().optional(),
-  imageUrl: z.string().optional(),
   translations: z
     .array(translationSchema)
     .min(1, 'At least one translation is required'),

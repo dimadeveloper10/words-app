@@ -51,7 +51,6 @@ export interface CreateTranslationPayload {
 export interface CreateWordPayload {
   word: string;
   transcription?: string;
-  imageUrl?: string;
   translations: CreateTranslationPayload[];
 }
 

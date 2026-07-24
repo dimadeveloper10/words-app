@@ -18,6 +18,7 @@ import {
 import { WordTranslation } from './entities/word-translation.entity';
 import { WordForm } from './entities/word-form.entity';
 import { WordExample } from './entities/word-example.entity';
+import { deleteWordImage, saveWordImage } from './word-image.storage';
 
 @Injectable()
 export class WordsService {
@@ -114,8 +115,10 @@ export class WordsService {
 
   async remove(id: string): Promise<void> {
     const word = await this.findOne(id);
-    // Child rows are removed via ON DELETE CASCADE on their FKs.
     await this.wordsRepository.remove(word);
+    if (word.imageUrl) {
+      await deleteWordImage(word.imageUrl);
+    }
   }
 
   private async ensureUniqueWord(
@@ -130,5 +133,18 @@ export class WordsService {
     if (existing) {
       throw new ConflictException('Word already exists');
     }
+  }
+
+  async setImage(id: string, file: Express.Multer.File): Promise<Word> {
+    const word = await this.findOne(id);
+    const previousUrl = word.imageUrl;
+
+    const imageUrl = await saveWordImage(file);
+    await this.wordsRepository.update(id, { imageUrl });
+
+    if (previousUrl) {
+      await deleteWordImage(previousUrl);
+    }
+    return this.findOne(id);
   }
 }

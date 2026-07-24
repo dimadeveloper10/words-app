@@ -11,6 +11,8 @@ import { validateEnv } from './config/env.validation';
 import { buildDataSourceOptions } from './database/data-source';
 import { UsersModule } from './users/users.module';
 import { WordsModule } from './words/words.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -23,6 +25,10 @@ import { WordsModule } from './words/words.module';
         ...buildDataSourceOptions(),
         autoLoadEntities: true,
       }),
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'static'),
+      serveRoot: '/static',
     }),
     UsersModule,
     AuthModule,
