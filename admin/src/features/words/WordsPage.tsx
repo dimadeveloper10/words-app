@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { isAxiosError } from 'axios';
-import { AlertCircle, Loader2, Plus, Trash2 } from 'lucide-react';
+import { AlertCircle, Loader2, Plus, Search, Trash2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +27,8 @@ import { AddWordDialog } from './AddWordDialog';
 import { useDeleteWord, useWords } from './useWords';
 import { PARTS_OF_SPEECH } from './words.types';
 import type { Word, WordTranslation } from './words.types';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue.ts';
+import { Input } from '@/components/ui/input.tsx';
 
 function groupByPartOfSpeech(translations: WordTranslation[]) {
   return PARTS_OF_SPEECH.map((p) => ({
@@ -62,7 +64,15 @@ function TranslationsCell({ word }: { word: Word }) {
 export function WordsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [wordToDelete, setWordToDelete] = useState<Word | null>(null);
-  const { data: words, isLoading, isError, error } = useWords();
+
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search, 300);
+  const {
+    data: words,
+    isLoading,
+    isError,
+    error,
+  } = useWords(debouncedSearch || undefined);
   const deleteWord = useDeleteWord();
 
   const confirmDelete = () => {
@@ -85,6 +95,16 @@ export function WordsPage() {
           <Plus className="size-4" />
           Add word
         </Button>
+      </div>
+
+      <div className="relative max-w-sm">
+        <Search className="text-muted-foreground absolute left-2.5 top-2.5 size-4" />
+        <Input
+          placeholder="Search words or translations…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-8"
+        />
       </div>
 
       <Card>
@@ -123,7 +143,9 @@ export function WordsPage() {
                       colSpan={5}
                       className="text-muted-foreground py-12 text-center"
                     >
-                      No words yet — add your first word.
+                      {debouncedSearch
+                        ? `No words match “${debouncedSearch}”.`
+                        : 'No words yet — add your first word.'}
                     </TableCell>
                   </TableRow>
                 )}

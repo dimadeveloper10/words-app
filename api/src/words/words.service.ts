@@ -12,6 +12,7 @@ import {
   buildExample,
   buildForm,
   buildTranslation,
+  escapeLike,
   normalizeWord,
 } from './words.service.helper';
 import { WordTranslation } from './entities/word-translation.entity';
@@ -25,11 +26,27 @@ export class WordsService {
     private readonly wordsRepository: Repository<Word>,
   ) {}
 
-  findAll(): Promise<Word[]> {
-    return this.wordsRepository.find({
-      relations: { translations: true, forms: true, examples: true },
-      order: { word: 'ASC' },
-    });
+  findAll(search?: string): Promise<Word[]> {
+    const term = search?.trim();
+    if (!term) {
+      return this.wordsRepository.find({
+        relations: { translations: true, forms: true, examples: true },
+        order: { word: 'ASC' },
+      });
+    }
+
+    const pattern = `%${escapeLike(term)}%`;
+    return this.wordsRepository
+      .createQueryBuilder('w')
+      .leftJoinAndSelect('w.translations', 'translations')
+      .leftJoinAndSelect('w.forms', 'forms')
+      .leftJoinAndSelect('w.examples', 'examples')
+      .where(
+        'w.word ILIKE :q OR EXISTS (SELECT 1 FROM word_translations wt WHERE wt.word_id = w.id AND wt.text ILIKE :q)',
+        { q: pattern },
+      )
+      .orderBy('w.word', 'ASC')
+      .getMany();
   }
 
   async findOne(id: string): Promise<Word> {

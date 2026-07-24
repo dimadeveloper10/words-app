@@ -36,3 +36,6 @@ export const buildExample = (
   example.sortOrder = dto.sortOrder ?? 0;
   return example;
 };
+
+export const escapeLike = (input: string): string =>
+  input.replace(/[\\%_]/g, (ch) => `\\${ch}`);

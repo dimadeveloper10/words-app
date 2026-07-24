@@ -6,8 +6,10 @@ export async function createWord(payload: CreateWordPayload): Promise<Word> {
   return data;
 }
 
-export async function listWords(): Promise<Word[]> {
-  const { data } = await api.get<Word[]>('/words');
+export async function listWords(q?: string): Promise<Word[]> {
+  const { data } = await api.get<Word[]>('/words', {
+    params: q ? { q } : undefined,
+  });
   return data;
 }
 

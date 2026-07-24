@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
@@ -16,15 +17,15 @@ import { CreateWordDto } from './dto/create-word.dto';
 import { UpdateWordDto } from './dto/update-word.dto';
 import { Word } from './entities/word.entity';
 import { WordsService } from './words.service';
+import { QueryWordsDto } from './dto/query-words.dto';
 
 @Controller('words')
 export class WordsController {
   constructor(private readonly wordsService: WordsService) {}
 
-  // Any authenticated user can read the dictionary.
   @Get()
-  findAll(): Promise<Word[]> {
-    return this.wordsService.findAll();
+  findAll(@Query() query: QueryWordsDto): Promise<Word[]> {
+    return this.wordsService.findAll(query.q);
   }
 
   @Get(':id')

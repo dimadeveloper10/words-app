@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { getApiErrorMessage } from '@/lib/api';
@@ -31,10 +36,11 @@ export function useCreateWord() {
   });
 }
 
-export function useWords() {
+export function useWords(q?: string) {
   return useQuery({
-    queryKey: ['words'],
-    queryFn: listWords,
+    queryKey: ['words', q ?? ''],
+    queryFn: () => listWords(q),
+    placeholderData: keepPreviousData,
     retry: false,
   });
 }
