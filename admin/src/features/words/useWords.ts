@@ -13,6 +13,7 @@ import {
   listWords,
   uploadWordImage,
 } from './words.api';
+import type { ListWordsParams } from './words.api';
 import type { CreateWordValues } from './words.schemas';
 
 export function useCreateWord() {
@@ -52,10 +53,10 @@ export function useUploadWordImage() {
   });
 }
 
-export function useWords(q?: string) {
+export function useWords(params: ListWordsParams) {
   return useQuery({
-    queryKey: ['words', q ?? ''],
-    queryFn: () => listWords(q),
+    queryKey: ['words', params.q ?? '', params.page, params.limit],
+    queryFn: () => listWords(params),
     placeholderData: keepPreviousData,
     retry: false,
   });

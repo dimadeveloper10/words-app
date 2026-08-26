@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import type { Paginated } from '@/types/pagination';
 import type { CreateWordPayload, Word } from './words.types';
 
 export async function createWord(payload: CreateWordPayload): Promise<Word> {
@@ -6,10 +7,16 @@ export async function createWord(payload: CreateWordPayload): Promise<Word> {
   return data;
 }
 
-export async function listWords(q?: string): Promise<Word[]> {
-  const { data } = await api.get<Word[]>('/words', {
-    params: q ? { q } : undefined,
-  });
+export interface ListWordsParams {
+  q?: string;
+  page: number;
+  limit: number;
+}
+
+export async function listWords(
+  params: ListWordsParams,
+): Promise<Paginated<Word>> {
+  const { data } = await api.get<Paginated<Word>>('/words', { params });
   return data;
 }
 

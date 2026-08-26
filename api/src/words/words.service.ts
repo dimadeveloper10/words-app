@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { CreateWordDto } from './dto/create-word.dto';
 import { UpdateWordDto } from './dto/update-word.dto';
+import { QueryWordsDto } from './dto/query-words.dto';
 import { Word } from './entities/word.entity';
 import {
   buildExample,
@@ -19,6 +20,7 @@ import { WordTranslation } from './entities/word-translation.entity';
 import { WordForm } from './entities/word-form.entity';
 import { WordExample } from './entities/word-example.entity';
 import { deleteWordImage, saveWordImage } from './word-image.storage';
+import { Paginated, paginated } from '../common/dto/paginated';
 
 @Injectable()
 export class WordsService {
@@ -27,27 +29,28 @@ export class WordsService {
     private readonly wordsRepository: Repository<Word>,
   ) {}
 
-  findAll(search?: string): Promise<Word[]> {
-    const term = search?.trim();
-    if (!term) {
-      return this.wordsRepository.find({
-        relations: { translations: true, forms: true, examples: true },
-        order: { word: 'ASC' },
-      });
-    }
+  async findAll(query: QueryWordsDto): Promise<Paginated<Word>> {
+    const { page, limit } = query;
+    const term = query.q?.trim();
 
-    const pattern = `%${escapeLike(term)}%`;
-    return this.wordsRepository
+    const qb = this.wordsRepository
       .createQueryBuilder('w')
       .leftJoinAndSelect('w.translations', 'translations')
       .leftJoinAndSelect('w.forms', 'forms')
       .leftJoinAndSelect('w.examples', 'examples')
-      .where(
-        'w.word ILIKE :q OR EXISTS (SELECT 1 FROM word_translations wt WHERE wt.word_id = w.id AND wt.text ILIKE :q)',
-        { q: pattern },
-      )
       .orderBy('w.word', 'ASC')
-      .getMany();
+      .take(limit)
+      .skip((page - 1) * limit);
+
+    if (term) {
+      qb.where(
+        'w.word ILIKE :q OR EXISTS (SELECT 1 FROM word_translations wt WHERE wt.word_id = w.id AND wt.text ILIKE :q)',
+        { q: `%${escapeLike(term)}%` },
+      );
+    }
+
+    const [items, total] = await qb.getManyAndCount();
+    return paginated(items, total, page, limit);
   }
 
   async findOne(id: string): Promise<Word> {

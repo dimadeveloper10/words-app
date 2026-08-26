@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
 import {
   AlertCircle,
@@ -30,6 +30,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { getApiErrorMessage } from '@/lib/api';
+import { DataPagination } from '@/components/DataPagination';
 import { AddWordDialog } from './add-word/AddWordDialog';
 import { useDeleteWord, useWords } from './useWords';
 import { PARTS_OF_SPEECH } from './words.types';
@@ -85,19 +86,27 @@ function ImageCell({ word }: { word: Word }) {
   );
 }
 
+const PAGE_SIZE = 20;
+
 export function WordsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [wordToDelete, setWordToDelete] = useState<Word | null>(null);
 
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   const debouncedSearch = useDebouncedValue(search, 300);
-  const {
-    data: words,
-    isLoading,
-    isError,
-    error,
-  } = useWords(debouncedSearch || undefined);
+  const { data, isLoading, isFetching, isError, error } = useWords({
+    q: debouncedSearch || undefined,
+    page,
+    limit: PAGE_SIZE,
+  });
   const deleteWord = useDeleteWord();
+
+  useEffect(() => {
+    if (data && data.totalPages > 0 && page > data.totalPages) {
+      setPage(data.totalPages);
+    }
+  }, [data, page]);
 
   const confirmDelete = () => {
     if (!wordToDelete) return;
@@ -105,6 +114,11 @@ export function WordsPage() {
       onSuccess: () => setWordToDelete(null),
     });
   };
+
+  const words = data?.items ?? [];
+  const rangeFrom =
+    data && data.total > 0 ? (data.page - 1) * data.limit + 1 : 0;
+  const rangeTo = data ? rangeFrom + words.length - 1 : 0;
 
   return (
     <div className="space-y-4">
@@ -126,7 +140,10 @@ export function WordsPage() {
         <Input
           placeholder="Search words or translations…"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           className="pl-8"
         />
       </div>
@@ -149,8 +166,14 @@ export function WordsPage() {
             </div>
           )}
 
-          {!isLoading && !isError && words && (
-            <Table>
+          {!isLoading && !isError && data && (
+            <Table
+              className={
+                isFetching
+                  ? 'opacity-60 transition-opacity'
+                  : 'transition-opacity'
+              }
+            >
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[72px] pl-6">Image</TableHead>
@@ -210,6 +233,19 @@ export function WordsPage() {
                 ))}
               </TableBody>
             </Table>
+          )}
+
+          {!isLoading && !isError && data && data.total > 0 && (
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t px-6 pt-4">
+              <p className="text-muted-foreground text-sm">
+                Showing {rangeFrom}–{rangeTo} of {data.total}
+              </p>
+              <DataPagination
+                page={data.page}
+                totalPages={data.totalPages}
+                onPageChange={setPage}
+              />
+            </div>
           )}
         </CardContent>
       </Card>

@@ -23,6 +23,7 @@ import { UpdateWordDto } from './dto/update-word.dto';
 import { Word } from './entities/word.entity';
 import { WordsService } from './words.service';
 import { QueryWordsDto } from './dto/query-words.dto';
+import { Paginated } from '../common/dto/paginated';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('words')
@@ -30,8 +31,8 @@ export class WordsController {
   constructor(private readonly wordsService: WordsService) {}
 
   @Get()
-  findAll(@Query() query: QueryWordsDto): Promise<Word[]> {
-    return this.wordsService.findAll(query.q);
+  findAll(@Query() query: QueryWordsDto): Promise<Paginated<Word>> {
+    return this.wordsService.findAll(query);
   }
 
   @Get(':id')
