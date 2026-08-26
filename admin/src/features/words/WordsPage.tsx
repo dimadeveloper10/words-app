@@ -22,6 +22,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
   Table,
   TableBody,
   TableCell,
@@ -58,7 +63,7 @@ function TranslationsCell({ word }: { word: Word }) {
         <div key={group.label} className="text-sm">
           <span className="text-muted-foreground">{group.label}: </span>
           {group.items.map((t, i) => (
-            <span key={t.id} className={t.isPrimary ? 'font-medium' : ''}>
+            <span key={t.id} className={t.isPrimary ? 'font-bold' : ''}>
               {t.text}
               {i < group.items.length - 1 ? ', ' : ''}
             </span>
@@ -66,6 +71,25 @@ function TranslationsCell({ word }: { word: Word }) {
         </div>
       ))}
     </div>
+  );
+}
+
+function FormsCell({ word }: { word: Word }) {
+  if (word.forms.length === 0) {
+    return <span className="text-muted-foreground">—</span>;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger className="cursor-help">
+        <Badge variant="secondary" className="border-b border-dashed">
+          {word.forms.length}
+        </Badge>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-56">
+        {word.forms.map((form) => form.form).join(', ')}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -176,7 +200,8 @@ export function WordsPage() {
             >
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[72px] pl-6">Image</TableHead>
+                  <TableHead className="w-[56px] pl-6">#</TableHead>
+                  <TableHead className="w-[72px]">Image</TableHead>
                   <TableHead>Word</TableHead>
                   <TableHead>Translations</TableHead>
                   <TableHead>Forms</TableHead>
@@ -188,7 +213,7 @@ export function WordsPage() {
                 {words.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={6}
+                      colSpan={7}
                       className="text-muted-foreground py-12 text-center"
                     >
                       {debouncedSearch
@@ -197,9 +222,12 @@ export function WordsPage() {
                     </TableCell>
                   </TableRow>
                 )}
-                {words.map((word) => (
+                {words.map((word, index) => (
                   <TableRow key={word.id}>
-                    <TableCell className="pl-6 align-top">
+                    <TableCell className="text-muted-foreground pl-6 align-top tabular-nums">
+                      {rangeFrom + index}
+                    </TableCell>
+                    <TableCell className="align-top">
                       <ImageCell word={word} />
                     </TableCell>
                     <TableCell className="align-top">
@@ -214,7 +242,7 @@ export function WordsPage() {
                       <TranslationsCell word={word} />
                     </TableCell>
                     <TableCell className="align-top">
-                      <Badge variant="secondary">{word.forms.length}</Badge>
+                      <FormsCell word={word} />
                     </TableCell>
                     <TableCell className="align-top">
                       <Badge variant="secondary">{word.examples.length}</Badge>

@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { CreateWordDto } from './dto/create-word.dto';
 import { UpdateWordDto } from './dto/update-word.dto';
 import { QueryWordsDto } from './dto/query-words.dto';
@@ -33,23 +33,36 @@ export class WordsService {
     const { page, limit } = query;
     const term = query.q?.trim();
 
-    const qb = this.wordsRepository
+    const pageQuery = this.wordsRepository
       .createQueryBuilder('w')
-      .leftJoinAndSelect('w.translations', 'translations')
-      .leftJoinAndSelect('w.forms', 'forms')
-      .leftJoinAndSelect('w.examples', 'examples')
+      .select('w.id')
       .orderBy('w.word', 'ASC')
       .take(limit)
       .skip((page - 1) * limit);
 
     if (term) {
-      qb.where(
+      pageQuery.where(
         'w.word ILIKE :q OR EXISTS (SELECT 1 FROM word_translations wt WHERE wt.word_id = w.id AND wt.text ILIKE :q)',
         { q: `%${escapeLike(term)}%` },
       );
     }
 
-    const [items, total] = await qb.getManyAndCount();
+    const [pageRows, total] = await pageQuery.getManyAndCount();
+    if (pageRows.length === 0) {
+      return paginated([], total, page, limit);
+    }
+
+    const items = await this.wordsRepository.find({
+      where: { id: In(pageRows.map((row) => row.id)) },
+      relations: { translations: true, forms: true, examples: true },
+      order: {
+        word: 'ASC',
+        translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
+        forms: { sortOrder: 'ASC' },
+        examples: { sortOrder: 'ASC' },
+      },
+    });
+
     return paginated(items, total, page, limit);
   }
 
@@ -57,6 +70,11 @@ export class WordsService {
     const word = await this.wordsRepository.findOne({
       where: { id },
       relations: { translations: true, forms: true, examples: true },
+      order: {
+        translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
+        forms: { sortOrder: 'ASC' },
+        examples: { sortOrder: 'ASC' },
+      },
     });
     if (!word) {
       throw new NotFoundException('Word not found');
