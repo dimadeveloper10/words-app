@@ -74,7 +74,7 @@ export function ImageField({ value, onChange, currentUrl }: ImageFieldProps) {
         onChange={onFileChange}
       />
       {shownSrc ? (
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <img
             src={shownSrc}
             alt="Word image"

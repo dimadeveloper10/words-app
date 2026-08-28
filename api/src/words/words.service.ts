@@ -36,7 +36,8 @@ export class WordsService {
     const pageQuery = this.wordsRepository
       .createQueryBuilder('w')
       .select('w.id')
-      .orderBy('w.word', 'ASC')
+      .orderBy('w.createdAt', 'DESC')
+      .addOrderBy('w.id', 'ASC')
       .take(limit)
       .skip((page - 1) * limit);
 
@@ -56,7 +57,8 @@ export class WordsService {
       where: { id: In(pageRows.map((row) => row.id)) },
       relations: { translations: true, forms: true, examples: true },
       order: {
-        word: 'ASC',
+        createdAt: 'DESC',
+        id: 'ASC',
         translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
         forms: { sortOrder: 'ASC' },
         examples: { sortOrder: 'ASC' },

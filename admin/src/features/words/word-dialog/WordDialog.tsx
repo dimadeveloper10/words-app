@@ -82,7 +82,7 @@ export function WordDialog({ word, open, onOpenChange }: WordDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-h-[85vh] overflow-y-auto sm:max-w-lg"
+        className="max-h-[85vh] overflow-y-auto sm:max-w-4xl"
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
@@ -99,43 +99,48 @@ export function WordDialog({ word, open, onOpenChange }: WordDialogProps) {
             onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
             className="grid gap-4"
           >
-            <FormField
-              control={form.control}
-              name="word"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Word</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. run" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid gap-4 sm:grid-cols-3">
+              <FormField
+                control={form.control}
+                name="word"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Word</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. run" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="transcription"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Transcription (optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. /rʌn/" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="transcription"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Transcription (optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. /rʌn/" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <ImageField
-              value={imageFile}
-              onChange={setImageFile}
-              currentUrl={word?.imageUrl}
-            />
+              <ImageField
+                value={imageFile}
+                onChange={setImageFile}
+                currentUrl={word?.imageUrl}
+              />
+            </div>
 
             <TranslationsField />
-            <FormsField />
-            <ExamplesField />
+
+            <div className="grid gap-x-6 gap-y-4 md:grid-cols-2">
+              <FormsField />
+              <ExamplesField />
+            </div>
 
             <DialogFooter className="mt-2">
               <Button

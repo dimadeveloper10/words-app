@@ -92,7 +92,14 @@ export function WordsTable({
               {rangeFrom + index}
             </TableCell>
             <TableCell className="align-top">
-              <ImageCell word={word} />
+              <button
+                type="button"
+                aria-label={`Edit ${word.word}`}
+                onClick={() => onEdit(word)}
+                className="focus-visible:ring-ring cursor-pointer rounded-md transition hover:opacity-80 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+              >
+                <ImageCell word={word} />
+              </button>
             </TableCell>
             <TableCell className="align-top">
               <div className="font-medium">{word.word}</div>

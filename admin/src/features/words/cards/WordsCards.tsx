@@ -96,11 +96,18 @@ export function WordsCards({
           key={word.id}
           className="flex flex-col overflow-hidden rounded-md border"
         >
-          <WordImage
-            word={word}
-            className="aspect-[4/3] w-full rounded-none border-b"
-            iconClassName="size-8"
-          />
+          <button
+            type="button"
+            aria-label={`Edit ${word.word}`}
+            onClick={() => onEdit(word)}
+            className="focus-visible:ring-ring block cursor-pointer transition hover:opacity-80 focus-visible:ring-2 focus-visible:outline-none"
+          >
+            <WordImage
+              word={word}
+              className="aspect-[4/3] w-full rounded-none border-b"
+              iconClassName="size-8"
+            />
+          </button>
 
           <div className="flex flex-1 flex-col p-3">
             <div className="flex items-start gap-2">
