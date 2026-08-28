@@ -30,6 +30,19 @@ export function useCreateWord() {
           isPrimary: t.isPrimary,
           sortOrder: index,
         })),
+        forms: values.forms.length
+          ? values.forms.map((f, index) => ({
+              form: f.form,
+              sortOrder: index,
+            }))
+          : undefined,
+        examples: values.examples.length
+          ? values.examples.map((e, index) => ({
+              text: e.text,
+              translation: e.translation || undefined,
+              sortOrder: index,
+            }))
+          : undefined,
       }),
     onSuccess: (word) => {
       void queryClient.invalidateQueries({ queryKey: ['words'] });

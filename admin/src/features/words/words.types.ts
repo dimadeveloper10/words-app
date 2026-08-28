@@ -48,10 +48,23 @@ export interface CreateTranslationPayload {
   sortOrder?: number;
 }
 
+export interface CreateFormPayload {
+  form: string;
+  sortOrder?: number;
+}
+
+export interface CreateExamplePayload {
+  text: string;
+  translation?: string;
+  sortOrder?: number;
+}
+
 export interface CreateWordPayload {
   word: string;
   transcription?: string;
   translations: CreateTranslationPayload[];
+  forms?: CreateFormPayload[];
+  examples?: CreateExamplePayload[];
 }
 
 export interface WordForm {
