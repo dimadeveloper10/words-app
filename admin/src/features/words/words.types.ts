@@ -79,3 +79,11 @@ export interface WordExample {
   translation: string | null;
   sortOrder: number;
 }
+
+export type WordsView = 'list' | 'cards';
+
+export interface WordsViewProps {
+  words: Word[];
+  rangeFrom: number;
+  onDelete: (word: Word) => void;
+}
