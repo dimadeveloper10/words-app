@@ -23,64 +23,61 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
-  createWordSchema,
-  makeTranslation,
-  type CreateWordValues,
+  emptyWordValues,
+  wordFormSchema,
+  wordToFormValues,
+  type WordFormValues,
 } from '../words.schemas';
-import { useCreateWord, useUploadWordImage } from '../useWords';
+import { useCreateWord, useUpdateWord, useUploadWordImage } from '../useWords';
+import type { Word } from '../words.types';
 import { ImageField } from './ImageField';
 import { TranslationsField } from './TranslationsField';
 import { FormsField } from './FormsField';
 import { ExamplesField } from './ExamplesField';
 
-interface AddWordDialogProps {
+interface WordDialogProps {
+  word?: Word;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function AddWordDialog({ open, onOpenChange }: AddWordDialogProps) {
+export function WordDialog({ word, open, onOpenChange }: WordDialogProps) {
   const createWord = useCreateWord();
+  const updateWord = useUpdateWord();
   const uploadImage = useUploadWordImage();
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const form = useForm<CreateWordValues>({
-    resolver: zodResolver(createWordSchema),
-    defaultValues: {
-      word: '',
-      transcription: '',
-      translations: [makeTranslation(true)],
-      forms: [],
-      examples: [],
-    },
+  const form = useForm<WordFormValues>({
+    resolver: zodResolver(wordFormSchema),
+    defaultValues: word ? wordToFormValues(word) : emptyWordValues(),
   });
 
-  const closeAndReset = () => {
-    form.reset();
-    setImageFile(null);
-    onOpenChange(false);
-  };
+  const isEdit = word !== undefined;
 
-  const onSubmit = async (values: CreateWordValues) => {
+  const onSubmit = async (values: WordFormValues) => {
     try {
-      const word = await createWord.mutateAsync(values);
+      const saved = isEdit
+        ? await updateWord.mutateAsync({ id: word.id, values })
+        : await createWord.mutateAsync(values);
 
       if (imageFile) {
         try {
-          await uploadImage.mutateAsync({ id: word.id, file: imageFile });
+          await uploadImage.mutateAsync({ id: saved.id, file: imageFile });
         } catch {
           toast.warning(
-            `Word "${word.word}" created, but the image failed to upload.`,
+            `Word "${saved.word}" saved, but the image failed to upload.`,
           );
         }
       }
 
-      closeAndReset();
+      onOpenChange(false);
     } catch {
       return;
     }
   };
 
-  const isSubmitting = createWord.isPending || uploadImage.isPending;
+  const isSubmitting =
+    createWord.isPending || updateWord.isPending || uploadImage.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -89,9 +86,11 @@ export function AddWordDialog({ open, onOpenChange }: AddWordDialogProps) {
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>Add word</DialogTitle>
+          <DialogTitle>{isEdit ? 'Edit word' : 'Add word'}</DialogTitle>
           <DialogDescription>
-            Create a new dictionary entry with translations, forms and examples.
+            {isEdit
+              ? `Update “${word.word}” — translations, forms and examples are replaced with what you submit.`
+              : 'Create a new dictionary entry with translations, forms and examples.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -128,20 +127,28 @@ export function AddWordDialog({ open, onOpenChange }: AddWordDialogProps) {
               )}
             />
 
-            <ImageField value={imageFile} onChange={setImageFile} />
+            <ImageField
+              value={imageFile}
+              onChange={setImageFile}
+              currentUrl={word?.imageUrl}
+            />
 
             <TranslationsField />
             <FormsField />
             <ExamplesField />
 
             <DialogFooter className="mt-2">
-              <Button type="button" variant="outline" onClick={closeAndReset}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
                 Cancel
               </Button>
 
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="animate-spin" />}
-                Create
+                {isEdit ? 'Save' : 'Create'}
               </Button>
             </DialogFooter>
           </form>

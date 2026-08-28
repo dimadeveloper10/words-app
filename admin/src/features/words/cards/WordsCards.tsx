@@ -1,4 +1,4 @@
-import { Layers, MessageSquareQuote, Trash2 } from 'lucide-react';
+import { Layers, MessageSquareQuote, Pencil, Trash2 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -83,7 +83,12 @@ function CardMeta({ word }: { word: Word }) {
   );
 }
 
-export function WordsCards({ words, rangeFrom, onDelete }: WordsViewProps) {
+export function WordsCards({
+  words,
+  rangeFrom,
+  onEdit,
+  onDelete,
+}: WordsViewProps) {
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 px-6">
       {words.map((word, index) => (
@@ -110,14 +115,24 @@ export function WordsCards({ words, rangeFrom, onDelete }: WordsViewProps) {
                   </div>
                 )}
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="-mr-1 -mt-1 size-7 shrink-0"
-                onClick={() => onDelete(word)}
-              >
-                <Trash2 className="text-destructive size-4" />
-              </Button>
+              <div className="-mr-1 -mt-1 flex shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-7"
+                  onClick={() => onEdit(word)}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-7"
+                  onClick={() => onDelete(word)}
+                >
+                  <Trash2 className="text-destructive size-4" />
+                </Button>
+              </div>
             </div>
 
             <div className="pt-1">

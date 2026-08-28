@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ImagePlus, X } from 'lucide-react';
+import { ImagePlus, RefreshCw, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -21,9 +21,10 @@ function validateImageFile(file: File): string | null {
 interface ImageFieldProps {
   value: File | null;
   onChange: (file: File | null) => void;
+  currentUrl?: string | null;
 }
 
-export function ImageField({ value, onChange }: ImageFieldProps) {
+export function ImageField({ value, onChange, currentUrl }: ImageFieldProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -56,6 +57,12 @@ export function ImageField({ value, onChange }: ImageFieldProps) {
     onChange(file);
   };
 
+  const shownSrc = preview
+    ? preview
+    : currentUrl
+      ? `${import.meta.env.VITE_API_URL}${currentUrl}`
+      : null;
+
   return (
     <div className="space-y-2">
       <FormLabel>Image (optional)</FormLabel>
@@ -66,22 +73,33 @@ export function ImageField({ value, onChange }: ImageFieldProps) {
         className="hidden"
         onChange={onFileChange}
       />
-      {preview ? (
+      {shownSrc ? (
         <div className="flex items-center gap-3">
           <img
-            src={preview}
-            alt="Selected preview"
+            src={shownSrc}
+            alt="Word image"
             className="size-16 rounded-md border object-cover"
           />
           <Button
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => onChange(null)}
+            onClick={() => inputRef.current?.click()}
           >
-            <X className="size-4" />
-            Remove
+            <RefreshCw className="size-4" />
+            Replace
           </Button>
+          {preview && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => onChange(null)}
+            >
+              <X className="size-4" />
+              Cancel
+            </Button>
+          )}
         </div>
       ) : (
         <Button

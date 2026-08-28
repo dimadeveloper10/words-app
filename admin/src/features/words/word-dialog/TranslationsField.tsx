@@ -19,10 +19,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { PARTS_OF_SPEECH } from '../words.types';
-import { makeTranslation, type CreateWordValues } from '../words.schemas';
+import { makeTranslation, type WordFormValues } from '../words.schemas';
 
 export function TranslationsField() {
-  const { control } = useFormContext<CreateWordValues>();
+  const { control } = useFormContext<WordFormValues>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'translations',

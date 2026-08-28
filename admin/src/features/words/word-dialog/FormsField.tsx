@@ -10,10 +10,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import type { CreateWordValues } from '../words.schemas';
+import type { WordFormValues } from '../words.schemas';
 
 export function FormsField() {
-  const { control } = useFormContext<CreateWordValues>();
+  const { control } = useFormContext<WordFormValues>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'forms',

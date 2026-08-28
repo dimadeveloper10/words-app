@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { getApiErrorMessage } from '@/lib/api';
 import { DataPagination } from '@/components/DataPagination';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
-import { AddWordDialog } from './add-word/AddWordDialog';
+import { WordDialog } from './word-dialog/WordDialog';
 import { useDeleteWord, useWords } from './useWords';
 import { ViewToggle } from './ViewToggle';
 import { WordsCards } from './cards/WordsCards';
@@ -27,7 +27,7 @@ import type { Word, WordsView } from './words.types';
 const PAGE_SIZE = 20;
 
 export function WordsPage() {
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<{ word?: Word } | null>(null);
   const [wordToDelete, setWordToDelete] = useState<Word | null>(null);
   const [view, setView] = useState<WordsView>('list');
 
@@ -68,7 +68,7 @@ export function WordsPage() {
             Manage dictionary entries.
           </p>
         </div>
-        <Button onClick={() => setDialogOpen(true)}>
+        <Button onClick={() => setEditing({})}>
           <Plus className="size-4" />
           Add word
         </Button>
@@ -126,12 +126,14 @@ export function WordsPage() {
                 <WordsTable
                   words={words}
                   rangeFrom={rangeFrom}
+                  onEdit={(word) => setEditing({ word })}
                   onDelete={setWordToDelete}
                 />
               ) : (
                 <WordsCards
                   words={words}
                   rangeFrom={rangeFrom}
+                  onEdit={(word) => setEditing({ word })}
                   onDelete={setWordToDelete}
                 />
               )}
@@ -153,7 +155,16 @@ export function WordsPage() {
         </CardContent>
       </Card>
 
-      <AddWordDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+      {editing && (
+        <WordDialog
+          key={editing.word?.id ?? 'create'}
+          word={editing.word}
+          open
+          onOpenChange={(open) => {
+            if (!open) setEditing(null);
+          }}
+        />
+      )}
 
       <AlertDialog
         open={wordToDelete !== null}

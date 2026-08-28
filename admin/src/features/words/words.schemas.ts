@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { PARTS_OF_SPEECH, type PartOfSpeech } from './words.types';
+import type { Word, WordPayload } from './words.types';
 
 const partOfSpeechValues = PARTS_OF_SPEECH.map((p) => p.value) as [
   PartOfSpeech,
@@ -15,7 +16,7 @@ const translationSchema = z.object({
   isPrimary: z.boolean(),
 });
 
-const wordFormSchema = z.object({
+const formItemSchema = z.object({
   form: z.string().min(1, 'Form is required'),
 });
 
@@ -24,23 +25,63 @@ const exampleSchema = z.object({
   translation: z.string().optional(),
 });
 
-export const createWordSchema = z.object({
+export const wordFormSchema = z.object({
   word: z.string().min(1, 'Word is required'),
   transcription: z.string().optional(),
   translations: z
     .array(translationSchema)
     .min(1, 'At least one translation is required'),
-  forms: z.array(wordFormSchema),
+  forms: z.array(formItemSchema),
   examples: z.array(exampleSchema),
 });
 
-export type CreateWordValues = z.infer<typeof createWordSchema>;
-export type TranslationValues = z.infer<typeof translationSchema>;
 export type WordFormValues = z.infer<typeof wordFormSchema>;
+export type TranslationValues = z.infer<typeof translationSchema>;
+export type FormItemValues = z.infer<typeof formItemSchema>;
 export type ExampleValues = z.infer<typeof exampleSchema>;
 
 export const makeTranslation = (isPrimary: boolean): TranslationValues => ({
   partOfSpeech: undefined as unknown as PartOfSpeech,
   text: '',
   isPrimary,
+});
+
+export const emptyWordValues = (): WordFormValues => ({
+  word: '',
+  transcription: '',
+  translations: [makeTranslation(true)],
+  forms: [],
+  examples: [],
+});
+
+export const wordToFormValues = (word: Word): WordFormValues => ({
+  word: word.word,
+  transcription: word.transcription ?? '',
+  translations: word.translations.map((t) => ({
+    partOfSpeech: t.partOfSpeech,
+    text: t.text,
+    isPrimary: t.isPrimary,
+  })),
+  forms: word.forms.map((f) => ({ form: f.form })),
+  examples: word.examples.map((e) => ({
+    text: e.text,
+    translation: e.translation ?? '',
+  })),
+});
+
+export const toWordPayload = (values: WordFormValues): WordPayload => ({
+  word: values.word,
+  transcription: values.transcription || null,
+  translations: values.translations.map((t, index) => ({
+    partOfSpeech: t.partOfSpeech,
+    text: t.text,
+    isPrimary: t.isPrimary,
+    sortOrder: index,
+  })),
+  forms: values.forms.map((f, index) => ({ form: f.form, sortOrder: index })),
+  examples: values.examples.map((e, index) => ({
+    text: e.text,
+    translation: e.translation || undefined,
+    sortOrder: index,
+  })),
 });

@@ -11,45 +11,39 @@ import {
   createWord,
   deleteWord,
   listWords,
+  updateWord,
   uploadWordImage,
 } from './words.api';
 import type { ListWordsParams } from './words.api';
-import type { CreateWordValues } from './words.schemas';
+import { toWordPayload, type WordFormValues } from './words.schemas';
 
 export function useCreateWord() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (values: CreateWordValues) =>
-      createWord({
-        word: values.word,
-        transcription: values.transcription || undefined,
-        translations: values.translations.map((t, index) => ({
-          partOfSpeech: t.partOfSpeech,
-          text: t.text,
-          isPrimary: t.isPrimary,
-          sortOrder: index,
-        })),
-        forms: values.forms.length
-          ? values.forms.map((f, index) => ({
-              form: f.form,
-              sortOrder: index,
-            }))
-          : undefined,
-        examples: values.examples.length
-          ? values.examples.map((e, index) => ({
-              text: e.text,
-              translation: e.translation || undefined,
-              sortOrder: index,
-            }))
-          : undefined,
-      }),
+    mutationFn: (values: WordFormValues) => createWord(toWordPayload(values)),
     onSuccess: (word) => {
       void queryClient.invalidateQueries({ queryKey: ['words'] });
       toast.success(`Word "${word.word}" created`);
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, 'Failed to create word'));
+    },
+  });
+}
+
+export function useUpdateWord() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, values }: { id: string; values: WordFormValues }) =>
+      updateWord(id, toWordPayload(values)),
+    onSuccess: (word) => {
+      void queryClient.invalidateQueries({ queryKey: ['words'] });
+      toast.success(`Word "${word.word}" updated`);
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update word'));
     },
   });
 }

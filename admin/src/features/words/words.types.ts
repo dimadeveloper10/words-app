@@ -41,30 +41,30 @@ export interface Word {
   updatedAt: string;
 }
 
-export interface CreateTranslationPayload {
+export interface TranslationPayload {
   partOfSpeech: PartOfSpeech;
   text: string;
   isPrimary?: boolean;
   sortOrder?: number;
 }
 
-export interface CreateFormPayload {
+export interface FormPayload {
   form: string;
   sortOrder?: number;
 }
 
-export interface CreateExamplePayload {
+export interface ExamplePayload {
   text: string;
   translation?: string;
   sortOrder?: number;
 }
 
-export interface CreateWordPayload {
+export interface WordPayload {
   word: string;
-  transcription?: string;
-  translations: CreateTranslationPayload[];
-  forms?: CreateFormPayload[];
-  examples?: CreateExamplePayload[];
+  transcription?: string | null;
+  translations: TranslationPayload[];
+  forms?: FormPayload[];
+  examples?: ExamplePayload[];
 }
 
 export interface WordForm {
@@ -85,5 +85,6 @@ export type WordsView = 'list' | 'cards';
 export interface WordsViewProps {
   words: Word[];
   rangeFrom: number;
+  onEdit: (word: Word) => void;
   onDelete: (word: Word) => void;
 }

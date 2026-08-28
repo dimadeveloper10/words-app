@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -66,7 +66,12 @@ function FormsCell({ word }: { word: Word }) {
   );
 }
 
-export function WordsTable({ words, rangeFrom, onDelete }: WordsViewProps) {
+export function WordsTable({
+  words,
+  rangeFrom,
+  onEdit,
+  onDelete,
+}: WordsViewProps) {
   return (
     <Table>
       <TableHeader>
@@ -107,6 +112,14 @@ export function WordsTable({ words, rangeFrom, onDelete }: WordsViewProps) {
               <Badge variant="secondary">{word.examples.length}</Badge>
             </TableCell>
             <TableCell className="pr-6 text-right align-top">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8"
+                onClick={() => onEdit(word)}
+              >
+                <Pencil className="size-4" />
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"
