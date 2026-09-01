@@ -11,6 +11,7 @@ import { validateEnv } from './config/env.validation';
 import { buildDataSourceOptions } from './database/data-source';
 import { UsersModule } from './users/users.module';
 import { WordsModule } from './words/words.module';
+import { TopicsModule } from './topics/topics.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
@@ -33,6 +34,7 @@ import { join } from 'path';
     UsersModule,
     AuthModule,
     WordsModule,
+    TopicsModule,
   ],
   controllers: [AppController],
   providers: [
