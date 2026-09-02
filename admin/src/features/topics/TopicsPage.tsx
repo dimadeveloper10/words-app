@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
-import { AlertCircle, Loader2, Trash2 } from 'lucide-react';
+import { AlertCircle, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 
 import { DataPagination } from '@/components/DataPagination';
 import {
@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/table';
 import { getApiErrorMessage } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth';
+import { TopicDialog } from './TopicDialog';
 import { useDeleteTopic, useTopics } from './useTopics';
 import type { Topic } from './topics.types';
 
@@ -32,9 +33,10 @@ const PAGE_SIZE = 20;
 
 export function TopicsPage() {
   const [page, setPage] = useState(1);
+  const [editing, setEditing] = useState<{ topic?: Topic } | null>(null);
   const [topicToDelete, setTopicToDelete] = useState<Topic | null>(null);
   const role = useAuthStore((state) => state.user?.role);
-  const canDelete = role === 'admin' || role === 'superadmin';
+  const canManage = role === 'admin' || role === 'superadmin';
   const { data, isLoading, isFetching, isError, error } = useTopics({
     page,
     limit: PAGE_SIZE,
@@ -61,11 +63,19 @@ export function TopicsPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Topics</h1>
-        <p className="text-muted-foreground text-sm">
-          Browse dictionary topics.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Topics</h1>
+          <p className="text-muted-foreground text-sm">
+            {canManage ? 'Manage dictionary topics.' : 'Browse dictionary topics.'}
+          </p>
+        </div>
+        {canManage && (
+          <Button onClick={() => setEditing({})}>
+            <Plus className="size-4" />
+            Add topic
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -96,7 +106,9 @@ export function TopicsPage() {
             >
               {topics.length === 0 ? (
                 <p className="text-muted-foreground py-12 text-center text-sm">
-                  No topics yet.
+                  {canManage
+                    ? 'No topics yet — add your first topic.'
+                    : 'No topics yet.'}
                 </p>
               ) : (
                 <Table>
@@ -107,7 +119,7 @@ export function TopicsPage() {
                       <TableHead>Slug</TableHead>
                       <TableHead>Description</TableHead>
                       <TableHead className="text-right">Sort order</TableHead>
-                      {canDelete && (
+                      {canManage && (
                         <TableHead className="pr-6 text-right">
                           Actions
                         </TableHead>
@@ -132,8 +144,18 @@ export function TopicsPage() {
                         <TableCell className="text-right tabular-nums">
                           {topic.sortOrder}
                         </TableCell>
-                        {canDelete && (
+                        {canManage && (
                           <TableCell className="pr-6 text-right">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="size-8"
+                              aria-label={`Edit ${topic.name}`}
+                              onClick={() => setEditing({ topic })}
+                            >
+                              <Pencil className="size-4" />
+                            </Button>
                             <Button
                               type="button"
                               variant="ghost"
@@ -168,6 +190,17 @@ export function TopicsPage() {
           )}
         </CardContent>
       </Card>
+
+      {editing && (
+        <TopicDialog
+          key={editing.topic?.id ?? 'create'}
+          topic={editing.topic}
+          open
+          onOpenChange={(open) => {
+            if (!open) setEditing(null);
+          }}
+        />
+      )}
 
       <AlertDialog
         open={topicToDelete !== null}

@@ -7,3 +7,10 @@ export interface Topic {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface TopicPayload {
+  name: string;
+  slug: string;
+  description: string | null;
+  sortOrder: number;
+}
