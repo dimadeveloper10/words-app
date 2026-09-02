@@ -21,17 +21,23 @@ export class TopicsService {
 
   async findAll(query: PaginationQueryDto): Promise<Paginated<Topic>> {
     const { page, limit } = query;
-    const [items, total] = await this.topicsRepository.findAndCount({
-      order: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
-      take: limit,
-      skip: (page - 1) * limit,
-    });
+    const [items, total] = await this.topicsRepository
+      .createQueryBuilder('topic')
+      .orderBy('topic.sortOrder', 'ASC')
+      .addOrderBy('topic.name', 'ASC')
+      .addOrderBy('topic.id', 'ASC')
+      .take(limit)
+      .skip((page - 1) * limit)
+      .getManyAndCount();
 
     return paginated(items, total, page, limit);
   }
 
   async findOne(id: string): Promise<Topic> {
-    const topic = await this.topicsRepository.findOneBy({ id });
+    const topic = await this.topicsRepository
+      .createQueryBuilder('topic')
+      .where('topic.id = :id', { id })
+      .getOne();
     if (!topic) {
       throw new NotFoundException('Topic not found');
     }
@@ -50,7 +56,8 @@ export class TopicsService {
       sortOrder: dto.sortOrder ?? 0,
     });
 
-    return this.topicsRepository.save(topic);
+    const savedTopic = await this.topicsRepository.save(topic);
+    return this.findOne(savedTopic.id);
   }
 
   async update(id: string, dto: UpdateTopicDto): Promise<Topic> {
@@ -75,7 +82,8 @@ export class TopicsService {
       topic.sortOrder = dto.sortOrder;
     }
 
-    return this.topicsRepository.save(topic);
+    const savedTopic = await this.topicsRepository.save(topic);
+    return this.findOne(savedTopic.id);
   }
 
   async remove(id: string): Promise<void> {

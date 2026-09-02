@@ -2,10 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Topic } from '../../topics/entities/topic.entity';
 import { WordForm } from './word-form.entity';
 import { WordTranslation } from './word-translation.entity';
 import { WordExample } from './word-example.entity';
@@ -43,6 +46,20 @@ export class Word {
     orphanedRowAction: 'delete',
   })
   examples!: WordExample[];
+
+  @ManyToMany(() => Topic, (topic) => topic.words)
+  @JoinTable({
+    name: 'topic_words',
+    joinColumn: {
+      name: 'word_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'topic_id',
+      referencedColumnName: 'id',
+    },
+  })
+  topics!: Topic[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

@@ -4,7 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Not, Repository } from 'typeorm';
+import { EntityManager, In, Not, Repository } from 'typeorm';
+import { Topic } from '../topics/entities/topic.entity';
 import { CreateWordDto } from './dto/create-word.dto';
 import { UpdateWordDto } from './dto/update-word.dto';
 import { QueryWordsDto } from './dto/query-words.dto';
@@ -55,13 +56,19 @@ export class WordsService {
 
     const items = await this.wordsRepository.find({
       where: { id: In(pageRows.map((row) => row.id)) },
-      relations: { translations: true, forms: true, examples: true },
+      relations: {
+        translations: true,
+        forms: true,
+        examples: true,
+        topics: true,
+      },
       order: {
         createdAt: 'DESC',
         id: 'ASC',
         translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
         forms: { sortOrder: 'ASC' },
         examples: { sortOrder: 'ASC' },
+        topics: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
       },
     });
 
@@ -71,11 +78,17 @@ export class WordsService {
   async findOne(id: string): Promise<Word> {
     const word = await this.wordsRepository.findOne({
       where: { id },
-      relations: { translations: true, forms: true, examples: true },
+      relations: {
+        translations: true,
+        forms: true,
+        examples: true,
+        topics: true,
+      },
       order: {
         translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
         forms: { sortOrder: 'ASC' },
         examples: { sortOrder: 'ASC' },
+        topics: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
       },
     });
     if (!word) {
@@ -88,17 +101,45 @@ export class WordsService {
     const headword = normalizeWord(dto.word);
     await this.ensureUniqueWord(headword);
 
-    const word = this.wordsRepository.create({
-      word: headword,
-      transcription: dto.transcription ?? null,
-      imageUrl: dto.imageUrl ?? null,
-      translations: dto.translations.map(buildTranslation),
-      forms: (dto.forms ?? []).map(buildForm),
-      examples: (dto.examples ?? []).map(buildExample),
+    const wordId = await this.wordsRepository.manager.transaction(
+      async (manager) => {
+        const topics = await this.resolveTopics(manager, dto.topicIds ?? []);
+        const wordsRepository = manager.getRepository(Word);
+        const word = wordsRepository.create({
+          word: headword,
+          transcription: dto.transcription ?? null,
+          imageUrl: dto.imageUrl ?? null,
+          translations: dto.translations.map(buildTranslation),
+          forms: (dto.forms ?? []).map(buildForm),
+          examples: (dto.examples ?? []).map(buildExample),
+          topics,
+        });
+
+        const savedWord = await wordsRepository.save(word);
+        return savedWord.id;
+      },
+    );
+
+    return this.findOne(wordId);
+  }
+
+  private async resolveTopics(
+    manager: EntityManager,
+    topicIds: string[],
+  ): Promise<Topic[]> {
+    if (topicIds.length === 0) {
+      return [];
+    }
+
+    const topics = await manager.getRepository(Topic).find({
+      where: { id: In(topicIds) },
     });
 
-    const saved = await this.wordsRepository.save(word);
-    return this.findOne(saved.id);
+    if (topics.length !== topicIds.length) {
+      throw new NotFoundException('One or more topics not found');
+    }
+
+    return topics;
   }
 
   async update(id: string, dto: UpdateWordDto): Promise<Word> {
@@ -115,6 +156,9 @@ export class WordsService {
       }
       if (dto.imageUrl !== undefined) {
         word.imageUrl = dto.imageUrl ?? null;
+      }
+      if (dto.topicIds !== undefined) {
+        word.topics = await this.resolveTopics(manager, dto.topicIds);
       }
 
       if (dto.translations !== undefined) {
