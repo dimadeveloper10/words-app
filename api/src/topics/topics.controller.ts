@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -20,6 +21,7 @@ import { UpdateTopicDto } from './dto/update-topic.dto';
 import { Topic } from './entities/topic.entity';
 import { TopicsService } from './topics.service';
 import { Word } from '../words/entities/word.entity';
+import { AddTopicWordsDto } from './dto/add-topic-words.dto';
 
 @Controller('topics')
 export class TopicsController {
@@ -53,6 +55,16 @@ export class TopicsController {
     @Body() dto: UpdateTopicDto,
   ): Promise<Topic> {
     return this.topicsService.update(id, dto);
+  }
+
+  @Put(':id/add_words')
+  @Roles(Role.ADMIN)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  addWords(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AddTopicWordsDto,
+  ): Promise<void> {
+    return this.topicsService.addWords(id, dto);
   }
 
   @Delete(':id')

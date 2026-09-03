@@ -5,13 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { Paginated, paginated } from '../common/dto/paginated';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
 import { Topic } from './entities/topic.entity';
 import { Word } from '../words/entities/word.entity';
+import { AddTopicWordsDto } from './dto/add-topic-words.dto';
 
 @Injectable()
 export class TopicsService {
@@ -66,6 +67,36 @@ export class TopicsService {
         examples: { sortOrder: 'ASC' },
         topics: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
       },
+    });
+  }
+
+  async addWords(id: string, dto: AddTopicWordsDto): Promise<void> {
+    await this.topicsRepository.manager.transaction(async (manager) => {
+      const topicsRepository = manager.getRepository(Topic);
+      const wordsRepository = manager.getRepository(Word);
+      const topic = await topicsRepository.findOneBy({ id });
+      if (!topic) {
+        throw new NotFoundException('Topic not found');
+      }
+
+      const words = await wordsRepository.find({
+        where: { id: In(dto.wordIds) },
+        relations: { topics: true },
+      });
+      if (words.length !== dto.wordIds.length) {
+        throw new NotFoundException('One or more words not found');
+      }
+
+      const wordsToUpdate = words.filter(
+        (word) => !word.topics.some((wordTopic) => wordTopic.id === topic.id),
+      );
+      for (const word of wordsToUpdate) {
+        word.topics.push(topic);
+      }
+
+      if (wordsToUpdate.length > 0) {
+        await wordsRepository.save(wordsToUpdate);
+      }
     });
   }
 
