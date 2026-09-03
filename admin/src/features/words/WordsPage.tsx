@@ -6,6 +6,7 @@ import {
   Loader2,
   Plus,
   Search,
+  Trash2,
   X,
 } from 'lucide-react';
 import {
@@ -26,7 +27,7 @@ import { getApiErrorMessage } from '@/lib/api';
 import { DataPagination } from '@/components/DataPagination';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { WordDialog } from './word-dialog/WordDialog';
-import { useDeleteWord, useWords } from './useWords';
+import { useDeleteWord, useDeleteWords, useWords } from './useWords';
 import { ViewToggle } from './ViewToggle';
 import { WordsCards } from './cards/WordsCards';
 import { WordsTable } from './table/WordsTable';
@@ -40,6 +41,7 @@ export function WordsPage() {
   const [wordToDelete, setWordToDelete] = useState<Word | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [addToTopicOpen, setAddToTopicOpen] = useState(false);
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const [view, setView] = useState<WordsView>('list');
 
   const [search, setSearch] = useState('');
@@ -51,6 +53,7 @@ export function WordsPage() {
     limit: PAGE_SIZE,
   });
   const deleteWord = useDeleteWord();
+  const deleteWords = useDeleteWords();
 
   useEffect(() => {
     if (data && data.totalPages > 0 && page > data.totalPages) {
@@ -85,6 +88,15 @@ export function WordsPage() {
       }
 
       return [...new Set([...currentIds, ...wordIds])];
+    });
+  };
+
+  const confirmBulkDelete = () => {
+    deleteWords.mutate(selectedIds, {
+      onSuccess: () => {
+        setSelectedIds([]);
+        setBulkDeleteOpen(false);
+      },
     });
   };
 
@@ -170,6 +182,15 @@ export function WordsPage() {
                 >
                   <FolderPlus className="size-4" />
                   Add to topic
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setBulkDeleteOpen(true)}
+                >
+                  <Trash2 className="size-4" />
+                  Delete selected
                 </Button>
               </>
             )}
@@ -263,6 +284,40 @@ export function WordsPage() {
           onAdded={() => setSelectedIds([])}
         />
       )}
+
+      <AlertDialog
+        open={bulkDeleteOpen}
+        onOpenChange={setBulkDeleteOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete selected words?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete {selectedIds.length}{' '}
+              {selectedIds.length === 1 ? 'word' : 'words'} and their
+              translations, forms, examples and topic/lesson links. This
+              action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteWords.isPending}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(event) => {
+                event.preventDefault();
+                confirmBulkDelete();
+              }}
+              disabled={deleteWords.isPending}
+            >
+              {deleteWords.isPending && (
+                <Loader2 className="size-4 animate-spin" />
+              )}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog
         open={wordToDelete !== null}

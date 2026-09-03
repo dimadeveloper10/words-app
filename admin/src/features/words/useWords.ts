@@ -10,6 +10,7 @@ import { getApiErrorMessage } from '@/lib/api';
 import {
   createWord,
   deleteWord,
+  deleteWords,
   listWords,
   updateWord,
   uploadWordImage,
@@ -82,6 +83,23 @@ export function useDeleteWord() {
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, 'Failed to delete word'));
+    },
+  });
+}
+
+export function useDeleteWords() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteWords,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['words'] });
+      void queryClient.invalidateQueries({ queryKey: ['topics'] });
+      void queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      toast.success('Words deleted');
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to delete words'));
     },
   });
 }

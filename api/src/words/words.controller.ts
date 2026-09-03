@@ -19,6 +19,7 @@ import {
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 import { CreateWordDto } from './dto/create-word.dto';
+import { DeleteWordsDto } from './dto/delete-words.dto';
 import { UpdateWordDto } from './dto/update-word.dto';
 import { Word } from './entities/word.entity';
 import { WordsService } from './words.service';
@@ -53,6 +54,13 @@ export class WordsController {
     @Body() dto: UpdateWordDto,
   ): Promise<Word> {
     return this.wordsService.update(id, dto);
+  }
+
+  @Delete('bulk')
+  @Roles(Role.ADMIN)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeMany(@Body() dto: DeleteWordsDto): Promise<void> {
+    return this.wordsService.removeMany(dto);
   }
 
   @Delete(':id')

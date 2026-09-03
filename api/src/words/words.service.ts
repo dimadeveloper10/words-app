@@ -20,6 +20,7 @@ import {
 import { WordTranslation } from './entities/word-translation.entity';
 import { WordForm } from './entities/word-form.entity';
 import { WordExample } from './entities/word-example.entity';
+import { DeleteWordsDto } from './dto/delete-words.dto';
 import { deleteWordImage, saveWordImage } from './word-image.storage';
 import { Paginated, paginated } from '../common/dto/paginated';
 import { LessonsService } from '../lessons/lessons.service';
@@ -198,6 +199,32 @@ export class WordsService {
     await this.wordsRepository.remove(word);
     if (word.imageUrl) {
       await deleteWordImage(word.imageUrl);
+    }
+  }
+
+  async removeMany(dto: DeleteWordsDto): Promise<void> {
+    const imageUrls = await this.wordsRepository.manager.transaction(
+      async (manager) => {
+        const wordsRepository = manager.getRepository(Word);
+        const words = await wordsRepository.find({
+          where: { id: In(dto.wordIds) },
+          select: { id: true, imageUrl: true },
+        });
+
+        if (words.length !== dto.wordIds.length) {
+          throw new NotFoundException('One or more words not found');
+        }
+
+        const urls = words
+          .map((word) => word.imageUrl)
+          .filter((imageUrl): imageUrl is string => imageUrl !== null);
+        await manager.remove(words);
+        return urls;
+      },
+    );
+
+    for (const imageUrl of imageUrls) {
+      await deleteWordImage(imageUrl);
     }
   }
 
