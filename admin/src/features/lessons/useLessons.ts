@@ -70,6 +70,22 @@ export function useUpdateLesson() {
   });
 }
 
+export function useUpdateLessonWords() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, wordIds }: { id: string; wordIds: string[] }) =>
+      updateLesson(id, { wordIds }),
+    onSuccess: (lesson) => {
+      void queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      toast.success(`Words updated for "${lesson.name}"`);
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update lesson words'));
+    },
+  });
+}
+
 export function useLessons(params: ListLessonsParams) {
   return useQuery({
     queryKey: ['lessons', params.page, params.limit, params.topicId],

@@ -10,12 +10,21 @@ import { getApiErrorMessage } from '@/lib/api';
 import {
   createTopic,
   deleteTopic,
+  listTopicWords,
   listTopics,
   updateTopic,
 } from './topics.api';
 import type { ListTopicsParams } from './topics.api';
 import { toTopicPayload } from './topics.schemas';
 import type { TopicFormValues } from './topics.schemas';
+
+export function useTopicWords(id: string) {
+  return useQuery({
+    queryKey: ['topics', id, 'words'],
+    queryFn: () => listTopicWords(id),
+    retry: false,
+  });
+}
 
 export function useCreateTopic() {
   const queryClient = useQueryClient();

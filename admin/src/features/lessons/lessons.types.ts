@@ -28,6 +28,7 @@ export interface CreateLessonPayload {
 }
 
 export interface UpdateLessonPayload {
-  name: string;
-  slug: string;
+  name?: string;
+  slug?: string;
+  wordIds?: string[];
 }

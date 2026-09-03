@@ -1,5 +1,6 @@
 import { api } from '@/lib/api';
 import type { Paginated } from '@/types/pagination';
+import type { Word } from '@/features/words/words.types';
 import type { Topic, TopicPayload } from './topics.types';
 
 export async function createTopic(payload: TopicPayload): Promise<Topic> {
@@ -29,4 +30,9 @@ export async function listTopics(
 
 export async function deleteTopic(id: string): Promise<void> {
   await api.delete(`/topics/${id}`);
+}
+
+export async function listTopicWords(id: string): Promise<Word[]> {
+  const { data } = await api.get<Word[]>(`/topics/${id}/words`);
+  return data;
 }
