@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { LessonsModule } from '../lessons/lessons.module';
 import { Topic } from '../topics/entities/topic.entity';
 import { WordForm } from './entities/word-form.entity';
 import { WordTranslation } from './entities/word-translation.entity';
@@ -10,6 +11,7 @@ import { WordExample } from './entities/word-example.entity';
 
 @Module({
   imports: [
+    LessonsModule,
     TypeOrmModule.forFeature([
       Word,
       WordTranslation,

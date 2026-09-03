@@ -4,10 +4,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   VirtualColumn,
 } from 'typeorm';
+import { Lesson } from '../../lessons/entities/lesson.entity';
 import { Word } from '../../words/entities/word.entity';
 
 @Entity('topics')
@@ -30,6 +32,10 @@ export class Topic {
   @Exclude()
   @ManyToMany(() => Word, (word) => word.topics)
   words!: Word[];
+
+  @Exclude()
+  @OneToMany(() => Lesson, (lesson) => lesson.topic)
+  lessons!: Lesson[];
 
   @VirtualColumn({
     type: 'int',

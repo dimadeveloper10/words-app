@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -8,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Lesson } from '../../lessons/entities/lesson.entity';
 import { Topic } from '../../topics/entities/topic.entity';
 import { WordForm } from './word-form.entity';
 import { WordTranslation } from './word-translation.entity';
@@ -60,6 +62,13 @@ export class Word {
     },
   })
   topics!: Topic[];
+
+  @Exclude()
+  @ManyToMany(() => Lesson, (lesson) => lesson.words, {
+    onDelete: 'CASCADE',
+    onUpdate: 'NO ACTION',
+  })
+  lessons!: Lesson[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

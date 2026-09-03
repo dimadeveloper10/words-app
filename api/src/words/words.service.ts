@@ -22,12 +22,14 @@ import { WordForm } from './entities/word-form.entity';
 import { WordExample } from './entities/word-example.entity';
 import { deleteWordImage, saveWordImage } from './word-image.storage';
 import { Paginated, paginated } from '../common/dto/paginated';
+import { LessonsService } from '../lessons/lessons.service';
 
 @Injectable()
 export class WordsService {
   constructor(
     @InjectRepository(Word)
     private readonly wordsRepository: Repository<Word>,
+    private readonly lessonsService: LessonsService,
   ) {}
 
   async findAll(query: QueryWordsDto): Promise<Paginated<Word>> {
@@ -158,7 +160,18 @@ export class WordsService {
         word.imageUrl = dto.imageUrl ?? null;
       }
       if (dto.topicIds !== undefined) {
-        word.topics = await this.resolveTopics(manager, dto.topicIds);
+        const topics = await this.resolveTopics(manager, dto.topicIds);
+        const nextTopicIds = new Set(topics.map((topic) => topic.id));
+        const removedTopicIds = word.topics
+          .map((topic) => topic.id)
+          .filter((topicId) => !nextTopicIds.has(topicId));
+
+        await this.lessonsService.removeWordFromTopicLessons(
+          manager,
+          word.id,
+          removedTopicIds,
+        );
+        word.topics = topics;
       }
 
       if (dto.translations !== undefined) {
