@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -106,79 +105,95 @@ export function WordDialog({
       >
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit word' : 'Add word'}</DialogTitle>
-          <DialogDescription>
-            {isEdit
-              ? `Update “${word.word}” — translations, forms and examples are replaced with what you submit.`
-              : 'Create a new dictionary entry with translations, forms and examples.'}
-          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form
             onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
-            className="grid gap-4"
+            className="grid gap-6"
           >
-            <div className="grid gap-4 sm:grid-cols-3">
-              <FormField
-                control={form.control}
-                name="word"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Word</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. run" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="grid items-start gap-6 md:grid-cols-2">
+              <div className="grid gap-4">
+                <FormField
+                  control={form.control}
+                  name="word"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Word <span className="text-destructive">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. run" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="transcription"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Transcription (optional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. /rʌn/" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="transcription"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Transcription</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. /rʌn/" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="externalUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>External image URL (optional)</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://example.com/image.jpg"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <TopicsField fixedTopic={fixedTopic} />
+              </div>
 
-              <ImageField
-                value={imageFile}
-                onChange={setImageFile}
-                currentUrl={word?.imageUrl}
-                currentExternalUrl={word?.externalUrl}
-              />
+              <div className="grid content-start gap-2">
+                <ImageField
+                  value={imageFile}
+                  onChange={setImageFile}
+                  currentUrl={word?.imageUrl}
+                  currentExternalUrl={word?.externalUrl}
+                />
+
+                <div className="text-muted-foreground text-center text-sm">
+                  or
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="externalUrl"
+                  render={({ field }) => (
+                    <FormItem className="gap-1">
+                      <FormLabel>External image URL</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://example.com/image.jpg"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
-            <TopicsField fixedTopic={fixedTopic} />
+            <div className="border-t" />
 
             <TranslationsField />
 
-            <div className="grid gap-x-6 gap-y-4 md:grid-cols-2">
-              <FormsField />
-              <ExamplesField />
+            <div className="border-t" />
+
+            <div className="grid items-start gap-6">
+              <div className="w-full md:max-w-[50%]">
+                <FormsField />
+              </div>
+
+              <div className="border-t" />
+
+              <div className="w-full md:max-w-[50%]">
+                <ExamplesField />
+              </div>
             </div>
 
             <DialogFooter className="mt-2">

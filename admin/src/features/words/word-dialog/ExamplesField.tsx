@@ -21,7 +21,7 @@ export function ExamplesField() {
 
   return (
     <div className="space-y-3">
-      <FormLabel>Examples (optional)</FormLabel>
+      <FormLabel>Examples</FormLabel>
 
       {fields.map((item, index) => (
         <div key={item.id} className="space-y-3 rounded-md border p-3">
@@ -45,7 +45,9 @@ export function ExamplesField() {
             name={`examples.${index}.text`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Sentence</FormLabel>
+                <FormLabel>
+                  Sentence <span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input placeholder="e.g. Give me a hand" {...field} />
                 </FormControl>
@@ -59,7 +61,7 @@ export function ExamplesField() {
             name={`examples.${index}.translation`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Translation (optional)</FormLabel>
+                <FormLabel>Translation</FormLabel>
                 <FormControl>
                   <Input placeholder="Переклад речення" {...field} />
                 </FormControl>

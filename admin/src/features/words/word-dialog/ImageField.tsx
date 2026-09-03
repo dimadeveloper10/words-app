@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ImagePlus, RefreshCw, X } from 'lucide-react';
+import { ImageOff, ImagePlus, RefreshCw, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -70,8 +70,7 @@ export function ImageField({
         : currentExternalUrl || null;
 
   return (
-    <div className="space-y-2">
-      <FormLabel>Image (optional)</FormLabel>
+    <div>
       <input
         ref={inputRef}
         type="file"
@@ -80,43 +79,57 @@ export function ImageField({
         onChange={onFileChange}
       />
       {shownSrc ? (
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-[auto_auto] items-start justify-start gap-x-3 gap-y-2">
+          <FormLabel className="col-start-1 justify-self-start">
+            Image
+          </FormLabel>
           <img
             src={shownSrc}
             alt="Word image"
-            className="size-16 rounded-md border object-cover"
+            className="col-start-1 row-start-2 size-24 rounded-md border object-cover"
           />
+          <div className="col-start-2 row-start-2 flex flex-col items-start gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="min-w-24 justify-center"
+              onClick={() => inputRef.current?.click()}
+            >
+              <RefreshCw className="size-4" />
+              Replace
+            </Button>
+            {preview && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="min-w-24 justify-center"
+                onClick={() => onChange(null)}
+              >
+                <X className="size-4" />
+                Cancel
+              </Button>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-[auto_auto] items-start justify-start gap-x-3 gap-y-2">
+          <FormLabel className="col-start-1">Image</FormLabel>
+          <div className="bg-muted col-start-1 row-start-2 flex size-24 items-center justify-center rounded-md border">
+            <ImageOff className="text-muted-foreground size-6" />
+          </div>
           <Button
             type="button"
             variant="outline"
             size="sm"
+            className="col-start-2 row-start-2 min-w-24 justify-center"
             onClick={() => inputRef.current?.click()}
           >
-            <RefreshCw className="size-4" />
-            Replace
+            <ImagePlus className="size-4" />
+            Choose image
           </Button>
-          {preview && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => onChange(null)}
-            >
-              <X className="size-4" />
-              Cancel
-            </Button>
-          )}
         </div>
-      ) : (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => inputRef.current?.click()}
-        >
-          <ImagePlus className="size-4" />
-          Choose image
-        </Button>
       )}
     </div>
   );

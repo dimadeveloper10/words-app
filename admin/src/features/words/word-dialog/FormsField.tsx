@@ -21,7 +21,7 @@ export function FormsField() {
 
   return (
     <div className="space-y-3">
-      <FormLabel>Forms (optional)</FormLabel>
+      <FormLabel>Forms</FormLabel>
 
       {fields.map((item, index) => (
         <div key={item.id} className="flex items-start gap-2">

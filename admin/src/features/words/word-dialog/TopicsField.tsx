@@ -53,12 +53,7 @@ export function TopicsField({ fixedTopic }: TopicsFieldProps) {
       name="topicIds"
       render={({ field }) => (
         <FormItem>
-          <div>
-            <FormLabel>Topics (optional)</FormLabel>
-            <FormDescription>
-              Select every topic this word belongs to.
-            </FormDescription>
-          </div>
+          <FormLabel>Topics</FormLabel>
 
           <TopicMultiSelect
             topics={topics}

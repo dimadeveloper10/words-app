@@ -7,7 +7,10 @@ export type PartOfSpeech =
   | 'preposition'
   | 'conjunction'
   | 'interjection'
-  | 'numeral';
+  | 'numeral'
+  | 'determiner'
+  | 'article'
+  | 'particle';
 
 export const PARTS_OF_SPEECH = [
   { value: 'noun', label: 'Noun' },
@@ -19,6 +22,9 @@ export const PARTS_OF_SPEECH = [
   { value: 'conjunction', label: 'Conjunction' },
   { value: 'interjection', label: 'Interjection' },
   { value: 'numeral', label: 'Numeral' },
+  { value: 'determiner', label: 'Determiner' },
+  { value: 'article', label: 'Article' },
+  { value: 'particle', label: 'Particle' },
 ] as const;
 
 export interface WordTranslation {

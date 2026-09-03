@@ -30,7 +30,9 @@ export function TranslationsField() {
 
   return (
     <div className="space-y-3">
-      <FormLabel>Translations</FormLabel>
+      <FormLabel>
+        Translations <span className="text-destructive">*</span>
+      </FormLabel>
 
       {fields.map((item, index) => (
         <div key={item.id} className="space-y-3 rounded-md border p-3">
@@ -77,7 +79,9 @@ export function TranslationsField() {
               name={`translations.${index}.partOfSpeech`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Part of speech</FormLabel>
+                  <FormLabel>
+                    Part of speech <span className="text-destructive">*</span>
+                  </FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -102,7 +106,9 @@ export function TranslationsField() {
               name={`translations.${index}.text`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Translation</FormLabel>
+                  <FormLabel>
+                    Translation <span className="text-destructive">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="Переклад українською" {...field} />
                   </FormControl>
