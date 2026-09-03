@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import type { Word } from '@/features/words/words.types';
 import type { Paginated } from '@/types/pagination';
 import type {
   CreateLessonPayload,
@@ -18,6 +19,16 @@ export async function updateLesson(
   payload: UpdateLessonPayload,
 ): Promise<Lesson> {
   const { data } = await api.patch<Lesson>(`/lessons/${id}`, payload);
+  return data;
+}
+
+export async function getLesson(id: string): Promise<Lesson> {
+  const { data } = await api.get<Lesson>(`/lessons/${id}`);
+  return data;
+}
+
+export async function listLessonWords(id: string): Promise<Word[]> {
+  const { data } = await api.get<Word[]>(`/lessons/${id}/words`);
   return data;
 }
 

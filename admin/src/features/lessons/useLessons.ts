@@ -10,7 +10,9 @@ import { getApiErrorMessage } from '@/lib/api';
 import {
   createLesson,
   deleteLesson,
+  getLesson,
   listLessons,
+  listLessonWords,
   updateLesson,
 } from './lessons.api';
 import type { ListLessonsParams } from './lessons.api';
@@ -19,6 +21,22 @@ import {
   toUpdateLessonPayload,
 } from './lessons.schemas';
 import type { LessonFormValues } from './lessons.schemas';
+
+export function useLesson(id: string) {
+  return useQuery({
+    queryKey: ['lessons', 'detail', id],
+    queryFn: () => getLesson(id),
+    retry: false,
+  });
+}
+
+export function useLessonWords(id: string) {
+  return useQuery({
+    queryKey: ['lessons', id, 'words'],
+    queryFn: () => listLessonWords(id),
+    retry: false,
+  });
+}
 
 export function useCreateLesson() {
   const queryClient = useQueryClient();

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
 import { AlertCircle, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import { DataPagination } from '@/components/DataPagination';
 import {
@@ -40,6 +41,7 @@ function formatDate(iso: string): string {
 }
 
 export function LessonsPage() {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<{ lesson?: Lesson } | null>(null);
   const [lessonToDelete, setLessonToDelete] = useState<Lesson | null>(null);
@@ -136,7 +138,21 @@ export function LessonsPage() {
                   </TableHeader>
                   <TableBody>
                     {lessons.map((lesson, index) => (
-                      <TableRow key={lesson.id}>
+                      <TableRow
+                        key={lesson.id}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`View ${lesson.name}`}
+                        className="focus-visible:ring-ring cursor-pointer focus-visible:ring-2 focus-visible:ring-inset focus-visible:outline-none"
+                        onClick={() => void navigate(`/lessons/${lesson.id}`)}
+                        onKeyDown={(event) => {
+                          if (event.target !== event.currentTarget) return;
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            void navigate(`/lessons/${lesson.id}`);
+                          }
+                        }}
+                      >
                         <TableCell className="text-muted-foreground pl-6 tabular-nums">
                           {rangeFrom + index}
                         </TableCell>
@@ -166,7 +182,10 @@ export function LessonsPage() {
                           {formatDate(lesson.createdAt)}
                         </TableCell>
                         {canManage && (
-                          <TableCell className="pr-6 text-right">
+                          <TableCell
+                            className="pr-6 text-right"
+                            onClick={(event) => event.stopPropagation()}
+                          >
                             <Button
                               type="button"
                               variant="ghost"
