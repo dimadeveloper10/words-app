@@ -16,6 +16,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Paginated } from '../common/dto/paginated';
 import { Role } from '../common/enums/role.enum';
 import { User } from '../users/entities/user.entity';
+import { Word } from '../words/entities/word.entity';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { QueryLessonsDto } from './dto/query-lessons.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
@@ -34,6 +35,11 @@ export class LessonsController {
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Lesson> {
     return this.lessonsService.findOne(id);
+  }
+
+  @Get(':id/words')
+  findWords(@Param('id', ParseUUIDPipe) id: string): Promise<Word[]> {
+    return this.lessonsService.findWords(id);
   }
 
   @Post()

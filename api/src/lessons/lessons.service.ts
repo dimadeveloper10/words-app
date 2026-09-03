@@ -22,6 +22,8 @@ export class LessonsService {
     private readonly lessonsRepository: Repository<Lesson>,
     @InjectRepository(Topic)
     private readonly topicsRepository: Repository<Topic>,
+    @InjectRepository(Word)
+    private readonly wordsRepository: Repository<Word>,
   ) {}
 
   async findAll(query: QueryLessonsDto): Promise<Paginated<Lesson>> {
@@ -52,6 +54,28 @@ export class LessonsService {
     }
 
     return lesson;
+  }
+
+  async findWords(id: string): Promise<Word[]> {
+    await this.findOne(id);
+
+    return this.wordsRepository.find({
+      where: { lessons: { id } },
+      relations: {
+        translations: true,
+        forms: true,
+        examples: true,
+        topics: true,
+      },
+      order: {
+        createdAt: 'DESC',
+        id: 'ASC',
+        translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
+        forms: { sortOrder: 'ASC' },
+        examples: { sortOrder: 'ASC' },
+        topics: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
+      },
+    });
   }
 
   async create(dto: CreateLessonDto, addedBy: User): Promise<Lesson> {
