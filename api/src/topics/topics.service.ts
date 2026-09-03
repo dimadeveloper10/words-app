@@ -11,12 +11,15 @@ import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
 import { Topic } from './entities/topic.entity';
+import { Word } from '../words/entities/word.entity';
 
 @Injectable()
 export class TopicsService {
   constructor(
     @InjectRepository(Topic)
     private readonly topicsRepository: Repository<Topic>,
+    @InjectRepository(Word)
+    private readonly wordsRepository: Repository<Word>,
   ) {}
 
   async findAll(query: PaginationQueryDto): Promise<Paginated<Topic>> {
@@ -42,6 +45,28 @@ export class TopicsService {
       throw new NotFoundException('Topic not found');
     }
     return topic;
+  }
+
+  async findWords(id: string): Promise<Word[]> {
+    await this.findOne(id);
+
+    return this.wordsRepository.find({
+      where: { topics: { id } },
+      relations: {
+        translations: true,
+        forms: true,
+        examples: true,
+        topics: true,
+      },
+      order: {
+        word: 'ASC',
+        id: 'ASC',
+        translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
+        forms: { sortOrder: 'ASC' },
+        examples: { sortOrder: 'ASC' },
+        topics: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
+      },
+    });
   }
 
   async create(dto: CreateTopicDto): Promise<Topic> {

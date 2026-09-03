@@ -19,6 +19,7 @@ import { CreateTopicDto } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
 import { Topic } from './entities/topic.entity';
 import { TopicsService } from './topics.service';
+import { Word } from '../words/entities/word.entity';
 
 @Controller('topics')
 export class TopicsController {
@@ -32,6 +33,11 @@ export class TopicsController {
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Topic> {
     return this.topicsService.findOne(id);
+  }
+
+  @Get(':id/words')
+  findWords(@Param('id', ParseUUIDPipe) id: string): Promise<Word[]> {
+    return this.topicsService.findWords(id);
   }
 
   @Post()
