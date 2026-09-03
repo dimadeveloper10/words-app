@@ -147,10 +147,28 @@ export function WordDialog({
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="externalUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>External image URL (optional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="https://example.com/image.jpg"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <ImageField
                 value={imageFile}
                 onChange={setImageFile}
                 currentUrl={word?.imageUrl}
+                currentExternalUrl={word?.externalUrl}
               />
             </div>
 

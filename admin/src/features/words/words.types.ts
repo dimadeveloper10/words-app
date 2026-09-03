@@ -40,6 +40,7 @@ export interface Word {
   word: string;
   transcription: string | null;
   imageUrl: string | null;
+  externalUrl: string | null;
   translations: WordTranslation[];
   forms: WordForm[];
   examples: WordExample[];
@@ -73,6 +74,7 @@ export interface WordPayload {
   forms?: FormPayload[];
   examples?: ExamplePayload[];
   topicIds: string[];
+  externalUrl?: string | null;
 }
 
 export interface WordForm {

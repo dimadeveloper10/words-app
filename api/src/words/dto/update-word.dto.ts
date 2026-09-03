@@ -6,6 +6,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUrl,
   IsUUID,
   ValidateNested,
 } from 'class-validator';
@@ -33,6 +34,10 @@ export class UpdateWordDto {
   @IsOptional()
   @IsString()
   imageUrl?: string;
+
+  @IsOptional()
+  @IsUrl()
+  externalUrl?: string;
 
   @IsOptional()
   @IsArray()

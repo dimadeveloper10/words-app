@@ -28,6 +28,10 @@ const exampleSchema = z.object({
 export const wordFormSchema = z.object({
   word: z.string().min(1, 'Word is required'),
   transcription: z.string().optional(),
+  externalUrl: z
+    .string()
+    .url('Enter a valid image URL')
+    .or(z.literal('')),
   translations: z
     .array(translationSchema)
     .min(1, 'At least one translation is required'),
@@ -50,6 +54,7 @@ export const makeTranslation = (isPrimary: boolean): TranslationValues => ({
 export const emptyWordValues = (): WordFormValues => ({
   word: '',
   transcription: '',
+  externalUrl: '',
   translations: [makeTranslation(true)],
   forms: [],
   examples: [],
@@ -59,6 +64,7 @@ export const emptyWordValues = (): WordFormValues => ({
 export const wordToFormValues = (word: Word): WordFormValues => ({
   word: word.word,
   transcription: word.transcription ?? '',
+  externalUrl: word.externalUrl ?? '',
   translations: word.translations.map((t) => ({
     partOfSpeech: t.partOfSpeech,
     text: t.text,
@@ -75,6 +81,7 @@ export const wordToFormValues = (word: Word): WordFormValues => ({
 export const toWordPayload = (values: WordFormValues): WordPayload => ({
   word: values.word,
   transcription: values.transcription || null,
+  externalUrl: values.externalUrl || null,
   translations: values.translations.map((t, index) => ({
     partOfSpeech: t.partOfSpeech,
     text: t.text,

@@ -10,7 +10,11 @@ interface WordImageProps {
 }
 
 export function WordImage({ word, className, iconClassName }: WordImageProps) {
-  if (!word.imageUrl) {
+  const src = word.imageUrl
+    ? `${import.meta.env.VITE_API_URL}${word.imageUrl}`
+    : word.externalUrl;
+
+  if (!src) {
     return (
       <div
         className={cn(
@@ -27,7 +31,7 @@ export function WordImage({ word, className, iconClassName }: WordImageProps) {
 
   return (
     <img
-      src={`${import.meta.env.VITE_API_URL}${word.imageUrl}`}
+      src={src}
       alt={word.word}
       className={cn('rounded-md object-cover', className)}
     />

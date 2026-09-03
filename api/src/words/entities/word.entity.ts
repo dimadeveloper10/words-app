@@ -29,6 +29,9 @@ export class Word {
   @Column({ name: 'image_url', type: 'varchar', nullable: true })
   imageUrl!: string | null;
 
+  @Column({ name: 'external_url', type: 'varchar', nullable: true })
+  externalUrl!: string | null;
+
   // orphanedRowAction: 'delete' lets update() replace a collection by simply
   // reassigning the array — removed rows are deleted on save.
   @OneToMany(() => WordTranslation, (translation) => translation.word, {

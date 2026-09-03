@@ -9,6 +9,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUrl,
   IsUUID,
   ValidateNested,
 } from 'class-validator';
@@ -67,6 +68,10 @@ export class CreateWordDto {
   @IsOptional()
   @IsString()
   imageUrl?: string;
+
+  @IsOptional()
+  @IsUrl()
+  externalUrl?: string;
 
   @IsOptional()
   @IsArray()

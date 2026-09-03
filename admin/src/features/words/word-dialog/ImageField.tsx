@@ -22,9 +22,15 @@ interface ImageFieldProps {
   value: File | null;
   onChange: (file: File | null) => void;
   currentUrl?: string | null;
+  currentExternalUrl?: string | null;
 }
 
-export function ImageField({ value, onChange, currentUrl }: ImageFieldProps) {
+export function ImageField({
+  value,
+  onChange,
+  currentUrl,
+  currentExternalUrl,
+}: ImageFieldProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -59,9 +65,9 @@ export function ImageField({ value, onChange, currentUrl }: ImageFieldProps) {
 
   const shownSrc = preview
     ? preview
-    : currentUrl
-      ? `${import.meta.env.VITE_API_URL}${currentUrl}`
-      : null;
+      : currentUrl
+        ? `${import.meta.env.VITE_API_URL}${currentUrl}`
+        : currentExternalUrl || null;
 
   return (
     <div className="space-y-2">
