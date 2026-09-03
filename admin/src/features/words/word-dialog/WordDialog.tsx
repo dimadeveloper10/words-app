@@ -30,6 +30,7 @@ import {
 } from '../words.schemas';
 import { useCreateWord, useUpdateWord, useUploadWordImage } from '../useWords';
 import type { Word } from '../words.types';
+import type { Topic } from '@/features/topics/topics.types';
 import { ImageField } from './ImageField';
 import { TopicsField } from './TopicsField';
 import { TranslationsField } from './TranslationsField';
@@ -38,11 +39,17 @@ import { ExamplesField } from './ExamplesField';
 
 interface WordDialogProps {
   word?: Word;
+  fixedTopic?: Pick<Topic, 'id' | 'name'>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function WordDialog({ word, open, onOpenChange }: WordDialogProps) {
+export function WordDialog({
+  word,
+  fixedTopic,
+  open,
+  onOpenChange,
+}: WordDialogProps) {
   const createWord = useCreateWord();
   const updateWord = useUpdateWord();
   const uploadImage = useUploadWordImage();
@@ -50,16 +57,27 @@ export function WordDialog({ word, open, onOpenChange }: WordDialogProps) {
 
   const form = useForm<WordFormValues>({
     resolver: zodResolver(wordFormSchema),
-    defaultValues: word ? wordToFormValues(word) : emptyWordValues(),
+    defaultValues: word
+      ? wordToFormValues(word)
+      : {
+          ...emptyWordValues(),
+          topicIds: fixedTopic ? [fixedTopic.id] : [],
+        },
   });
 
   const isEdit = word !== undefined;
 
   const onSubmit = async (values: WordFormValues) => {
     try {
+      const valuesWithFixedTopic = fixedTopic
+        ? { ...values, topicIds: [fixedTopic.id] }
+        : values;
       const saved = isEdit
-        ? await updateWord.mutateAsync({ id: word.id, values })
-        : await createWord.mutateAsync(values);
+        ? await updateWord.mutateAsync({
+            id: word.id,
+            values: valuesWithFixedTopic,
+          })
+        : await createWord.mutateAsync(valuesWithFixedTopic);
 
       if (imageFile) {
         try {
@@ -136,7 +154,7 @@ export function WordDialog({ word, open, onOpenChange }: WordDialogProps) {
               />
             </div>
 
-            <TopicsField />
+            <TopicsField fixedTopic={fixedTopic} />
 
             <TranslationsField />
 

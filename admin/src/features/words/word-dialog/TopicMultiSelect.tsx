@@ -13,7 +13,7 @@ import {
 import type { Topic } from '@/features/topics/topics.types';
 
 interface TopicMultiSelectProps {
-  topics: Topic[];
+  topics: Array<Pick<Topic, 'id' | 'name'>>;
   value: string[];
   onChange: (topicIds: string[]) => void;
   disabled?: boolean;

@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { isAxiosError } from 'axios';
-import { AlertCircle, ArrowLeft, Loader2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Loader2, Plus } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
@@ -17,10 +18,15 @@ import { getApiErrorMessage } from '@/lib/api';
 import { TopicWordsTable } from './TopicWordsTable';
 import { useTopic, useTopicWords } from './useTopics';
 import { useLessons } from '@/features/lessons/useLessons';
+import { useAuthStore } from '@/stores/auth';
+import { WordDialog } from '@/features/words/word-dialog/WordDialog';
 
 export function TopicDetailsPage() {
+  const [addingWord, setAddingWord] = useState(false);
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const role = useAuthStore((state) => state.user?.role);
+  const canManage = role === 'admin' || role === 'superadmin';
   const topicQuery = useTopic(id);
   const wordsQuery = useTopicWords(id);
   const lessonsQuery = useLessons({ page: 1, limit: 100, topicId: id });
@@ -65,18 +71,26 @@ export function TopicDetailsPage() {
         </Link>
       </Button>
 
-      <div>
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {topic.name}
-          </h1>
-          <Badge variant="secondary">{topic.lessonCount} lessons</Badge>
-          <Badge variant="secondary">{topic.wordCount} words</Badge>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {topic.name}
+            </h1>
+            <Badge variant="secondary">{topic.lessonCount} lessons</Badge>
+            <Badge variant="secondary">{topic.wordCount} words</Badge>
+          </div>
+          <p className="text-muted-foreground text-sm">
+            {topic.slug}
+            {topic.description ? ` · ${topic.description}` : ''}
+          </p>
         </div>
-        <p className="text-muted-foreground text-sm">
-          {topic.slug}
-          {topic.description ? ` · ${topic.description}` : ''}
-        </p>
+        {canManage && (
+          <Button onClick={() => setAddingWord(true)}>
+            <Plus className="size-4" />
+            Add word
+          </Button>
+        )}
       </div>
 
       <section className="space-y-3">
@@ -197,6 +211,17 @@ export function TopicDetailsPage() {
           </CardContent>
         </Card>
       </section>
+
+      {addingWord && (
+        <WordDialog
+          key={`create-${topic.id}`}
+          fixedTopic={{ id: topic.id, name: topic.name }}
+          open
+          onOpenChange={(open) => {
+            if (!open) setAddingWord(false);
+          }}
+        />
+      )}
     </div>
   );
 }
