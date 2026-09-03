@@ -8,6 +8,11 @@ export async function createTopic(payload: TopicPayload): Promise<Topic> {
   return data;
 }
 
+export async function getTopic(id: string): Promise<Topic> {
+  const { data } = await api.get<Topic>(`/topics/${id}`);
+  return data;
+}
+
 export async function updateTopic(
   id: string,
   payload: TopicPayload,

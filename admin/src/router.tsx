@@ -8,6 +8,7 @@ import { RegisterPage } from '@/features/auth/RegisterPage';
 import { LessonsPage } from '@/features/lessons/LessonsPage';
 import { LessonDetailsPage } from '@/features/lessons/LessonDetailsPage';
 import { TopicsPage } from '@/features/topics/TopicsPage';
+import { TopicDetailsPage } from '@/features/topics/TopicDetailsPage';
 import { UsersPage } from '@/features/users/UsersPage';
 import { WordsPage } from '@/features/words/WordsPage.tsx';
 
@@ -29,6 +30,7 @@ export const router = createBrowserRouter([
           { path: '/users', element: <UsersPage /> },
           { path: '/words', element: <WordsPage /> },
           { path: '/topics', element: <TopicsPage /> },
+          { path: '/topics/:id', element: <TopicDetailsPage /> },
           { path: '/lessons', element: <LessonsPage /> },
           { path: '/lessons/:id', element: <LessonDetailsPage /> },
         ],

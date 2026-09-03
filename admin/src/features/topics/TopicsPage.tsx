@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
 import { AlertCircle, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import { DataPagination } from '@/components/DataPagination';
 import {
@@ -32,6 +33,7 @@ import type { Topic } from './topics.types';
 const PAGE_SIZE = 20;
 
 export function TopicsPage() {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<{ topic?: Topic } | null>(null);
   const [topicToDelete, setTopicToDelete] = useState<Topic | null>(null);
@@ -118,6 +120,7 @@ export function TopicsPage() {
                       <TableHead>Name</TableHead>
                       <TableHead>Slug</TableHead>
                       <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Lessons</TableHead>
                       <TableHead className="text-right">Words</TableHead>
                       <TableHead className="text-right">Sort order</TableHead>
                       {canManage && (
@@ -129,7 +132,21 @@ export function TopicsPage() {
                   </TableHeader>
                   <TableBody>
                     {topics.map((topic, index) => (
-                      <TableRow key={topic.id}>
+                      <TableRow
+                        key={topic.id}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`View ${topic.name}`}
+                        className="focus-visible:ring-ring cursor-pointer focus-visible:ring-2 focus-visible:ring-inset focus-visible:outline-none"
+                        onClick={() => void navigate(`/topics/${topic.id}`)}
+                        onKeyDown={(event) => {
+                          if (event.target !== event.currentTarget) return;
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            void navigate(`/topics/${topic.id}`);
+                          }
+                        }}
+                      >
                         <TableCell className="text-muted-foreground pl-6 tabular-nums">
                           {rangeFrom + index}
                         </TableCell>
@@ -143,13 +160,19 @@ export function TopicsPage() {
                           {topic.description ?? '—'}
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
+                          {topic.lessonCount}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
                           {topic.wordCount}
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
                           {topic.sortOrder}
                         </TableCell>
                         {canManage && (
-                          <TableCell className="pr-6 text-right">
+                          <TableCell
+                            className="pr-6 text-right"
+                            onClick={(event) => event.stopPropagation()}
+                          >
                             <Button
                               type="button"
                               variant="ghost"

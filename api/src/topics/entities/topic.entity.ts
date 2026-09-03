@@ -44,6 +44,13 @@ export class Topic {
   })
   wordCount!: number;
 
+  @VirtualColumn({
+    type: 'int',
+    query: (alias) =>
+      `SELECT COUNT(*)::int FROM "lessons" "lessons" WHERE "lessons"."topic_id" = ${alias}."id"`,
+  })
+  lessonCount!: number;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 

@@ -5,6 +5,7 @@ export interface Topic {
   description: string | null;
   sortOrder: number;
   wordCount: number;
+  lessonCount: number;
   createdAt: string;
   updatedAt: string;
 }

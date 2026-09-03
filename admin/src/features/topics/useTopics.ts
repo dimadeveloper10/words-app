@@ -11,6 +11,7 @@ import {
   addWordsToTopic,
   createTopic,
   deleteTopic,
+  getTopic,
   listTopicWords,
   listTopics,
   updateTopic,
@@ -40,6 +41,14 @@ export function useTopicWords(id: string) {
   return useQuery({
     queryKey: ['topics', id, 'words'],
     queryFn: () => listTopicWords(id),
+    retry: false,
+  });
+}
+
+export function useTopic(id: string) {
+  return useQuery({
+    queryKey: ['topics', 'detail', id],
+    queryFn: () => getTopic(id),
     retry: false,
   });
 }
