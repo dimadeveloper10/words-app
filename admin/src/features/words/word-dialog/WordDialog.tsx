@@ -31,6 +31,7 @@ import {
 import { useCreateWord, useUpdateWord, useUploadWordImage } from '../useWords';
 import type { Word } from '../words.types';
 import { ImageField } from './ImageField';
+import { TopicsField } from './TopicsField';
 import { TranslationsField } from './TranslationsField';
 import { FormsField } from './FormsField';
 import { ExamplesField } from './ExamplesField';
@@ -134,6 +135,8 @@ export function WordDialog({ word, open, onOpenChange }: WordDialogProps) {
                 currentUrl={word?.imageUrl}
               />
             </div>
+
+            <TopicsField />
 
             <TranslationsField />
 

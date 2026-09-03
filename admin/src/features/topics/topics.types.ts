@@ -4,6 +4,7 @@ export interface Topic {
   slug: string;
   description: string | null;
   sortOrder: number;
+  wordCount: number;
   createdAt: string;
   updatedAt: string;
 }

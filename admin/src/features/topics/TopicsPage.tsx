@@ -118,6 +118,7 @@ export function TopicsPage() {
                       <TableHead>Name</TableHead>
                       <TableHead>Slug</TableHead>
                       <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Words</TableHead>
                       <TableHead className="text-right">Sort order</TableHead>
                       {canManage && (
                         <TableHead className="pr-6 text-right">
@@ -140,6 +141,9 @@ export function TopicsPage() {
                         </TableCell>
                         <TableCell className="text-muted-foreground max-w-md whitespace-normal">
                           {topic.description ?? '—'}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {topic.wordCount}
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
                           {topic.sortOrder}

@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { WordImage } from '../WordImage';
+import { WordTopics } from '../WordTopics';
 import { groupByPartOfSpeech } from '../words.utils';
 import type { Word, WordsViewProps } from '../words.types';
 
@@ -94,20 +95,24 @@ export function WordsCards({
       {words.map((word, index) => (
         <div
           key={word.id}
-          className="flex flex-col overflow-hidden rounded-md border"
+          role="button"
+          tabIndex={0}
+          aria-label={`Edit ${word.word}`}
+          className="focus-visible:ring-ring flex cursor-pointer flex-col overflow-hidden rounded-md border transition hover:bg-muted/30 focus-visible:ring-2 focus-visible:outline-none"
+          onClick={() => onEdit(word)}
+          onKeyDown={(event) => {
+            if (event.target !== event.currentTarget) return;
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              onEdit(word);
+            }
+          }}
         >
-          <button
-            type="button"
-            aria-label={`Edit ${word.word}`}
-            onClick={() => onEdit(word)}
-            className="focus-visible:ring-ring block cursor-pointer transition hover:opacity-80 focus-visible:ring-2 focus-visible:outline-none"
-          >
-            <WordImage
-              word={word}
-              className="aspect-[4/3] w-full rounded-none border-b"
-              iconClassName="size-8"
-            />
-          </button>
+          <WordImage
+            word={word}
+            className="aspect-[4/3] w-full rounded-none border-b"
+            iconClassName="size-8"
+          />
 
           <div className="flex flex-1 flex-col p-3">
             <div className="flex items-start gap-2">
@@ -122,11 +127,15 @@ export function WordsCards({
                   </div>
                 )}
               </div>
-              <div className="-mr-1 -mt-1 flex shrink-0">
+              <div
+                className="-mr-1 -mt-1 flex shrink-0"
+                onClick={(event) => event.stopPropagation()}
+              >
                 <Button
                   variant="ghost"
                   size="icon"
                   className="size-7"
+                  aria-label={`Edit ${word.word}`}
                   onClick={() => onEdit(word)}
                 >
                   <Pencil className="size-4" />
@@ -135,12 +144,15 @@ export function WordsCards({
                   variant="ghost"
                   size="icon"
                   className="size-7"
+                  aria-label={`Delete ${word.word}`}
                   onClick={() => onDelete(word)}
                 >
                   <Trash2 className="text-destructive size-4" />
                 </Button>
               </div>
             </div>
+
+            <WordTopics topics={word.topics} className="pt-2" />
 
             <div className="pt-1">
               <TranslationsInline word={word} />

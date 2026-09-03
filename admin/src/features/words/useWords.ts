@@ -24,6 +24,7 @@ export function useCreateWord() {
     mutationFn: (values: WordFormValues) => createWord(toWordPayload(values)),
     onSuccess: (word) => {
       void queryClient.invalidateQueries({ queryKey: ['words'] });
+      void queryClient.invalidateQueries({ queryKey: ['topics'] });
       toast.success(`Word "${word.word}" created`);
     },
     onError: (error) => {
@@ -40,6 +41,7 @@ export function useUpdateWord() {
       updateWord(id, toWordPayload(values)),
     onSuccess: (word) => {
       void queryClient.invalidateQueries({ queryKey: ['words'] });
+      void queryClient.invalidateQueries({ queryKey: ['topics'] });
       toast.success(`Word "${word.word}" updated`);
     },
     onError: (error) => {

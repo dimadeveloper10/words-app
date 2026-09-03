@@ -33,6 +33,7 @@ export const wordFormSchema = z.object({
     .min(1, 'At least one translation is required'),
   forms: z.array(formItemSchema),
   examples: z.array(exampleSchema),
+  topicIds: z.array(z.string().uuid()),
 });
 
 export type WordFormValues = z.infer<typeof wordFormSchema>;
@@ -52,6 +53,7 @@ export const emptyWordValues = (): WordFormValues => ({
   translations: [makeTranslation(true)],
   forms: [],
   examples: [],
+  topicIds: [],
 });
 
 export const wordToFormValues = (word: Word): WordFormValues => ({
@@ -67,6 +69,7 @@ export const wordToFormValues = (word: Word): WordFormValues => ({
     text: e.text,
     translation: e.translation ?? '',
   })),
+  topicIds: word.topics.map((topic) => topic.id),
 });
 
 export const toWordPayload = (values: WordFormValues): WordPayload => ({
@@ -84,4 +87,5 @@ export const toWordPayload = (values: WordFormValues): WordPayload => ({
     translation: e.translation || undefined,
     sortOrder: index,
   })),
+  topicIds: values.topicIds,
 });

@@ -16,6 +16,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { WordImage } from '../WordImage';
+import { WordTopics } from '../WordTopics';
 import { groupByPartOfSpeech } from '../words.utils';
 import type { Word, WordsViewProps } from '../words.types';
 
@@ -80,6 +81,7 @@ export function WordsTable({
           <TableHead className="w-[72px]">Image</TableHead>
           <TableHead>Word</TableHead>
           <TableHead>Translations</TableHead>
+          <TableHead>Topics</TableHead>
           <TableHead>Forms</TableHead>
           <TableHead>Examples</TableHead>
           <TableHead className="pr-6 text-right">Actions</TableHead>
@@ -87,19 +89,26 @@ export function WordsTable({
       </TableHeader>
       <TableBody>
         {words.map((word, index) => (
-          <TableRow key={word.id}>
+          <TableRow
+            key={word.id}
+            role="button"
+            tabIndex={0}
+            aria-label={`Edit ${word.word}`}
+            className="focus-visible:ring-ring cursor-pointer focus-visible:ring-2 focus-visible:ring-inset focus-visible:outline-none"
+            onClick={() => onEdit(word)}
+            onKeyDown={(event) => {
+              if (event.target !== event.currentTarget) return;
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                onEdit(word);
+              }
+            }}
+          >
             <TableCell className="text-muted-foreground pl-6 align-top tabular-nums">
               {rangeFrom + index}
             </TableCell>
             <TableCell className="align-top">
-              <button
-                type="button"
-                aria-label={`Edit ${word.word}`}
-                onClick={() => onEdit(word)}
-                className="focus-visible:ring-ring cursor-pointer rounded-md transition hover:opacity-80 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-              >
-                <ImageCell word={word} />
-              </button>
+              <ImageCell word={word} />
             </TableCell>
             <TableCell className="align-top">
               <div className="font-medium">{word.word}</div>
@@ -112,17 +121,27 @@ export function WordsTable({
             <TableCell className="align-top">
               <TranslationsCell word={word} />
             </TableCell>
+            <TableCell className="max-w-xs align-top">
+              <WordTopics
+                topics={word.topics}
+                empty={<span className="text-muted-foreground">—</span>}
+              />
+            </TableCell>
             <TableCell className="align-top">
               <FormsCell word={word} />
             </TableCell>
             <TableCell className="align-top">
               <Badge variant="secondary">{word.examples.length}</Badge>
             </TableCell>
-            <TableCell className="pr-6 text-right align-top">
+            <TableCell
+              className="pr-6 text-right align-top"
+              onClick={(event) => event.stopPropagation()}
+            >
               <Button
                 variant="ghost"
                 size="icon"
                 className="size-8"
+                aria-label={`Edit ${word.word}`}
                 onClick={() => onEdit(word)}
               >
                 <Pencil className="size-4" />
@@ -131,6 +150,7 @@ export function WordsTable({
                 variant="ghost"
                 size="icon"
                 className="size-8"
+                aria-label={`Delete ${word.word}`}
                 onClick={() => onDelete(word)}
               >
                 <Trash2 className="text-destructive size-4" />

@@ -29,6 +29,12 @@ export interface WordTranslation {
   sortOrder: number;
 }
 
+export interface WordTopic {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 export interface Word {
   id: string;
   word: string;
@@ -37,6 +43,7 @@ export interface Word {
   translations: WordTranslation[];
   forms: WordForm[];
   examples: WordExample[];
+  topics: WordTopic[];
   createdAt: string;
   updatedAt: string;
 }
@@ -65,6 +72,7 @@ export interface WordPayload {
   translations: TranslationPayload[];
   forms?: FormPayload[];
   examples?: ExamplePayload[];
+  topicIds: string[];
 }
 
 export interface WordForm {
