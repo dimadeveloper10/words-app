@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
-import { AlertCircle, Loader2, Plus, Search } from 'lucide-react';
+import {
+  AlertCircle,
+  FolderPlus,
+  Loader2,
+  Plus,
+  Search,
+  X,
+} from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,12 +30,15 @@ import { ViewToggle } from './ViewToggle';
 import { WordsCards } from './cards/WordsCards';
 import { WordsTable } from './table/WordsTable';
 import type { Word, WordsView } from './words.types';
+import { AddWordsToTopicDialog } from './AddWordsToTopicDialog';
 
 const PAGE_SIZE = 20;
 
 export function WordsPage() {
   const [editing, setEditing] = useState<{ word?: Word } | null>(null);
   const [wordToDelete, setWordToDelete] = useState<Word | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [addToTopicOpen, setAddToTopicOpen] = useState(false);
   const [view, setView] = useState<WordsView>('list');
 
   const [search, setSearch] = useState('');
@@ -50,7 +60,30 @@ export function WordsPage() {
   const confirmDelete = () => {
     if (!wordToDelete) return;
     deleteWord.mutate(wordToDelete.id, {
-      onSuccess: () => setWordToDelete(null),
+      onSuccess: () => {
+        setSelectedIds((currentIds) =>
+          currentIds.filter((id) => id !== wordToDelete.id),
+        );
+        setWordToDelete(null);
+      },
+    });
+  };
+
+  const toggleWord = (wordId: string, checked: boolean) => {
+    setSelectedIds((currentIds) =>
+      checked
+        ? [...currentIds, wordId]
+        : currentIds.filter((id) => id !== wordId),
+    );
+  };
+
+  const togglePage = (wordIds: string[], checked: boolean) => {
+    setSelectedIds((currentIds) => {
+      if (!checked) {
+        return currentIds.filter((id) => !wordIds.includes(id));
+      }
+
+      return [...new Set([...currentIds, ...wordIds])];
     });
   };
 
@@ -90,6 +123,33 @@ export function WordsPage() {
         <ViewToggle value={view} onChange={setView} />
       </div>
 
+      {view === 'list' && selectedIds.length > 0 && (
+        <div className="bg-muted/40 flex flex-wrap items-center justify-between gap-3 rounded-md border px-4 py-3">
+          <span className="text-sm font-medium">
+            {selectedIds.length} selected
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedIds([])}
+            >
+              <X className="size-4" />
+              Clear selection
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => setAddToTopicOpen(true)}
+            >
+              <FolderPlus className="size-4" />
+              Add to topic
+            </Button>
+          </div>
+        </div>
+      )}
+
       <Card>
         <CardContent className="px-0">
           {isLoading && (
@@ -128,6 +188,9 @@ export function WordsPage() {
                   rangeFrom={rangeFrom}
                   onEdit={(word) => setEditing({ word })}
                   onDelete={setWordToDelete}
+                  selectedIds={selectedIds}
+                  onToggleWord={toggleWord}
+                  onTogglePage={togglePage}
                 />
               ) : (
                 <WordsCards
@@ -163,6 +226,15 @@ export function WordsPage() {
           onOpenChange={(open) => {
             if (!open) setEditing(null);
           }}
+        />
+      )}
+
+      {addToTopicOpen && (
+        <AddWordsToTopicDialog
+          wordIds={selectedIds}
+          open
+          onOpenChange={setAddToTopicOpen}
+          onAdded={() => setSelectedIds([])}
         />
       )}
 

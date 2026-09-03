@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 
 import { getApiErrorMessage } from '@/lib/api';
 import {
+  addWordsToTopic,
   createTopic,
   deleteTopic,
   listTopicWords,
@@ -17,6 +18,23 @@ import {
 import type { ListTopicsParams } from './topics.api';
 import { toTopicPayload } from './topics.schemas';
 import type { TopicFormValues } from './topics.schemas';
+
+export function useAddWordsToTopic() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ topicId, wordIds }: { topicId: string; wordIds: string[] }) =>
+      addWordsToTopic(topicId, wordIds),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['words'] });
+      void queryClient.invalidateQueries({ queryKey: ['topics'] });
+      toast.success('Words added to topic');
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to add words to topic'));
+    },
+  });
+}
 
 export function useTopicWords(id: string) {
   return useQuery({

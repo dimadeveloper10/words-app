@@ -2,6 +2,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Table,
   TableBody,
@@ -19,6 +20,12 @@ import { WordImage } from '../WordImage';
 import { WordTopics } from '../WordTopics';
 import { groupByPartOfSpeech } from '../words.utils';
 import type { Word, WordsViewProps } from '../words.types';
+
+interface WordsTableProps extends WordsViewProps {
+  selectedIds: string[];
+  onToggleWord: (wordId: string, checked: boolean) => void;
+  onTogglePage: (wordIds: string[], checked: boolean) => void;
+}
 
 function ImageCell({ word }: { word: Word }) {
   return <WordImage word={word} className="size-10 shrink-0 border" />;
@@ -72,12 +79,35 @@ export function WordsTable({
   rangeFrom,
   onEdit,
   onDelete,
-}: WordsViewProps) {
+  selectedIds,
+  onToggleWord,
+  onTogglePage,
+}: WordsTableProps) {
+  const pageWordIds = words.map((word) => word.id);
+  const allPageSelected =
+    words.length > 0 && pageWordIds.every((id) => selectedIds.includes(id));
+  const somePageSelected = pageWordIds.some((id) => selectedIds.includes(id));
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[56px] pl-6">#</TableHead>
+          <TableHead className="w-[52px] pl-6">
+            <Checkbox
+              checked={
+                allPageSelected
+                  ? true
+                  : somePageSelected
+                    ? 'indeterminate'
+                    : false
+              }
+              onCheckedChange={(checked) =>
+                onTogglePage(pageWordIds, checked === true)
+              }
+              aria-label="Select all words on this page"
+            />
+          </TableHead>
+          <TableHead className="w-[56px]">#</TableHead>
           <TableHead className="w-[72px]">Image</TableHead>
           <TableHead>Word</TableHead>
           <TableHead>Translations</TableHead>
@@ -104,7 +134,19 @@ export function WordsTable({
               }
             }}
           >
-            <TableCell className="text-muted-foreground pl-6 align-top tabular-nums">
+            <TableCell
+              className="pl-6 align-top"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <Checkbox
+                checked={selectedIds.includes(word.id)}
+                onCheckedChange={(checked) =>
+                  onToggleWord(word.id, checked === true)
+                }
+                aria-label={`Select ${word.word}`}
+              />
+            </TableCell>
+            <TableCell className="text-muted-foreground align-top tabular-nums">
               {rangeFrom + index}
             </TableCell>
             <TableCell className="align-top">

@@ -36,3 +36,10 @@ export async function listTopicWords(id: string): Promise<Word[]> {
   const { data } = await api.get<Word[]>(`/topics/${id}/words`);
   return data;
 }
+
+export async function addWordsToTopic(
+  id: string,
+  wordIds: string[],
+): Promise<void> {
+  await api.put(`/topics/${id}/add_words`, { wordIds });
+}
