@@ -20,3 +20,14 @@ export interface Lesson {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CreateLessonPayload {
+  name: string;
+  slug: string;
+  topicId: string;
+}
+
+export interface UpdateLessonPayload {
+  name: string;
+  slug: string;
+}

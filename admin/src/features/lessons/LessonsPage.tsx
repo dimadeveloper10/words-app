@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
-import { AlertCircle, Loader2, Trash2 } from 'lucide-react';
+import { AlertCircle, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 
 import { DataPagination } from '@/components/DataPagination';
 import {
@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/table';
 import { getApiErrorMessage } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth';
+import { LessonDialog } from './LessonDialog';
 import type { Lesson } from './lessons.types';
 import { useDeleteLesson, useLessons } from './useLessons';
 
@@ -40,6 +41,7 @@ function formatDate(iso: string): string {
 
 export function LessonsPage() {
   const [page, setPage] = useState(1);
+  const [editing, setEditing] = useState<{ lesson?: Lesson } | null>(null);
   const [lessonToDelete, setLessonToDelete] = useState<Lesson | null>(null);
   const role = useAuthStore((state) => state.user?.role);
   const canManage = role === 'admin' || role === 'superadmin';
@@ -69,11 +71,19 @@ export function LessonsPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Lessons</h1>
-        <p className="text-muted-foreground text-sm">
-          {canManage ? 'Browse and remove lessons.' : 'Browse lessons.'}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Lessons</h1>
+          <p className="text-muted-foreground text-sm">
+            {canManage ? 'Manage lessons.' : 'Browse lessons.'}
+          </p>
+        </div>
+        {canManage && (
+          <Button onClick={() => setEditing({})}>
+            <Plus className="size-4" />
+            Add lesson
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -162,6 +172,16 @@ export function LessonsPage() {
                               variant="ghost"
                               size="icon"
                               className="size-8"
+                              aria-label={`Edit ${lesson.name}`}
+                              onClick={() => setEditing({ lesson })}
+                            >
+                              <Pencil className="size-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="size-8"
                               aria-label={`Delete ${lesson.name}`}
                               onClick={() => setLessonToDelete(lesson)}
                             >
@@ -191,6 +211,17 @@ export function LessonsPage() {
           )}
         </CardContent>
       </Card>
+
+      {editing && (
+        <LessonDialog
+          key={editing.lesson?.id ?? 'create'}
+          lesson={editing.lesson}
+          open
+          onOpenChange={(open) => {
+            if (!open) setEditing(null);
+          }}
+        />
+      )}
 
       <AlertDialog
         open={lessonToDelete !== null}

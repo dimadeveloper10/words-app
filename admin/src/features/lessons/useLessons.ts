@@ -7,8 +7,50 @@ import {
 import { toast } from 'sonner';
 
 import { getApiErrorMessage } from '@/lib/api';
-import { deleteLesson, listLessons } from './lessons.api';
+import {
+  createLesson,
+  deleteLesson,
+  listLessons,
+  updateLesson,
+} from './lessons.api';
 import type { ListLessonsParams } from './lessons.api';
+import {
+  toCreateLessonPayload,
+  toUpdateLessonPayload,
+} from './lessons.schemas';
+import type { LessonFormValues } from './lessons.schemas';
+
+export function useCreateLesson() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (values: LessonFormValues) =>
+      createLesson(toCreateLessonPayload(values)),
+    onSuccess: (lesson) => {
+      void queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      toast.success(`Lesson "${lesson.name}" created`);
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to create lesson'));
+    },
+  });
+}
+
+export function useUpdateLesson() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, values }: { id: string; values: LessonFormValues }) =>
+      updateLesson(id, toUpdateLessonPayload(values)),
+    onSuccess: (lesson) => {
+      void queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      toast.success(`Lesson "${lesson.name}" updated`);
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update lesson'));
+    },
+  });
+}
 
 export function useLessons(params: ListLessonsParams) {
   return useQuery({

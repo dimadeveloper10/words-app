@@ -1,6 +1,25 @@
 import { api } from '@/lib/api';
 import type { Paginated } from '@/types/pagination';
-import type { Lesson } from './lessons.types';
+import type {
+  CreateLessonPayload,
+  Lesson,
+  UpdateLessonPayload,
+} from './lessons.types';
+
+export async function createLesson(
+  payload: CreateLessonPayload,
+): Promise<Lesson> {
+  const { data } = await api.post<Lesson>('/lessons', payload);
+  return data;
+}
+
+export async function updateLesson(
+  id: string,
+  payload: UpdateLessonPayload,
+): Promise<Lesson> {
+  const { data } = await api.patch<Lesson>(`/lessons/${id}`, payload);
+  return data;
+}
 
 export interface ListLessonsParams {
   page: number;
