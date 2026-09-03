@@ -24,7 +24,6 @@ import type { Word, WordsViewProps } from '../words.types';
 interface WordsTableProps extends WordsViewProps {
   selectedIds: string[];
   onToggleWord: (wordId: string, checked: boolean) => void;
-  onTogglePage: (wordIds: string[], checked: boolean) => void;
 }
 
 function ImageCell({ word }: { word: Word }) {
@@ -81,33 +80,13 @@ export function WordsTable({
   onDelete,
   selectedIds,
   onToggleWord,
-  onTogglePage,
 }: WordsTableProps) {
-  const pageWordIds = words.map((word) => word.id);
-  const allPageSelected =
-    words.length > 0 && pageWordIds.every((id) => selectedIds.includes(id));
-  const somePageSelected = pageWordIds.some((id) => selectedIds.includes(id));
-
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[52px] pl-6">
-            <Checkbox
-              checked={
-                allPageSelected
-                  ? true
-                  : somePageSelected
-                    ? 'indeterminate'
-                    : false
-              }
-              onCheckedChange={(checked) =>
-                onTogglePage(pageWordIds, checked === true)
-              }
-              aria-label="Select all words on this page"
-            />
-          </TableHead>
-          <TableHead className="w-[56px]">#</TableHead>
+          <TableHead className="w-[52px]" />
+          <TableHead className="w-[56px] pl-0">#</TableHead>
           <TableHead className="w-[72px]">Image</TableHead>
           <TableHead>Word</TableHead>
           <TableHead>Translations</TableHead>

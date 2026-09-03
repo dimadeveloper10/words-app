@@ -21,6 +21,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { getApiErrorMessage } from '@/lib/api';
 import { DataPagination } from '@/components/DataPagination';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -88,6 +89,10 @@ export function WordsPage() {
   };
 
   const words = data?.items ?? [];
+  const pageWordIds = words.map((word) => word.id);
+  const allPageSelected =
+    words.length > 0 && pageWordIds.every((id) => selectedIds.includes(id));
+  const somePageSelected = pageWordIds.some((id) => selectedIds.includes(id));
   const rangeFrom =
     data && data.total > 0 ? (data.page - 1) * data.limit + 1 : 0;
   const rangeTo = data ? rangeFrom + words.length - 1 : 0;
@@ -123,29 +128,51 @@ export function WordsPage() {
         <ViewToggle value={view} onChange={setView} />
       </div>
 
-      {view === 'list' && selectedIds.length > 0 && (
-        <div className="bg-muted/40 flex flex-wrap items-center justify-between gap-3 rounded-md border px-4 py-3">
-          <span className="text-sm font-medium">
-            {selectedIds.length} selected
-          </span>
+      {view === 'list' && (
+        <div className="bg-muted/40 flex min-h-14 flex-wrap items-center justify-between gap-3 rounded-md border px-4 py-2">
           <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setSelectedIds([])}
-            >
-              <X className="size-4" />
-              Clear selection
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              onClick={() => setAddToTopicOpen(true)}
-            >
-              <FolderPlus className="size-4" />
-              Add to topic
-            </Button>
+            <Checkbox
+              checked={
+                allPageSelected
+                  ? true
+                  : somePageSelected
+                    ? 'indeterminate'
+                    : false
+              }
+              disabled={words.length === 0}
+              onCheckedChange={(checked) =>
+                togglePage(pageWordIds, checked === true)
+              }
+              aria-label="Select all words on this page"
+            />
+            <span className="text-sm">
+              {selectedIds.length > 0
+                ? `${selectedIds.length} selected`
+                : 'Select words on this page'}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            {selectedIds.length > 0 && (
+              <>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedIds([])}
+                >
+                  <X className="size-4" />
+                  Clear selection
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => setAddToTopicOpen(true)}
+                >
+                  <FolderPlus className="size-4" />
+                  Add to topic
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -190,7 +217,6 @@ export function WordsPage() {
                   onDelete={setWordToDelete}
                   selectedIds={selectedIds}
                   onToggleWord={toggleWord}
-                  onTogglePage={togglePage}
                 />
               ) : (
                 <WordsCards
