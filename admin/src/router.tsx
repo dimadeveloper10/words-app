@@ -5,6 +5,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { PublicOnlyRoute } from '@/components/PublicOnlyRoute';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { RegisterPage } from '@/features/auth/RegisterPage';
+import { LessonsPage } from '@/features/lessons/LessonsPage';
 import { TopicsPage } from '@/features/topics/TopicsPage';
 import { UsersPage } from '@/features/users/UsersPage';
 import { WordsPage } from '@/features/words/WordsPage.tsx';
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
           { path: '/users', element: <UsersPage /> },
           { path: '/words', element: <WordsPage /> },
           { path: '/topics', element: <TopicsPage /> },
+          { path: '/lessons', element: <LessonsPage /> },
         ],
       },
     ],
