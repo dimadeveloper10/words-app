@@ -26,15 +26,18 @@ export class LessonsService {
 
   async findAll(query: QueryLessonsDto): Promise<Paginated<Lesson>> {
     const { topicId, page, limit } = query;
-    await this.findTopic(topicId);
-
-    const [items, total] = await this.lessonQuery()
-      .where('topic.id = :topicId', { topicId })
+    const lessonsQuery = this.lessonQuery()
       .orderBy('lesson.createdAt', 'ASC')
       .addOrderBy('lesson.id', 'ASC')
       .take(limit)
-      .skip((page - 1) * limit)
-      .getManyAndCount();
+      .skip((page - 1) * limit);
+
+    if (topicId) {
+      await this.findTopic(topicId);
+      lessonsQuery.where('topic.id = :topicId', { topicId });
+    }
+
+    const [items, total] = await lessonsQuery.getManyAndCount();
 
     return paginated(items, total, page, limit);
   }
