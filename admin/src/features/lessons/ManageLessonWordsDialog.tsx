@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { WordLessons } from '@/features/words/WordLessons';
 import type { Word } from '@/features/words/words.types';
 import { formatTranscription } from '@/features/words/words.utils';
 import { useTopicWords } from '@/features/topics/useTopics';
@@ -40,19 +41,29 @@ function ManageLessonWordsForm({
   onOpenChange,
 }: ManageLessonWordsFormProps) {
   const [search, setSearch] = useState('');
+  const [showOnlyWithoutLesson, setShowOnlyWithoutLesson] = useState(false);
   const [selectedIds, setSelectedIds] = useState(() =>
     currentWords.map((word) => word.id),
   );
   const topicWords = useTopicWords(lesson.topic.id);
   const updateLessonWords = useUpdateLessonWords();
   const normalizedSearch = search.trim().toLowerCase();
-  const filteredWords = (topicWords.data ?? []).filter(
-    (word) =>
-      word.word.toLowerCase().includes(normalizedSearch) ||
-      word.translations.some((translation) =>
-        translation.text.toLowerCase().includes(normalizedSearch),
-      ),
-  );
+  const filteredWords = (topicWords.data ?? [])
+    .filter(
+      (word) =>
+        word.word.toLowerCase().includes(normalizedSearch) ||
+        word.translations.some((translation) =>
+          translation.text.toLowerCase().includes(normalizedSearch),
+        ),
+    )
+    .filter(
+      (word) => !showOnlyWithoutLesson || (word.lessons?.length ?? 0) === 0,
+    )
+    .sort(
+      (first, second) =>
+        Number((first.lessons?.length ?? 0) > 0) -
+        Number((second.lessons?.length ?? 0) > 0),
+    );
   const visibleWordIds = filteredWords.map((word) => word.id);
   const selectedVisibleCount = visibleWordIds.filter((wordId) =>
     selectedIds.includes(wordId),
@@ -119,6 +130,16 @@ function ManageLessonWordsForm({
               className="pl-9"
             />
           </div>
+          <label className="flex shrink-0 cursor-pointer items-center gap-2 text-sm">
+            <Checkbox
+              checked={showOnlyWithoutLesson}
+              onCheckedChange={(checked) =>
+                setShowOnlyWithoutLesson(checked === true)
+              }
+              aria-label="Show only words without lessons"
+            />
+            Show only without lesson
+          </label>
           <div className="flex shrink-0 items-center gap-1">
             <label className="flex cursor-pointer items-center gap-2 text-sm">
               <Checkbox
@@ -170,12 +191,17 @@ function ManageLessonWordsForm({
             topicWords.data.length > 0 &&
             filteredWords.length === 0 && (
               <p className="text-muted-foreground py-10 text-center text-sm">
-                No words match “{search.trim()}”.
+                {showOnlyWithoutLesson
+                  ? normalizedSearch
+                    ? `No words without lessons match “${search.trim()}”.`
+                    : 'All topic words belong to a lesson.'
+                  : `No words match “${search.trim()}”.`}
               </p>
             )}
 
           {filteredWords.map((word) => {
             const checked = selectedIds.includes(word.id);
+            const lessons = word.lessons ?? [];
             const translations = word.translations
               .map((translation) => translation.text)
               .join(', ');
@@ -200,6 +226,17 @@ function ManageLessonWordsForm({
                       {formatTranscription(word.transcription)}
                     </span>
                   )}
+                  <span className="text-muted-foreground ml-2 text-sm">
+                    {lessons.length === 0 ? (
+                      '(no lessons)'
+                    ) : (
+                      <>
+                        {' ('}
+                        <WordLessons lessons={lessons} className="inline" />
+                        {')'}
+                      </>
+                    )}
+                  </span>
                   {translations && (
                     <span className="text-muted-foreground block truncate text-sm">
                       {translations}
