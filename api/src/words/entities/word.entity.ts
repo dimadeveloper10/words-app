@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -66,7 +66,9 @@ export class Word {
   })
   topics!: Topic[];
 
-  @Exclude()
+  @Transform(({ value }: { value?: Lesson[] }) =>
+    value?.map(({ id, lessonNumber, name }) => ({ id, lessonNumber, name })),
+  )
   @ManyToMany(() => Lesson, (lesson) => lesson.words, {
     onDelete: 'CASCADE',
     onUpdate: 'NO ACTION',

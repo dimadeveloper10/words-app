@@ -64,6 +64,7 @@ export class WordsService {
         forms: true,
         examples: true,
         topics: true,
+        lessons: true,
       },
       order: {
         createdAt: 'ASC',
@@ -72,6 +73,7 @@ export class WordsService {
         forms: { sortOrder: 'ASC' },
         examples: { sortOrder: 'ASC' },
         topics: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
+        lessons: { lessonNumber: 'ASC', name: 'ASC', id: 'ASC' },
       },
     });
 
@@ -86,12 +88,14 @@ export class WordsService {
         forms: true,
         examples: true,
         topics: true,
+        lessons: true,
       },
       order: {
         translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
         forms: { sortOrder: 'ASC' },
         examples: { sortOrder: 'ASC' },
         topics: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
+        lessons: { lessonNumber: 'ASC', name: 'ASC', id: 'ASC' },
       },
     });
     if (!word) {

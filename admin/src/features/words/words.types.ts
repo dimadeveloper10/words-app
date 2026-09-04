@@ -41,6 +41,12 @@ export interface WordTopic {
   slug: string;
 }
 
+export interface WordLesson {
+  id: string;
+  lessonNumber: number | null;
+  name: string;
+}
+
 export interface Word {
   id: string;
   word: string;
@@ -51,6 +57,7 @@ export interface Word {
   forms: WordForm[];
   examples: WordExample[];
   topics: WordTopic[];
+  lessons?: WordLesson[];
   createdAt: string;
   updatedAt: string;
 }

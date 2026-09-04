@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { WordImage } from '@/features/words/WordImage';
+import { WordLessons } from '@/features/words/WordLessons';
 import type { Word } from '@/features/words/words.types';
 import {
   formatTranscription,
@@ -61,6 +62,7 @@ export function TopicWordsTable({ words, onEdit }: TopicWordsTableProps) {
           <TableHead className="w-[72px]">Image</TableHead>
           <TableHead>Word</TableHead>
           <TableHead>Translations</TableHead>
+          <TableHead>Lessons</TableHead>
           <TableHead className="pr-6">Examples</TableHead>
           {onEdit && <TableHead className="pr-6 text-right">Actions</TableHead>}
         </TableRow>
@@ -79,7 +81,8 @@ export function TopicWordsTable({ words, onEdit }: TopicWordsTableProps) {
                 {word.word}
                 {word.forms.length > 0 && (
                   <span className="text-muted-foreground font-normal">
-                    {' '}({formatWordForms(word.forms)})
+                    {' '}
+                    ({formatWordForms(word.forms)})
                   </span>
                 )}
               </div>
@@ -91,6 +94,12 @@ export function TopicWordsTable({ words, onEdit }: TopicWordsTableProps) {
             </TableCell>
             <TableCell className="align-top">
               <TranslationsCell word={word} />
+            </TableCell>
+            <TableCell className="max-w-xs align-top">
+              <WordLessons
+                lessons={word.lessons}
+                empty={<span className="text-muted-foreground">—</span>}
+              />
             </TableCell>
             <TableCell className="pr-6 align-top">
               <Badge variant="secondary">{word.examples.length}</Badge>

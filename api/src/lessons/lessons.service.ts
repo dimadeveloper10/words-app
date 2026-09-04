@@ -59,13 +59,22 @@ export class LessonsService {
   async findWords(id: string): Promise<Word[]> {
     await this.findOne(id);
 
-    return this.wordsRepository.find({
+    const lessonWords = await this.wordsRepository.find({
+      select: { id: true },
       where: { lessons: { id } },
+    });
+    if (lessonWords.length === 0) {
+      return [];
+    }
+
+    return this.wordsRepository.find({
+      where: { id: In(lessonWords.map((word) => word.id)) },
       relations: {
         translations: true,
         forms: true,
         examples: true,
         topics: true,
+        lessons: true,
       },
       order: {
         createdAt: 'ASC',
@@ -74,6 +83,7 @@ export class LessonsService {
         forms: { sortOrder: 'ASC' },
         examples: { sortOrder: 'ASC' },
         topics: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
+        lessons: { lessonNumber: 'ASC', name: 'ASC', id: 'ASC' },
       },
     });
   }

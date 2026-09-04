@@ -12,6 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { WordImage } from '../WordImage';
+import { WordLessons } from '../WordLessons';
 import { WordTopics } from '../WordTopics';
 import {
   formatTranscription,
@@ -73,6 +74,7 @@ export function WordsTable({
           <TableHead>Word</TableHead>
           <TableHead>Translations</TableHead>
           <TableHead>Topics</TableHead>
+          <TableHead>Lessons</TableHead>
           <TableHead>Examples</TableHead>
           <TableHead className="pr-6 text-right">Actions</TableHead>
         </TableRow>
@@ -117,7 +119,8 @@ export function WordsTable({
                 {word.word}
                 {word.forms.length > 0 && (
                   <span className="text-muted-foreground font-normal">
-                    {' '}({formatWordForms(word.forms)})
+                    {' '}
+                    ({formatWordForms(word.forms)})
                   </span>
                 )}
               </div>
@@ -133,6 +136,12 @@ export function WordsTable({
             <TableCell className="max-w-xs align-top">
               <WordTopics
                 topics={word.topics}
+                empty={<span className="text-muted-foreground">—</span>}
+              />
+            </TableCell>
+            <TableCell className="max-w-xs align-top">
+              <WordLessons
+                lessons={word.lessons}
                 empty={<span className="text-muted-foreground">—</span>}
               />
             </TableCell>

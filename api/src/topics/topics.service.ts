@@ -58,6 +58,7 @@ export class TopicsService {
         forms: true,
         examples: true,
         topics: true,
+        lessons: true,
       },
       order: {
         createdAt: 'ASC',
@@ -66,6 +67,7 @@ export class TopicsService {
         forms: { sortOrder: 'ASC' },
         examples: { sortOrder: 'ASC' },
         topics: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
+        lessons: { lessonNumber: 'ASC', name: 'ASC', id: 'ASC' },
       },
     });
   }

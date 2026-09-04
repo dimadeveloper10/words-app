@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { isAxiosError } from 'axios';
-import { AlertCircle, ArrowLeft, Loader2, Plus } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowLeft,
+  ListChecks,
+  Loader2,
+  Plus,
+} from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +25,8 @@ import { TopicWordsTable } from './TopicWordsTable';
 import { useTopic, useTopicWords } from './useTopics';
 import { useLessons } from '@/features/lessons/useLessons';
 import { LessonDialog } from '@/features/lessons/LessonDialog';
+import { ManageLessonWordsDialog } from '@/features/lessons/ManageLessonWordsDialog';
+import type { Lesson } from '@/features/lessons/lessons.types';
 import { useAuthStore } from '@/stores/auth';
 import { WordDialog } from '@/features/words/word-dialog/WordDialog';
 import type { Word } from '@/features/words/words.types';
@@ -27,6 +35,9 @@ export function TopicDetailsPage() {
   const [addingLesson, setAddingLesson] = useState(false);
   const [addingWord, setAddingWord] = useState(false);
   const [editingWord, setEditingWord] = useState<Word | null>(null);
+  const [managingLessonWords, setManagingLessonWords] = useState<Lesson | null>(
+    null,
+  );
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const role = useAuthStore((state) => state.user?.role);
@@ -137,6 +148,11 @@ export function TopicDetailsPage() {
                       <TableHead>Slug</TableHead>
                       <TableHead className="text-right">Words</TableHead>
                       <TableHead className="pr-6">Created</TableHead>
+                      {canManage && (
+                        <TableHead className="pr-6 text-right">
+                          Actions
+                        </TableHead>
+                      )}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -173,6 +189,23 @@ export function TopicDetailsPage() {
                             { year: 'numeric', month: 'short', day: 'numeric' },
                           )}
                         </TableCell>
+                        {canManage && (
+                          <TableCell
+                            className="pr-6 text-right"
+                            onClick={(event) => event.stopPropagation()}
+                          >
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="size-8"
+                              aria-label={`Manage words for ${lesson.name}`}
+                              onClick={() => setManagingLessonWords(lesson)}
+                            >
+                              <ListChecks className="size-4" />
+                            </Button>
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                   </TableBody>
@@ -236,6 +269,17 @@ export function TopicDetailsPage() {
           open
           onOpenChange={(open) => {
             if (!open) setAddingLesson(false);
+          }}
+        />
+      )}
+
+      {managingLessonWords && (
+        <ManageLessonWordsDialog
+          key={managingLessonWords.id}
+          lesson={managingLessonWords}
+          open
+          onOpenChange={(open) => {
+            if (!open) setManagingLessonWords(null);
           }}
         />
       )}
