@@ -130,6 +130,25 @@ export function LessonDialog({
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="lessonNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lesson number</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="1"
+                        placeholder="e.g. 1"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <FormField

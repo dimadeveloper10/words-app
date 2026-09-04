@@ -17,8 +17,8 @@ import { User } from '../../users/entities/user.entity';
 import { Word } from '../../words/entities/word.entity';
 
 @Entity('lessons')
-@Unique('UQ_lessons_topic_name', ['topic', 'name'])
 @Unique('UQ_lessons_topic_slug', ['topic', 'slug'])
+@Unique('UQ_lessons_lesson_number', ['lessonNumber'])
 export class Lesson {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
@@ -28,6 +28,9 @@ export class Lesson {
 
   @Column()
   slug!: string;
+
+  @Column({ name: 'lesson_number', type: 'int', nullable: true })
+  lessonNumber!: number | null;
 
   @ManyToOne(() => Topic, (topic) => topic.lessons, { onDelete: 'CASCADE' })
   @JoinColumn({

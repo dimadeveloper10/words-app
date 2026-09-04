@@ -1,6 +1,7 @@
 import {
   ArrayUnique,
   IsArray,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -17,6 +18,10 @@ export class UpdateLessonDto {
   @IsString()
   @IsNotEmpty()
   slug?: string;
+
+  @IsOptional()
+  @IsInt()
+  lessonNumber?: number | null;
 
   @IsOptional()
   @IsArray()

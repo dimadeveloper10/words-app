@@ -1,6 +1,7 @@
 import {
   ArrayUnique,
   IsArray,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -15,6 +16,10 @@ export class CreateLessonDto {
   @IsString()
   @IsNotEmpty()
   slug!: string;
+
+  @IsOptional()
+  @IsInt()
+  lessonNumber?: number | null;
 
   @IsUUID('4')
   topicId!: string;

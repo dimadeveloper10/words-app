@@ -137,7 +137,7 @@ export function LessonsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {lessons.map((lesson, index) => (
+                    {lessons.map((lesson) => (
                       <TableRow
                         key={lesson.id}
                         role="button"
@@ -154,7 +154,7 @@ export function LessonsPage() {
                         }}
                       >
                         <TableCell className="text-muted-foreground pl-6 tabular-nums">
-                          {rangeFrom + index}
+                          {lesson.lessonNumber ?? '—'}
                         </TableCell>
                         <TableCell className="font-medium">
                           {lesson.name}

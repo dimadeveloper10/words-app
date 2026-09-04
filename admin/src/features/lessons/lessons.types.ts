@@ -14,6 +14,7 @@ export interface Lesson {
   id: string;
   name: string;
   slug: string;
+  lessonNumber: number | null;
   topic: LessonTopic;
   addedBy: LessonAuthor | null;
   wordCount: number;
@@ -24,11 +25,13 @@ export interface Lesson {
 export interface CreateLessonPayload {
   name: string;
   slug: string;
+  lessonNumber: number | null;
   topicId: string;
 }
 
 export interface UpdateLessonPayload {
   name?: string;
   slug?: string;
+  lessonNumber?: number | null;
   wordIds?: string[];
 }

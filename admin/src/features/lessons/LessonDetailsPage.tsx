@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { isAxiosError } from 'axios';
-import { AlertCircle, ArrowLeft, ListChecks, Loader2 } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowLeft,
+  ListChecks,
+  Loader2,
+  Pencil,
+} from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
@@ -9,10 +15,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getApiErrorMessage } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth';
 import { LessonWordsTable } from './LessonWordsTable';
+import { LessonDialog } from './LessonDialog';
 import { ManageLessonWordsDialog } from './ManageLessonWordsDialog';
 import { useLesson, useLessonWords } from './useLessons';
 
 export function LessonDetailsPage() {
+  const [editOpen, setEditOpen] = useState(false);
   const [manageWordsOpen, setManageWordsOpen] = useState(false);
   const { id = '' } = useParams<{ id: string }>();
   const role = useAuthStore((state) => state.user?.role);
@@ -69,6 +77,9 @@ export function LessonDetailsPage() {
             <h1 className="text-2xl font-semibold tracking-tight">
               {lesson.name}
             </h1>
+            {lesson.lessonNumber !== null && (
+              <Badge variant="outline">Lesson #{lesson.lessonNumber}</Badge>
+            )}
             <Badge variant="secondary">{lesson.wordCount} words</Badge>
           </div>
           <p className="text-muted-foreground text-sm">
@@ -76,13 +87,19 @@ export function LessonDetailsPage() {
           </p>
         </div>
         {canManage && (
-          <Button
-            disabled={!wordsQuery.data}
-            onClick={() => setManageWordsOpen(true)}
-          >
-            <ListChecks className="size-4" />
-            Manage words
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setEditOpen(true)}>
+              <Pencil className="size-4" />
+              Edit
+            </Button>
+            <Button
+              disabled={!wordsQuery.data}
+              onClick={() => setManageWordsOpen(true)}
+            >
+              <ListChecks className="size-4" />
+              Manage words
+            </Button>
+          </div>
         )}
       </div>
 
@@ -115,6 +132,15 @@ export function LessonDetailsPage() {
             ))}
         </CardContent>
       </Card>
+
+      {editOpen && (
+        <LessonDialog
+          key={lesson.id}
+          lesson={lesson}
+          open
+          onOpenChange={setEditOpen}
+        />
+      )}
 
       {manageWordsOpen && wordsQuery.data && (
         <ManageLessonWordsDialog

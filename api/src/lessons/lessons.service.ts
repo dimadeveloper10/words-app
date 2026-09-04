@@ -84,7 +84,7 @@ export class LessonsService {
         const topic = await this.findTopic(dto.topicId, manager);
         const name = this.normalizeName(dto.name);
         const slug = this.normalizeSlug(dto.slug);
-        await this.ensureUnique(manager, topic.id, name, slug);
+        await this.ensureUnique(manager, topic.id, slug, dto.lessonNumber);
 
         const words = await this.resolveWords(
           manager,
@@ -95,6 +95,7 @@ export class LessonsService {
         const lesson = lessonsRepository.create({
           name,
           slug,
+          lessonNumber: dto.lessonNumber ?? null,
           topic,
           addedBy,
           words,
@@ -124,13 +125,22 @@ export class LessonsService {
       const slug =
         dto.slug === undefined ? undefined : this.normalizeSlug(dto.slug);
 
-      await this.ensureUnique(manager, lesson.topic.id, name, slug, id);
+      await this.ensureUnique(
+        manager,
+        lesson.topic.id,
+        slug,
+        dto.lessonNumber,
+        id,
+      );
 
       if (name !== undefined) {
         lesson.name = name;
       }
       if (slug !== undefined) {
         lesson.slug = slug;
+      }
+      if (dto.lessonNumber !== undefined) {
+        lesson.lessonNumber = dto.lessonNumber;
       }
       if (dto.wordIds !== undefined) {
         lesson.words = await this.resolveWords(
@@ -253,23 +263,10 @@ export class LessonsService {
   private async ensureUnique(
     manager: EntityManager,
     topicId: string,
-    name: string | undefined,
     slug: string | undefined,
+    lessonNumber: number | null | undefined,
     exceptId?: string,
   ): Promise<void> {
-    if (name !== undefined) {
-      const existingName = await manager.getRepository(Lesson).findOne({
-        where: {
-          topic: { id: topicId },
-          name,
-          ...(exceptId ? { id: Not(exceptId) } : {}),
-        },
-      });
-      if (existingName) {
-        throw new ConflictException('Lesson name already exists in this topic');
-      }
-    }
-
     if (slug !== undefined) {
       const existingSlug = await manager.getRepository(Lesson).findOne({
         where: {
@@ -280,6 +277,18 @@ export class LessonsService {
       });
       if (existingSlug) {
         throw new ConflictException('Lesson slug already exists in this topic');
+      }
+    }
+
+    if (lessonNumber !== undefined && lessonNumber !== null) {
+      const existingLessonNumber = await manager.getRepository(Lesson).findOne({
+        where: {
+          lessonNumber,
+          ...(exceptId ? { id: Not(exceptId) } : {}),
+        },
+      });
+      if (existingLessonNumber) {
+        throw new ConflictException('Lesson number already exists');
       }
     }
   }
