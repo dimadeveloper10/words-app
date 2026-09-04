@@ -60,7 +60,7 @@ export class TopicsService {
         topics: true,
       },
       order: {
-        word: 'ASC',
+        createdAt: 'ASC',
         id: 'ASC',
         translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
         forms: { sortOrder: 'ASC' },

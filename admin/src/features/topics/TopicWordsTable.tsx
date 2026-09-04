@@ -1,4 +1,7 @@
+import { Pencil } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -7,14 +10,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { WordImage } from '@/features/words/WordImage';
 import type { Word } from '@/features/words/words.types';
-import { groupByPartOfSpeech } from '@/features/words/words.utils';
+import {
+  formatTranscription,
+  formatWordForms,
+  groupByPartOfSpeech,
+} from '@/features/words/words.utils';
 
 function TranslationsCell({ word }: { word: Word }) {
   const groups = groupByPartOfSpeech(word.translations);
@@ -27,7 +29,9 @@ function TranslationsCell({ word }: { word: Word }) {
     <div className="space-y-1">
       {groups.map((group) => (
         <div key={group.label} className="text-sm">
-          <span className="text-muted-foreground">{group.label}: </span>
+          <span className="text-muted-foreground" title={group.fullLabel}>
+            {group.label}:{' '}
+          </span>
           {group.items.map((translation, index) => (
             <span
               key={translation.id}
@@ -43,26 +47,12 @@ function TranslationsCell({ word }: { word: Word }) {
   );
 }
 
-function FormsCell({ word }: { word: Word }) {
-  if (word.forms.length === 0) {
-    return <span className="text-muted-foreground">—</span>;
-  }
-
-  return (
-    <Tooltip>
-      <TooltipTrigger className="cursor-help">
-        <Badge variant="secondary" className="border-b border-dashed">
-          {word.forms.length}
-        </Badge>
-      </TooltipTrigger>
-      <TooltipContent className="max-w-56">
-        {word.forms.map((form) => form.form).join(', ')}
-      </TooltipContent>
-    </Tooltip>
-  );
+interface TopicWordsTableProps {
+  words: Word[];
+  onEdit?: (word: Word) => void;
 }
 
-export function TopicWordsTable({ words }: { words: Word[] }) {
+export function TopicWordsTable({ words, onEdit }: TopicWordsTableProps) {
   return (
     <Table>
       <TableHeader>
@@ -71,8 +61,8 @@ export function TopicWordsTable({ words }: { words: Word[] }) {
           <TableHead className="w-[72px]">Image</TableHead>
           <TableHead>Word</TableHead>
           <TableHead>Translations</TableHead>
-          <TableHead>Forms</TableHead>
           <TableHead className="pr-6">Examples</TableHead>
+          {onEdit && <TableHead className="pr-6 text-right">Actions</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -85,22 +75,40 @@ export function TopicWordsTable({ words }: { words: Word[] }) {
               <WordImage word={word} className="size-10 shrink-0 border" />
             </TableCell>
             <TableCell className="align-top">
-              <div className="font-medium">{word.word}</div>
+              <div className="font-medium">
+                {word.word}
+                {word.forms.length > 0 && (
+                  <span className="text-muted-foreground font-normal">
+                    {' '}({formatWordForms(word.forms)})
+                  </span>
+                )}
+              </div>
               {word.transcription && (
                 <div className="text-muted-foreground text-sm">
-                  {word.transcription}
+                  {formatTranscription(word.transcription)}
                 </div>
               )}
             </TableCell>
             <TableCell className="align-top">
               <TranslationsCell word={word} />
             </TableCell>
-            <TableCell className="align-top">
-              <FormsCell word={word} />
-            </TableCell>
             <TableCell className="pr-6 align-top">
               <Badge variant="secondary">{word.examples.length}</Badge>
             </TableCell>
+            {onEdit && (
+              <TableCell className="pr-6 text-right align-top">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  aria-label={`Edit ${word.word}`}
+                  onClick={() => onEdit(word)}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+              </TableCell>
+            )}
           </TableRow>
         ))}
       </TableBody>

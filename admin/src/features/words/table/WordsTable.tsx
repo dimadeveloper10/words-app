@@ -11,14 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { WordImage } from '../WordImage';
 import { WordTopics } from '../WordTopics';
-import { groupByPartOfSpeech } from '../words.utils';
+import {
+  formatTranscription,
+  formatWordForms,
+  groupByPartOfSpeech,
+} from '../words.utils';
 import type { Word, WordsViewProps } from '../words.types';
 
 interface WordsTableProps extends WordsViewProps {
@@ -41,7 +40,9 @@ function TranslationsCell({ word }: { word: Word }) {
     <div className="space-y-1">
       {groups.map((group) => (
         <div key={group.label} className="text-sm">
-          <span className="text-muted-foreground">{group.label}: </span>
+          <span className="text-muted-foreground" title={group.fullLabel}>
+            {group.label}:{' '}
+          </span>
           {group.items.map((t, i) => (
             <span key={t.id} className={t.isPrimary ? 'font-bold' : ''}>
               {t.text}
@@ -51,25 +52,6 @@ function TranslationsCell({ word }: { word: Word }) {
         </div>
       ))}
     </div>
-  );
-}
-
-function FormsCell({ word }: { word: Word }) {
-  if (word.forms.length === 0) {
-    return <span className="text-muted-foreground">—</span>;
-  }
-
-  return (
-    <Tooltip>
-      <TooltipTrigger className="cursor-help">
-        <Badge variant="secondary" className="border-b border-dashed">
-          {word.forms.length}
-        </Badge>
-      </TooltipTrigger>
-      <TooltipContent className="max-w-56">
-        {word.forms.map((form) => form.form).join(', ')}
-      </TooltipContent>
-    </Tooltip>
   );
 }
 
@@ -91,7 +73,6 @@ export function WordsTable({
           <TableHead>Word</TableHead>
           <TableHead>Translations</TableHead>
           <TableHead>Topics</TableHead>
-          <TableHead>Forms</TableHead>
           <TableHead>Examples</TableHead>
           <TableHead className="pr-6 text-right">Actions</TableHead>
         </TableRow>
@@ -132,10 +113,17 @@ export function WordsTable({
               <ImageCell word={word} />
             </TableCell>
             <TableCell className="align-top">
-              <div className="font-medium">{word.word}</div>
+              <div className="font-medium">
+                {word.word}
+                {word.forms.length > 0 && (
+                  <span className="text-muted-foreground font-normal">
+                    {' '}({formatWordForms(word.forms)})
+                  </span>
+                )}
+              </div>
               {word.transcription && (
                 <div className="text-muted-foreground text-sm">
-                  {word.transcription}
+                  {formatTranscription(word.transcription)}
                 </div>
               )}
             </TableCell>
@@ -147,9 +135,6 @@ export function WordsTable({
                 topics={word.topics}
                 empty={<span className="text-muted-foreground">—</span>}
               />
-            </TableCell>
-            <TableCell className="align-top">
-              <FormsCell word={word} />
             </TableCell>
             <TableCell className="align-top">
               <Badge variant="secondary">{word.examples.length}</Badge>

@@ -40,7 +40,7 @@ export class WordsService {
     const pageQuery = this.wordsRepository
       .createQueryBuilder('w')
       .select('w.id')
-      .orderBy('w.createdAt', 'DESC')
+      .orderBy('w.createdAt', 'ASC')
       .addOrderBy('w.id', 'ASC')
       .take(limit)
       .skip((page - 1) * limit);
@@ -66,7 +66,7 @@ export class WordsService {
         topics: true,
       },
       order: {
-        createdAt: 'DESC',
+        createdAt: 'ASC',
         id: 'ASC',
         translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
         forms: { sortOrder: 'ASC' },

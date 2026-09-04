@@ -39,12 +39,14 @@ import { useCreateLesson, useUpdateLesson } from './useLessons';
 
 interface LessonDialogProps {
   lesson?: Lesson;
+  fixedTopic?: Pick<Lesson['topic'], 'id' | 'name'>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 export function LessonDialog({
   lesson,
+  fixedTopic,
   open,
   onOpenChange,
 }: LessonDialogProps) {
@@ -56,23 +58,36 @@ export function LessonDialog({
     resolver: zodResolver(lessonFormSchema),
     defaultValues: lesson
       ? lessonToFormValues(lesson)
-      : emptyLessonValues(),
+      : {
+          ...emptyLessonValues(),
+          topicId: fixedTopic?.id ?? '',
+        },
   });
 
   const topicOptions = (topicsQuery.data?.items ?? []).map((topic) => ({
     id: topic.id,
     name: topic.name,
   }));
-  if (lesson && !topicOptions.some((topic) => topic.id === lesson.topic.id)) {
-    topicOptions.push({ id: lesson.topic.id, name: lesson.topic.name });
+  const selectedTopic = lesson?.topic ?? fixedTopic;
+  if (
+    selectedTopic &&
+    !topicOptions.some((topic) => topic.id === selectedTopic.id)
+  ) {
+    topicOptions.push({ id: selectedTopic.id, name: selectedTopic.name });
   }
 
   const onSubmit = async (values: LessonFormValues) => {
     try {
+      const valuesWithFixedTopic = fixedTopic
+        ? { ...values, topicId: fixedTopic.id }
+        : values;
       if (isEdit) {
-        await updateLesson.mutateAsync({ id: lesson.id, values });
+        await updateLesson.mutateAsync({
+          id: lesson.id,
+          values: valuesWithFixedTopic,
+        });
       } else {
-        await createLesson.mutateAsync(values);
+        await createLesson.mutateAsync(valuesWithFixedTopic);
       }
       onOpenChange(false);
     } catch {
@@ -160,7 +175,12 @@ export function LessonDialog({
                   <Select
                     value={field.value}
                     onValueChange={field.onChange}
-                    disabled={isEdit || topicsQuery.isLoading || isSubmitting}
+                    disabled={
+                      isEdit ||
+                      fixedTopic !== undefined ||
+                      topicsQuery.isLoading ||
+                      isSubmitting
+                    }
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -181,12 +201,13 @@ export function LessonDialog({
                       ))}
                     </SelectContent>
                   </Select>
-                  {topicsQuery.isError && (
+                  {!fixedTopic && topicsQuery.isError && (
                     <p className="text-destructive text-sm">
                       Failed to load topics.
                     </p>
                   )}
-                  {!topicsQuery.isLoading &&
+                  {!fixedTopic &&
+                    !topicsQuery.isLoading &&
                     !topicsQuery.isError &&
                     topicOptions.length === 0 && (
                       <p className="text-muted-foreground text-sm">
@@ -212,6 +233,7 @@ export function LessonDialog({
                 disabled={
                   isSubmitting ||
                   (!isEdit &&
+                    fixedTopic === undefined &&
                     (topicsQuery.isLoading ||
                       topicsQuery.isError ||
                       topicOptions.length === 0))

@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import type { Word } from '@/features/words/words.types';
+import { formatTranscription } from '@/features/words/words.utils';
 import { useTopicWords } from '@/features/topics/useTopics';
 import type { Lesson } from './lessons.types';
 import { useUpdateLessonWords } from './useLessons';
@@ -145,7 +146,7 @@ export function ManageLessonWordsDialog({
                   <span className="font-medium">{word.word}</span>
                   {word.transcription && (
                     <span className="text-muted-foreground ml-2 text-sm">
-                      {word.transcription}
+                      {formatTranscription(word.transcription)}
                     </span>
                   )}
                   {translations && (

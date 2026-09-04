@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/tooltip';
 import { WordImage } from '../WordImage';
 import { WordTopics } from '../WordTopics';
-import { groupByPartOfSpeech } from '../words.utils';
+import { formatTranscription, groupByPartOfSpeech } from '../words.utils';
 import type { Word, WordsViewProps } from '../words.types';
 
 function TranslationsInline({ word }: { word: Word }) {
@@ -24,7 +24,9 @@ function TranslationsInline({ word }: { word: Word }) {
       {groups.map((group, groupIndex) => (
         <span key={group.label}>
           {groupIndex > 0 && <span className="text-muted-foreground"> · </span>}
-          <span className="text-muted-foreground">{group.label}: </span>
+          <span className="text-muted-foreground" title={group.fullLabel}>
+            {group.label}:{' '}
+          </span>
           {group.items.map((t, i) => (
             <span key={t.id} className={t.isPrimary ? 'font-bold' : ''}>
               {t.text}
@@ -123,7 +125,7 @@ export function WordsCards({
                 <div className="truncate font-medium">{word.word}</div>
                 {word.transcription && (
                   <div className="text-muted-foreground truncate text-xs">
-                    {word.transcription}
+                    {formatTranscription(word.transcription)}
                   </div>
                 )}
               </div>

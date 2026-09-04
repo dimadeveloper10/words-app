@@ -68,7 +68,7 @@ export class LessonsService {
         topics: true,
       },
       order: {
-        createdAt: 'DESC',
+        createdAt: 'ASC',
         id: 'ASC',
         translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
         forms: { sortOrder: 'ASC' },

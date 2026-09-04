@@ -18,11 +18,15 @@ import { getApiErrorMessage } from '@/lib/api';
 import { TopicWordsTable } from './TopicWordsTable';
 import { useTopic, useTopicWords } from './useTopics';
 import { useLessons } from '@/features/lessons/useLessons';
+import { LessonDialog } from '@/features/lessons/LessonDialog';
 import { useAuthStore } from '@/stores/auth';
 import { WordDialog } from '@/features/words/word-dialog/WordDialog';
+import type { Word } from '@/features/words/words.types';
 
 export function TopicDetailsPage() {
+  const [addingLesson, setAddingLesson] = useState(false);
   const [addingWord, setAddingWord] = useState(false);
+  const [editingWord, setEditingWord] = useState<Word | null>(null);
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const role = useAuthStore((state) => state.user?.role);
@@ -85,20 +89,22 @@ export function TopicDetailsPage() {
             {topic.description ? ` · ${topic.description}` : ''}
           </p>
         </div>
-        {canManage && (
-          <Button onClick={() => setAddingWord(true)}>
-            <Plus className="size-4" />
-            Add word
-          </Button>
-        )}
       </div>
 
       <section className="space-y-3">
-        <div>
-          <h2 className="text-lg font-semibold">Lessons</h2>
-          <p className="text-muted-foreground text-sm">
-            Lessons grouped under this topic.
-          </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold">Lessons</h2>
+            <p className="text-muted-foreground text-sm">
+              Lessons grouped under this topic.
+            </p>
+          </div>
+          {canManage && (
+            <Button onClick={() => setAddingLesson(true)}>
+              <Plus className="size-4" />
+              Add lesson
+            </Button>
+          )}
         </div>
         <Card>
           <CardContent className="px-0">
@@ -177,11 +183,19 @@ export function TopicDetailsPage() {
       </section>
 
       <section className="space-y-3">
-        <div>
-          <h2 className="text-lg font-semibold">Words</h2>
-          <p className="text-muted-foreground text-sm">
-            All words assigned to this topic.
-          </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold">Words</h2>
+            <p className="text-muted-foreground text-sm">
+              All words assigned to this topic.
+            </p>
+          </div>
+          {canManage && (
+            <Button onClick={() => setAddingWord(true)}>
+              <Plus className="size-4" />
+              Add word
+            </Button>
+          )}
         </div>
         <Card>
           <CardContent className="px-0">
@@ -206,11 +220,25 @@ export function TopicDetailsPage() {
                   This topic has no words yet.
                 </p>
               ) : (
-                <TopicWordsTable words={wordsQuery.data} />
+                <TopicWordsTable
+                  words={wordsQuery.data}
+                  onEdit={canManage ? setEditingWord : undefined}
+                />
               ))}
           </CardContent>
         </Card>
       </section>
+
+      {addingLesson && (
+        <LessonDialog
+          key={`create-${topic.id}`}
+          fixedTopic={{ id: topic.id, name: topic.name }}
+          open
+          onOpenChange={(open) => {
+            if (!open) setAddingLesson(false);
+          }}
+        />
+      )}
 
       {addingWord && (
         <WordDialog
@@ -219,6 +247,17 @@ export function TopicDetailsPage() {
           open
           onOpenChange={(open) => {
             if (!open) setAddingWord(false);
+          }}
+        />
+      )}
+
+      {editingWord && (
+        <WordDialog
+          key={editingWord.id}
+          word={editingWord}
+          open
+          onOpenChange={(open) => {
+            if (!open) setEditingWord(null);
           }}
         />
       )}

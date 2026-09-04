@@ -46,6 +46,7 @@ export function useCreateLesson() {
       createLesson(toCreateLessonPayload(values)),
     onSuccess: (lesson) => {
       void queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      void queryClient.invalidateQueries({ queryKey: ['topics'] });
       toast.success(`Lesson "${lesson.name}" created`);
     },
     onError: (error) => {

@@ -13,18 +13,18 @@ export type PartOfSpeech =
   | 'particle';
 
 export const PARTS_OF_SPEECH = [
-  { value: 'noun', label: 'Noun' },
-  { value: 'verb', label: 'Verb' },
-  { value: 'adjective', label: 'Adjective' },
-  { value: 'adverb', label: 'Adverb' },
-  { value: 'pronoun', label: 'Pronoun' },
-  { value: 'preposition', label: 'Preposition' },
-  { value: 'conjunction', label: 'Conjunction' },
-  { value: 'interjection', label: 'Interjection' },
-  { value: 'numeral', label: 'Numeral' },
-  { value: 'determiner', label: 'Determiner' },
-  { value: 'article', label: 'Article' },
-  { value: 'particle', label: 'Particle' },
+  { value: 'noun', label: 'Noun', shortLabel: 'noun' },
+  { value: 'verb', label: 'Verb', shortLabel: 'verb' },
+  { value: 'adjective', label: 'Adjective', shortLabel: 'adj' },
+  { value: 'adverb', label: 'Adverb', shortLabel: 'adv' },
+  { value: 'pronoun', label: 'Pronoun', shortLabel: 'pron' },
+  { value: 'preposition', label: 'Preposition', shortLabel: 'prep' },
+  { value: 'conjunction', label: 'Conjunction', shortLabel: 'conj' },
+  { value: 'interjection', label: 'Interjection', shortLabel: 'int' },
+  { value: 'numeral', label: 'Numeral', shortLabel: 'num' },
+  { value: 'determiner', label: 'Determiner', shortLabel: 'det' },
+  { value: 'article', label: 'Article', shortLabel: 'art' },
+  { value: 'particle', label: 'Particle', shortLabel: 'part' },
 ] as const;
 
 export interface WordTranslation {
