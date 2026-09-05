@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ImageOff, ImagePlus, RefreshCw, X } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -23,6 +23,7 @@ interface ImageFieldProps {
   onChange: (file: File | null) => void;
   currentUrl?: string | null;
   currentExternalUrl?: string | null;
+  alternativeInput: ReactNode;
 }
 
 export function ImageField({
@@ -30,6 +31,7 @@ export function ImageField({
   onChange,
   currentUrl,
   currentExternalUrl,
+  alternativeInput,
 }: ImageFieldProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -65,12 +67,12 @@ export function ImageField({
 
   const shownSrc = preview
     ? preview
-      : currentUrl
-        ? `${import.meta.env.VITE_API_URL}${currentUrl}`
-        : currentExternalUrl || null;
+    : currentUrl
+      ? `${import.meta.env.VITE_API_URL}${currentUrl}`
+      : currentExternalUrl || null;
 
   return (
-    <div>
+    <div className="grid gap-2">
       <input
         ref={inputRef}
         type="file"
@@ -78,17 +80,11 @@ export function ImageField({
         className="hidden"
         onChange={onFileChange}
       />
-      {shownSrc ? (
-        <div className="grid grid-cols-[auto_auto] items-start justify-start gap-x-3 gap-y-2">
-          <FormLabel className="col-start-1 justify-self-start">
-            Image
-          </FormLabel>
-          <img
-            src={shownSrc}
-            alt="Word image"
-            className="col-start-1 row-start-2 size-24 rounded-md border object-cover"
-          />
-          <div className="col-start-2 row-start-2 flex flex-col items-start gap-2">
+      <FormLabel>Image</FormLabel>
+
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+        <div className="grid gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               type="button"
               variant="outline"
@@ -96,8 +92,12 @@ export function ImageField({
               className="min-w-24 justify-center"
               onClick={() => inputRef.current?.click()}
             >
-              <RefreshCw className="size-4" />
-              Replace
+              {shownSrc ? (
+                <RefreshCw className="size-4" />
+              ) : (
+                <ImagePlus className="size-4" />
+              )}
+              {shownSrc ? 'Replace' : 'Choose image'}
             </Button>
             {preview && (
               <Button
@@ -112,25 +112,21 @@ export function ImageField({
               </Button>
             )}
           </div>
+          {alternativeInput}
         </div>
-      ) : (
-        <div className="grid grid-cols-[auto_auto] items-start justify-start gap-x-3 gap-y-2">
-          <FormLabel className="col-start-1">Image</FormLabel>
-          <div className="bg-muted col-start-1 row-start-2 flex size-24 items-center justify-center rounded-md border">
+
+        {shownSrc ? (
+          <img
+            src={shownSrc}
+            alt="Word image"
+            className="size-20 rounded-md border object-cover"
+          />
+        ) : (
+          <div className="bg-muted flex size-20 items-center justify-center rounded-md border">
             <ImageOff className="text-muted-foreground size-6" />
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="col-start-2 row-start-2 min-w-24 justify-center"
-            onClick={() => inputRef.current?.click()}
-          >
-            <ImagePlus className="size-4" />
-            Choose image
-          </Button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

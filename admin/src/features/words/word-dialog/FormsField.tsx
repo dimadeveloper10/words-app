@@ -20,7 +20,7 @@ export function FormsField() {
   });
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       <FormLabel>Forms</FormLabel>
 
       {fields.map((item, index) => (

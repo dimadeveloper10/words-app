@@ -79,6 +79,10 @@ export function useUpdateLessonWords() {
       updateLesson(id, { wordIds }),
     onSuccess: (lesson) => {
       void queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      void queryClient.invalidateQueries({ queryKey: ['words'] });
+      void queryClient.invalidateQueries({
+        queryKey: ['topics', lesson.topic.id, 'words'],
+      });
       toast.success(`Words updated for "${lesson.name}"`);
     },
     onError: (error) => {

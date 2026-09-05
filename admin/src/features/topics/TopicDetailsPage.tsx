@@ -31,7 +31,10 @@ import { useAuthStore } from '@/stores/auth';
 import { WordDialog } from '@/features/words/word-dialog/WordDialog';
 import type { Word } from '@/features/words/words.types';
 
+type TopicTab = 'lessons' | 'words';
+
 export function TopicDetailsPage() {
+  const [activeTab, setActiveTab] = useState<TopicTab>('lessons');
   const [addingLesson, setAddingLesson] = useState(false);
   const [addingWord, setAddingWord] = useState(false);
   const [editingWord, setEditingWord] = useState<Word | null>(null);
@@ -102,7 +105,58 @@ export function TopicDetailsPage() {
         </div>
       </div>
 
-      <section className="space-y-3">
+      <div
+        role="tablist"
+        aria-label="Topic content"
+        className="flex gap-1 border-b"
+      >
+        <button
+          type="button"
+          role="tab"
+          id="topic-lessons-tab"
+          aria-selected={activeTab === 'lessons'}
+          aria-controls="topic-lessons-panel"
+          tabIndex={activeTab === 'lessons' ? 0 : -1}
+          className="text-muted-foreground hover:text-foreground aria-selected:text-foreground aria-selected:border-primary -mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium transition-colors"
+          onClick={() => setActiveTab('lessons')}
+          onKeyDown={(event) => {
+            if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+              event.preventDefault();
+              setActiveTab('words');
+              document.getElementById('topic-words-tab')?.focus();
+            }
+          }}
+        >
+          Lessons
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="topic-words-tab"
+          aria-selected={activeTab === 'words'}
+          aria-controls="topic-words-panel"
+          tabIndex={activeTab === 'words' ? 0 : -1}
+          className="text-muted-foreground hover:text-foreground aria-selected:text-foreground aria-selected:border-primary -mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium transition-colors"
+          onClick={() => setActiveTab('words')}
+          onKeyDown={(event) => {
+            if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+              event.preventDefault();
+              setActiveTab('lessons');
+              document.getElementById('topic-lessons-tab')?.focus();
+            }
+          }}
+        >
+          Words
+        </button>
+      </div>
+
+      <section
+        role="tabpanel"
+        id="topic-lessons-panel"
+        aria-labelledby="topic-lessons-tab"
+        hidden={activeTab !== 'lessons'}
+        className="space-y-3"
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-semibold">Lessons</h2>
@@ -215,7 +269,13 @@ export function TopicDetailsPage() {
         </Card>
       </section>
 
-      <section className="space-y-3">
+      <section
+        role="tabpanel"
+        id="topic-words-panel"
+        aria-labelledby="topic-words-tab"
+        hidden={activeTab !== 'words'}
+        className="space-y-3"
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-semibold">Words</h2>

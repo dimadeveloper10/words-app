@@ -100,7 +100,7 @@ export function WordDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-h-[85vh] overflow-y-auto sm:max-w-4xl"
+        className="h-[85dvh] max-h-[85dvh] grid-rows-[auto_minmax(0,1fr)] overflow-hidden sm:max-w-6xl"
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
@@ -110,93 +110,98 @@ export function WordDialog({
         <Form {...form}>
           <form
             onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
-            className="grid gap-6"
+            className="flex min-h-0 flex-col"
           >
-            <div className="grid items-start gap-6 md:grid-cols-2">
-              <div className="grid gap-4">
-                <FormField
-                  control={form.control}
-                  name="word"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Word <span className="text-destructive">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. run" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="transcription"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Transcription</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. /rʌn/" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+            <div className="grid min-h-0 gap-6 overflow-y-auto pr-2">
+              <div className="grid items-start gap-6 lg:grid-cols-3">
                 <TopicsField fixedTopic={fixedTopic} />
-              </div>
 
-              <div className="grid content-start gap-2">
-                <ImageField
-                  value={imageFile}
-                  onChange={setImageFile}
-                  currentUrl={word?.imageUrl}
-                  currentExternalUrl={word?.externalUrl}
-                />
+                <div className="grid items-start gap-6 lg:col-span-3 lg:grid-cols-3">
+                  <div className="grid gap-4">
+                    <FormField
+                      control={form.control}
+                      name="word"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Word <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g. run" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <div className="text-muted-foreground text-center text-sm">
-                  or
+                    <FormField
+                      control={form.control}
+                      name="transcription"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Transcription</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g. /rʌn/" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="lg:self-stretch lg:border-l lg:pl-6">
+                    <FormsField />
+                  </div>
+
+                  <div className="grid content-start gap-2 lg:border-l lg:pl-6">
+                    <ImageField
+                      value={imageFile}
+                      onChange={setImageFile}
+                      currentUrl={word?.imageUrl}
+                      currentExternalUrl={word?.externalUrl}
+                      alternativeInput={
+                        <>
+                          <div className="text-muted-foreground text-center text-sm">
+                            or
+                          </div>
+
+                          <FormField
+                            control={form.control}
+                            name="externalUrl"
+                            render={({ field }) => (
+                              <FormItem className="gap-1">
+                                <FormLabel>External image URL</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="https://example.com/image.jpg"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </>
+                      }
+                    />
+                  </div>
                 </div>
-
-                <FormField
-                  control={form.control}
-                  name="externalUrl"
-                  render={({ field }) => (
-                    <FormItem className="gap-1">
-                      <FormLabel>External image URL</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="https://example.com/image.jpg"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            <div className="border-t" />
-
-            <TranslationsField />
-
-            <div className="border-t" />
-
-            <div className="grid items-start gap-6">
-              <div className="w-full md:max-w-[50%]">
-                <FormsField />
               </div>
 
               <div className="border-t" />
 
-              <div className="w-full md:max-w-[50%]">
+              <div className="lg:w-2/3">
+                <TranslationsField />
+              </div>
+
+              <div className="border-t" />
+
+              <div className="w-full pb-1 md:max-w-[50%]">
                 <ExamplesField />
               </div>
             </div>
 
-            <DialogFooter className="mt-2">
+            <DialogFooter className="mt-4 shrink-0 border-t bg-background pt-4">
               <Button
                 type="button"
                 variant="outline"
