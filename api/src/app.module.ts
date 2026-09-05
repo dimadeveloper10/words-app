@@ -15,6 +15,7 @@ import { TopicsModule } from './topics/topics.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { LessonsModule } from './lessons/lessons.module';
+import { DictionaryModule } from './dictionary/dictionary.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { LessonsModule } from './lessons/lessons.module';
     WordsModule,
     TopicsModule,
     LessonsModule,
+    DictionaryModule,
   ],
   controllers: [AppController],
   providers: [
