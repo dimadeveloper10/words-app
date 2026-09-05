@@ -50,6 +50,10 @@ class EnvironmentVariables {
   @IsString()
   CORS_ORIGIN?: string;
 
+  @IsOptional()
+  @IsString()
+  REDIS_URL?: string;
+
   // Only required when running the seed script.
   @IsOptional()
   @IsString()

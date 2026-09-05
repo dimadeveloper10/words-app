@@ -1,13 +1,28 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { CACHE_MANAGER, type Cache } from '@nestjs/cache-manager';
+import { Inject, Injectable, ServiceUnavailableException } from '@nestjs/common';
 import type { DictionaryApiEntry } from './interfaces/dictionary-api-response.interface';
 
 const DICTIONARY_API_URL = 'https://api.dictionaryapi.dev/api/v2/entries/en';
 const DICTIONARY_TIMEOUT_MS = 30_000;
+const TRANSCRIPTION_CACHE_TTL_MS = 24 * 60 * 60 * 1_000;
+
+interface CachedTranscription {
+  transcription: string | null;
+}
 
 @Injectable()
 export class DictionaryService {
+  constructor(
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
+  ) {}
+
   async findTranscription(word: string): Promise<string | null> {
     const normalizedWord = word.trim().toLowerCase();
+    const cacheKey = `dictionary:transcription:${normalizedWord}`;
+    const cached = await this.cacheManager.get<CachedTranscription>(cacheKey);
+
+    if (cached !== undefined) return cached.transcription;
 
     try {
       const response = await fetch(
@@ -15,13 +30,26 @@ export class DictionaryService {
         { signal: AbortSignal.timeout(DICTIONARY_TIMEOUT_MS) },
       );
 
-      if (response.status === 404) return null;
-      if (!response.ok) {
-        throw new Error(`Dictionary API returned ${response.status}`);
+      let transcription: string | null;
+
+      if (response.status === 404) {
+        transcription = null;
+      } else {
+        if (!response.ok) {
+          throw new Error(`Dictionary API returned ${response.status}`);
+        }
+
+        const payload = (await response.json()) as DictionaryApiEntry[];
+        transcription = this.extractTranscription(payload);
       }
 
-      const payload = (await response.json()) as DictionaryApiEntry[];
-      return this.extractTranscription(payload);
+      await this.cacheManager.set(
+        cacheKey,
+        { transcription },
+        TRANSCRIPTION_CACHE_TTL_MS,
+      );
+
+      return transcription;
     } catch {
       throw new ServiceUnavailableException('Dictionary service unavailable');
     }
