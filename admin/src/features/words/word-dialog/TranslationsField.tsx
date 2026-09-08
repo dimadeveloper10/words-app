@@ -21,6 +21,9 @@ import {
 import { PARTS_OF_SPEECH } from '../words.types';
 import { makeTranslation, type WordFormValues } from '../words.schemas';
 
+const VISIBLE_PARTS_OF_SPEECH = PARTS_OF_SPEECH.slice(0, 4);
+const OTHER_PARTS_OF_SPEECH = PARTS_OF_SPEECH.slice(4);
+
 export function TranslationsField() {
   const { control } = useFormContext<WordFormValues>();
   const { fields, append, remove } = useFieldArray({
@@ -82,20 +85,51 @@ export function TranslationsField() {
                   <FormLabel>
                     Part of speech <span className="text-destructive">*</span>
                   </FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select part of speech" />
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                    {VISIBLE_PARTS_OF_SPEECH.map((part) => {
+                      const id = `translation-${item.id}-${part.value}`;
+
+                      return (
+                        <div
+                          key={part.value}
+                          className="flex items-center gap-2"
+                        >
+                          <Checkbox
+                            id={id}
+                            checked={field.value === part.value}
+                            onCheckedChange={(checked) => {
+                              if (checked) field.onChange(part.value);
+                            }}
+                          />
+                          <label htmlFor={id} className="text-sm">
+                            {part.label}
+                          </label>
+                        </div>
+                      );
+                    })}
+
+                    <Select
+                      value={
+                        OTHER_PARTS_OF_SPEECH.some(
+                          (part) => part.value === field.value,
+                        )
+                          ? field.value
+                          : ''
+                      }
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger size="sm">
+                        <SelectValue placeholder="Other" />
                       </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {PARTS_OF_SPEECH.map((p) => (
-                        <SelectItem key={p.value} value={p.value}>
-                          {p.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                      <SelectContent>
+                        {OTHER_PARTS_OF_SPEECH.map((part) => (
+                          <SelectItem key={part.value} value={part.value}>
+                            {part.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
