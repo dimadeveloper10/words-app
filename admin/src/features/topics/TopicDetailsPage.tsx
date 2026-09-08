@@ -3,6 +3,7 @@ import { isAxiosError } from 'axios';
 import {
   AlertCircle,
   ArrowLeft,
+  ArrowUp,
   ListChecks,
   Loader2,
   Plus,
@@ -321,6 +322,18 @@ export function TopicDetailsPage() {
           </CardContent>
         </Card>
       </section>
+
+      <div className="flex justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        >
+          <ArrowUp className="size-4" />
+          Back to top
+        </Button>
+      </div>
 
       {addingLesson && (
         <LessonDialog
