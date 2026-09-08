@@ -30,8 +30,7 @@ export const emptyLessonValues = (): LessonFormValues => ({
 export const lessonToFormValues = (lesson: Lesson): LessonFormValues => ({
   name: lesson.name,
   slug: lesson.slug,
-  lessonNumber:
-    lesson.lessonNumber === null ? '' : String(lesson.lessonNumber),
+  lessonNumber: lesson.lessonNumber === null ? '' : String(lesson.lessonNumber),
   topicId: lesson.topic.id,
 });
 
@@ -40,8 +39,7 @@ export const toCreateLessonPayload = (
 ): CreateLessonPayload => ({
   name: values.name,
   slug: values.slug,
-  lessonNumber:
-    values.lessonNumber === '' ? null : Number(values.lessonNumber),
+  lessonNumber: values.lessonNumber === '' ? null : Number(values.lessonNumber),
   topicId: values.topicId,
 });
 
@@ -50,6 +48,5 @@ export const toUpdateLessonPayload = (
 ): UpdateLessonPayload => ({
   name: values.name,
   slug: values.slug,
-  lessonNumber:
-    values.lessonNumber === '' ? null : Number(values.lessonNumber),
+  lessonNumber: values.lessonNumber === '' ? null : Number(values.lessonNumber),
 });

@@ -69,7 +69,9 @@ export function TopicsPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Topics</h1>
           <p className="text-muted-foreground text-sm">
-            {canManage ? 'Manage dictionary topics.' : 'Browse dictionary topics.'}
+            {canManage
+              ? 'Manage dictionary topics.'
+              : 'Browse dictionary topics.'}
           </p>
         </div>
         {canManage && (

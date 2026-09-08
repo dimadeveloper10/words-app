@@ -57,7 +57,8 @@ export function AddWordsToTopicDialog({
         <DialogHeader>
           <DialogTitle>Add words to topic</DialogTitle>
           <DialogDescription>
-            Add {wordIds.length} selected {wordIds.length === 1 ? 'word' : 'words'}
+            Add {wordIds.length} selected{' '}
+            {wordIds.length === 1 ? 'word' : 'words'}
             to a topic. Existing topic assignments will be preserved.
           </DialogDescription>
         </DialogHeader>

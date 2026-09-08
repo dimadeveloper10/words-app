@@ -252,8 +252,8 @@ export function LessonsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete lesson?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete “{lessonToDelete?.name}”. This
-              action cannot be undone.
+              This will permanently delete “{lessonToDelete?.name}”. This action
+              cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -28,10 +28,7 @@ const exampleSchema = z.object({
 export const wordFormSchema = z.object({
   word: z.string().min(1, 'Word is required'),
   transcription: z.string().optional(),
-  externalUrl: z
-    .string()
-    .url('Enter a valid image URL')
-    .or(z.literal('')),
+  externalUrl: z.string().url('Enter a valid image URL').or(z.literal('')),
   translations: z
     .array(translationSchema)
     .min(1, 'At least one translation is required'),

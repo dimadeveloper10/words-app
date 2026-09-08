@@ -239,9 +239,7 @@ export function LessonDialog({
                       topicOptions.length === 0))
                 }
               >
-                {isSubmitting && (
-                  <Loader2 className="size-4 animate-spin" />
-                )}
+                {isSubmitting && <Loader2 className="size-4 animate-spin" />}
                 {isEdit ? 'Save' : 'Create'}
               </Button>
             </DialogFooter>

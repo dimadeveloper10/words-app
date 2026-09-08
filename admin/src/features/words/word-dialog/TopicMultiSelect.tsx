@@ -64,7 +64,9 @@ export function TopicMultiSelect({
                   </Badge>
                 ))}
                 {unavailableCount > 0 && (
-                  <Badge variant="secondary">+{unavailableCount} selected</Badge>
+                  <Badge variant="secondary">
+                    +{unavailableCount} selected
+                  </Badge>
                 )}
               </>
             )}

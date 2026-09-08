@@ -24,8 +24,13 @@ export function useAddWordsToTopic() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ topicId, wordIds }: { topicId: string; wordIds: string[] }) =>
-      addWordsToTopic(topicId, wordIds),
+    mutationFn: ({
+      topicId,
+      wordIds,
+    }: {
+      topicId: string;
+      wordIds: string[];
+    }) => addWordsToTopic(topicId, wordIds),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['words'] });
       void queryClient.invalidateQueries({ queryKey: ['topics'] });

@@ -36,11 +36,7 @@ interface TopicDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function TopicDialog({
-  topic,
-  open,
-  onOpenChange,
-}: TopicDialogProps) {
+export function TopicDialog({ topic, open, onOpenChange }: TopicDialogProps) {
   const createTopic = useCreateTopic();
   const updateTopic = useUpdateTopic();
   const isEdit = topic !== undefined;
@@ -163,9 +159,7 @@ export function TopicDialog({
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && (
-                  <Loader2 className="size-4 animate-spin" />
-                )}
+                {isSubmitting && <Loader2 className="size-4 animate-spin" />}
                 {isEdit ? 'Save' : 'Create'}
               </Button>
             </DialogFooter>

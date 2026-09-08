@@ -285,18 +285,15 @@ export function WordsPage() {
         />
       )}
 
-      <AlertDialog
-        open={bulkDeleteOpen}
-        onOpenChange={setBulkDeleteOpen}
-      >
+      <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete selected words?</AlertDialogTitle>
             <AlertDialogDescription>
               This will permanently delete {selectedIds.length}{' '}
               {selectedIds.length === 1 ? 'word' : 'words'} and their
-              translations, forms, examples and topic/lesson links. This
-              action cannot be undone.
+              translations, forms, examples and topic/lesson links. This action
+              cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

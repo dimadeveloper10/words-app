@@ -42,10 +42,7 @@ export function LessonDetailsPage() {
           {isAxiosError(lessonQuery.error) &&
           lessonQuery.error.response?.status === 404
             ? 'Lesson not found.'
-            : getApiErrorMessage(
-                lessonQuery.error,
-                'Failed to load lesson.',
-              )}
+            : getApiErrorMessage(lessonQuery.error, 'Failed to load lesson.')}
         </div>
       </div>
     );
