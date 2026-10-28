@@ -22,7 +22,7 @@ import { WordForm } from './entities/word-form.entity';
 import { WordExample } from './entities/word-example.entity';
 import { DeleteWordsDto } from './dto/delete-words.dto';
 import { deleteWordImage, saveWordImage } from './word-image.storage';
-import { Paginated, paginated } from '../common/dto/paginated';
+import { Paginated, paginated } from '../../common/dto/paginated';
 import { LessonsService } from '../lessons/lessons.service';
 
 @Injectable()

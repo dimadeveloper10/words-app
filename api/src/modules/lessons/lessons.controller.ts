@@ -12,9 +12,9 @@ import {
   Query,
 } from '@nestjs/common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { Roles } from '../common/decorators/roles.decorator';
-import { Paginated } from '../common/dto/paginated';
-import { Role } from '../common/enums/role.enum';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Paginated } from '../../common/dto/paginated';
+import { Role } from '../../common/enums/role.enum';
 import { User } from '../users/entities/user.entity';
 import { Word } from '../words/entities/word.entity';
 import { CreateLessonDto } from './dto/create-lesson.dto';

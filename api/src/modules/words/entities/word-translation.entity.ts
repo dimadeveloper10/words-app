@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { PartOfSpeech } from '../../common/enums/part-of-speech.enum';
+import { PartOfSpeech } from '../../../common/enums/part-of-speech.enum';
 import { Word } from './word.entity';
 
 @Entity('word_translations')

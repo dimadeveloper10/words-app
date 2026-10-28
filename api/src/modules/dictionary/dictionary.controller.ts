@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { Roles } from '../common/decorators/roles.decorator';
-import { Role } from '../common/enums/role.enum';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/enums/role.enum';
 import { DictionaryService } from './dictionary.service';
 import { QueryTranscriptionDto } from './dto/query-transcription.dto';
 

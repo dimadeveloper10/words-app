@@ -16,15 +16,15 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { Roles } from '../common/decorators/roles.decorator';
-import { Role } from '../common/enums/role.enum';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/enums/role.enum';
 import { CreateWordDto } from './dto/create-word.dto';
 import { DeleteWordsDto } from './dto/delete-words.dto';
 import { UpdateWordDto } from './dto/update-word.dto';
 import { Word } from './entities/word.entity';
 import { WordsService } from './words.service';
 import { QueryWordsDto } from './dto/query-words.dto';
-import { Paginated } from '../common/dto/paginated';
+import { Paginated } from '../../common/dto/paginated';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('words')

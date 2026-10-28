@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
-import { Role } from '../common/enums/role.enum';
+import { Role } from '../../common/enums/role.enum';
 import { User } from './entities/user.entity';
 
 const BCRYPT_ROUNDS = 10;

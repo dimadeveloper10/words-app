@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import * as bcrypt from 'bcrypt';
 import { Role } from '../../common/enums/role.enum';
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../modules/users/entities/user.entity';
 import { dataSource } from '../data-source';
 
 /**

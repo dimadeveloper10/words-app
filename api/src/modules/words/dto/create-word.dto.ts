@@ -13,7 +13,7 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import { PartOfSpeech } from '../../common/enums/part-of-speech.enum';
+import { PartOfSpeech } from '../../../common/enums/part-of-speech.enum';
 
 export class CreateTranslationDto {
   @IsEnum(PartOfSpeech)

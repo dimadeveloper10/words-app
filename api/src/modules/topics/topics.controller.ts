@@ -12,10 +12,10 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { Roles } from '../common/decorators/roles.decorator';
-import { Paginated } from '../common/dto/paginated';
-import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
-import { Role } from '../common/enums/role.enum';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Paginated } from '../../common/dto/paginated';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import { Role } from '../../common/enums/role.enum';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
 import { Topic } from './entities/topic.entity';

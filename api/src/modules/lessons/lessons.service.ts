@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Not, Repository } from 'typeorm';
-import { Paginated, paginated } from '../common/dto/paginated';
+import { Paginated, paginated } from '../../common/dto/paginated';
 import { Topic } from '../topics/entities/topic.entity';
 import { User } from '../users/entities/user.entity';
 import { Word } from '../words/entities/word.entity';

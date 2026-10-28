@@ -52,11 +52,11 @@ Follow the existing repository history for commit messages:
 **Stack:** NestJS 11 · TypeORM 1.x · PostgreSQL (`pg`) · JWT (`@nestjs/jwt` +
 `passport-jwt`) · `bcrypt` · validation via `class-validator` / `class-transformer`.
 
-**Layout** — feature modules under `src/`, each with the same shape (see `src/users/`
-and `src/words/` as templates):
+**Layout** — feature modules under `src/modules/`, each with the same shape (see `src/modules/users/`
+and `src/modules/words/` as templates):
 
 ```
-src/<feature>/
+src/modules/<feature>/
   <feature>.module.ts       # @Module, TypeOrmModule.forFeature([...])
   <feature>.controller.ts   # @Controller('<feature>'), route handlers
   <feature>.service.ts      # @Injectable, injects Repository<Entity>
