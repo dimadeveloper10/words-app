@@ -7,11 +7,17 @@ The UI supplies correctness and awarded points; the API stores both unchanged.
 The authenticated JWT determines ownership. No caller-supplied user ID.
 The client supplies a stable UUID so retries do not duplicate attempts.
 
-Request fields: `id`, `wordId`, optional/nullable `lessonId`, `exerciseTypeId`,
+Request fields: `id`, `wordId`, optional/nullable `lessonId`, `exerciseType`,
 `isCorrect`, `pointsAwarded`, `startedAt`, and `answeredAt`.
 Dates must be ISO 8601 strings with seconds, a timezone, and at most millisecond
 precision; start must not follow answer time.
 Points must be a signed PostgreSQL integer. No scoring rules are imposed.
+
+The UI supplies the stable exercise `type` (for example `compile_word`), which
+the API resolves to an internal UUID for storage. Answer responses expose
+`exerciseType` as that same string. `GET /exercise-types` returns `{ type, name }`
+objects without database IDs or pagination. Unknown exercise types return 404.
+This API change requires no database migration; `type` is already unique.
 
 Return a flat answer with the submitted fields (lesson normalized to null) and
 server `createdAt`. New submissions return 201; identical retries return 200.

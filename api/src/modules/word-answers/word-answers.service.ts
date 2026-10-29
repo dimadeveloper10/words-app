@@ -48,7 +48,7 @@ export class WordAnswersService {
       return this.retry(existing, dto, user.id, startedAt, answeredAt);
     }
 
-    await this.validateReferences(dto);
+    const exerciseType = await this.validateReferences(dto);
 
     // insert never updates an existing attempt, unlike save or upsert.
     try {
@@ -57,7 +57,7 @@ export class WordAnswersService {
         user: { id: user.id },
         word: { id: dto.wordId },
         lesson: dto.lessonId ? { id: dto.lessonId } : null,
-        exerciseType: { id: dto.exerciseTypeId },
+        exerciseType: { id: exerciseType.id },
         isCorrect: dto.isCorrect,
         pointsAwarded: dto.pointsAwarded,
         startedAt,
@@ -89,13 +89,16 @@ export class WordAnswersService {
     return { answer: this.toResponse(saved), created: true };
   }
 
-  private async validateReferences(dto: CreateWordAnswerDto): Promise<void> {
+  private async validateReferences(
+    dto: CreateWordAnswerDto,
+  ): Promise<ExerciseType> {
     if (!(await this.wordsRepository.existsBy({ id: dto.wordId }))) {
       throw new NotFoundException('Word not found');
     }
-    if (
-      !(await this.exerciseTypesRepository.existsBy({ id: dto.exerciseTypeId }))
-    ) {
+    const exerciseType = await this.exerciseTypesRepository.findOneBy({
+      type: dto.exerciseType,
+    });
+    if (!exerciseType) {
       throw new NotFoundException('Exercise type not found');
     }
     if (dto.lessonId) {
@@ -111,6 +114,7 @@ export class WordAnswersService {
         throw new BadRequestException('Word does not belong to this lesson');
       }
     }
+    return exerciseType;
   }
 
   private findStored(id: string): Promise<WordAnswer | null> {
@@ -127,7 +131,7 @@ export class WordAnswersService {
         user: { id: true },
         word: { id: true },
         lesson: { id: true },
-        exerciseType: { id: true },
+        exerciseType: { id: true, type: true },
       },
     });
   }
@@ -143,7 +147,7 @@ export class WordAnswersService {
       saved.user.id !== userId ||
       saved.word.id !== dto.wordId ||
       (saved.lesson?.id ?? null) !== (dto.lessonId ?? null) ||
-      saved.exerciseType.id !== dto.exerciseTypeId ||
+      saved.exerciseType.type !== dto.exerciseType ||
       saved.isCorrect !== dto.isCorrect ||
       saved.pointsAwarded !== dto.pointsAwarded ||
       saved.startedAt.getTime() !== startedAt.getTime() ||
@@ -161,7 +165,7 @@ export class WordAnswersService {
       id: answer.id,
       wordId: answer.word.id,
       lessonId: answer.lesson?.id ?? null,
-      exerciseTypeId: answer.exerciseType.id,
+      exerciseType: answer.exerciseType.type,
       isCorrect: answer.isCorrect,
       pointsAwarded: answer.pointsAwarded,
       startedAt: answer.startedAt,

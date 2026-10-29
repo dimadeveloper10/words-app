@@ -2,7 +2,7 @@ export class WordAnswerResponseDto {
   id!: string;
   wordId!: string;
   lessonId!: string | null;
-  exerciseTypeId!: string;
+  exerciseType!: string;
   isCorrect!: boolean;
   pointsAwarded!: number;
   startedAt!: Date;

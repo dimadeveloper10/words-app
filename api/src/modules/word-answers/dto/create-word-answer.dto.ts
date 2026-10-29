@@ -3,7 +3,9 @@ import {
   IsBoolean,
   IsISO8601,
   IsInt,
+  IsNotEmpty,
   IsOptional,
+  IsString,
   IsUUID,
   Matches,
   Max,
@@ -28,9 +30,9 @@ export class CreateWordAnswerDto {
   @IsUUID('4')
   lessonId?: string | null;
 
-  @Transform(normalizeUuid)
-  @IsUUID('4')
-  exerciseTypeId!: string;
+  @IsString()
+  @IsNotEmpty()
+  exerciseType!: string;
 
   @IsBoolean()
   isCorrect!: boolean;
