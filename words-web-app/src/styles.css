@@ -200,6 +200,95 @@ a:hover {
   font-weight: 600;
 }
 
+.lessons-carousel {
+  margin: 16px 0 28px;
+  min-width: 0;
+}
+.carousel-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.lessons-carousel .carousel-button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  border: 1px solid #cbdccf;
+  border-radius: 50%;
+  background: #e8efe4;
+  color: #27634d;
+  font-size: 22px;
+  cursor: pointer;
+}
+.carousel-button:not(:disabled):hover {
+  background: #d9e6d5;
+}
+.carousel-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+.carousel-viewport {
+  overflow: hidden;
+  border-radius: 16px;
+}
+.carousel-track {
+  display: flex;
+  gap: 16px;
+  touch-action: pan-y pinch-zoom;
+}
+.carousel-slide {
+  flex: 0 0 82%;
+  min-width: 0;
+}
+.lesson-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 28px;
+  height: 100%;
+  min-height: 180px;
+  padding: 24px;
+  border: 1px solid #cbdccf;
+  border-radius: 16px;
+  background: #fff;
+}
+.lesson-card h3 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.4;
+  letter-spacing: -0.4px;
+  overflow-wrap: anywhere;
+}
+.lesson-card-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 0;
+  padding-top: 18px;
+  border-top: 1px solid #e8efe4;
+}
+.lesson-card-stats dt {
+  margin-bottom: 6px;
+  color: #5d6c65;
+  font-size: 13px;
+}
+.lesson-card-stats dd {
+  margin: 0;
+  color: #27634d;
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 640px) {
+  .carousel-slide {
+    flex-basis: calc((100% - 16px) / 2);
+  }
+}
+
 @media (max-width: 760px) {
   .auth-layout {
     grid-template-columns: 1fr;

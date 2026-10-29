@@ -5,6 +5,7 @@ import type { User } from '../../types/auth';
 import { getApiErrorMessage } from '../../lib/api';
 import { useTopics } from '../topics/useTopics';
 import { useLessons } from '../lessons/useLessons';
+import { LessonsCarousel } from '../lessons/LessonsCarousel';
 
 export function HomePage() {
   const user = useOutletContext<User>();
@@ -53,6 +54,7 @@ export function HomePage() {
           )}
         </h2>
         {lessons.isPending && <p role="status">Loading lessons…</p>}
+        {lessons.isSuccess && <LessonsCarousel lessons={lessons.data} />}
         {lessons.isError && (
           <>
             <p role="alert">
