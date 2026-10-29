@@ -17,6 +17,7 @@ import { join } from 'path';
 import { LessonsModule } from './modules/lessons/lessons.module';
 import { DictionaryModule } from './modules/dictionary/dictionary.module';
 import { WordAnswersModule } from './modules/word-answers/word-answers.module';
+import { ExerciseTypesModule } from './modules/exercise-types/exercise-types.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { WordAnswersModule } from './modules/word-answers/word-answers.module';
     LessonsModule,
     DictionaryModule,
     WordAnswersModule,
+    ExerciseTypesModule,
   ],
   controllers: [AppController],
   providers: [
