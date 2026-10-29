@@ -22,12 +22,14 @@ import { QueryLessonsDto } from './dto/query-lessons.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { Lesson } from './entities/lesson.entity';
 import { LessonsService } from './lessons.service';
+import { ApiPaginatedResponse } from '../../common/decorators/api-paginated-response.decorator';
 
 @Controller('lessons')
 export class LessonsController {
   constructor(private readonly lessonsService: LessonsService) {}
 
   @Get()
+  @ApiPaginatedResponse(Lesson)
   findAll(@Query() query: QueryLessonsDto): Promise<Paginated<Lesson>> {
     return this.lessonsService.findAll(query);
   }

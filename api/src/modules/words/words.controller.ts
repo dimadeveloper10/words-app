@@ -26,12 +26,15 @@ import { WordsService } from './words.service';
 import { QueryWordsDto } from './dto/query-words.dto';
 import { Paginated } from '../../common/dto/paginated';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiPaginatedResponse } from '../../common/decorators/api-paginated-response.decorator';
 
 @Controller('words')
 export class WordsController {
   constructor(private readonly wordsService: WordsService) {}
 
   @Get()
+  @ApiPaginatedResponse(Word)
   findAll(@Query() query: QueryWordsDto): Promise<Paginated<Word>> {
     return this.wordsService.findAll(query);
   }
@@ -71,6 +74,20 @@ export class WordsController {
   }
 
   @Post(':id/image')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['file'],
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'JPEG or PNG image, at most 2 MiB',
+        },
+      },
+    },
+  })
   @Roles(Role.ADMIN)
   @UseInterceptors(FileInterceptor('file'))
   uploadImage(

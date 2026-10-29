@@ -14,6 +14,7 @@ import { Topic } from '../../topics/entities/topic.entity';
 import { WordForm } from './word-form.entity';
 import { WordTranslation } from './word-translation.entity';
 import { WordExample } from './word-example.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('words')
 export class Word {
@@ -66,6 +67,17 @@ export class Word {
   })
   topics!: Topic[];
 
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', format: 'uuid' },
+        lessonNumber: { type: 'integer', nullable: true },
+        name: { type: 'string' },
+      },
+    },
+  })
   @Transform(({ value }: { value?: Lesson[] }) =>
     value?.map(({ id, lessonNumber, name }) => ({ id, lessonNumber, name })),
   )

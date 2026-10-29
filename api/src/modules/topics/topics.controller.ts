@@ -22,12 +22,14 @@ import { Topic } from './entities/topic.entity';
 import { TopicsService } from './topics.service';
 import { Word } from '../words/entities/word.entity';
 import { AddTopicWordsDto } from './dto/add-topic-words.dto';
+import { ApiPaginatedResponse } from '../../common/decorators/api-paginated-response.decorator';
 
 @Controller('topics')
 export class TopicsController {
   constructor(private readonly topicsService: TopicsService) {}
 
   @Get()
+  @ApiPaginatedResponse(Topic)
   findAll(@Query() query: PaginationQueryDto): Promise<Paginated<Topic>> {
     return this.topicsService.findAll(query);
   }

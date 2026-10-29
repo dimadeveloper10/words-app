@@ -1,4 +1,13 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
+import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { AuthResponseDto } from './dto/auth-response.dto';
 import { User } from '../users/entities/user.entity';
 import { AuthResult, AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
@@ -12,6 +21,7 @@ export class AuthController {
 
   @Public()
   @Post('register')
+  @ApiCreatedResponse({ type: AuthResponseDto })
   register(@Body() dto: RegisterDto): Promise<AuthResult> {
     return this.authService.register(dto);
   }
@@ -19,6 +29,7 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
+  @ApiOkResponse({ type: AuthResponseDto })
   login(@Body() dto: LoginDto): Promise<AuthResult> {
     return this.authService.login(dto);
   }
