@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { DataSource, QueryRunner } from 'typeorm';
 import { buildDataSourceOptions } from '../src/database/data-source';
+import { AddWordAnswerStartedAt1793285831000 } from '../src/database/migrations/1793285831000-AddWordAnswerStartedAt';
 
 async function requireEmptyDatabase(db: DataSource): Promise<void> {
   const [{ schema }] = await db.query<{ schema: string }[]>(
@@ -138,6 +139,7 @@ describe('Word answer database', () => {
         exercise_type_id: compileId,
         is_correct: true,
         points_awarded: 10,
+        started_at: '2026-01-01T11:59:55+02:00',
         answered_at: '2026-01-01T12:00:00+02:00',
         ...overrides,
       };
@@ -145,7 +147,7 @@ describe('Word answer database', () => {
 
     async function insert(values = answer()) {
       const columns = Object.keys(values);
-      return query<{ answered_at: Date; created_at: Date }[]>(
+      return query<{ started_at: Date; answered_at: Date; created_at: Date }[]>(
         `INSERT INTO word_answers (${columns.map((c) => `"${c}"`).join(', ')})
          VALUES (${columns.map((_, i) => `$${i + 1}`).join(', ')}) RETURNING *`,
         Object.values(values),
@@ -180,6 +182,7 @@ describe('Word answer database', () => {
         'exercise_type_id',
         'is_correct',
         'points_awarded',
+        'started_at',
         'answered_at',
       ]) {
         const values = answer();
@@ -287,8 +290,28 @@ describe('Word answer database', () => {
       ]);
     });
 
+    it('backfills historical answers without changing their answer time', async () => {
+      const migration = new AddWordAnswerStartedAt1793285831000();
+      await migration.down(runner);
+      const values = answer();
+      delete values['started_at'];
+      await insert(values);
+
+      await migration.up(runner);
+
+      expect(
+        await query('SELECT started_at, answered_at FROM word_answers'),
+      ).toEqual([
+        {
+          started_at: new Date('2026-01-01T10:00:00Z'),
+          answered_at: new Date('2026-01-01T10:00:00Z'),
+        },
+      ]);
+    });
+
     it('keeps device time separate from server time and preserves timezone instants', async () => {
       const [saved] = await insert();
+      expect(saved.started_at.toISOString()).toBe('2026-01-01T09:59:55.000Z');
       expect(saved.answered_at.toISOString()).toBe('2026-01-01T10:00:00.000Z');
       expect(saved.created_at.getTime()).toBeGreaterThan(
         saved.answered_at.getTime(),
@@ -299,6 +322,7 @@ describe('Word answer database', () => {
   describe('migration rollback', () => {
     it('removes only the learning tables and can recreate them with seed data', async () => {
       // Answer fixtures have been rolled back before this destructive test.
+      await db.undoLastMigration();
       await db.undoLastMigration();
       expect(
         await db.query(`SELECT to_regclass('word_answers') AS answers,

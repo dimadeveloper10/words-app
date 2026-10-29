@@ -77,6 +77,9 @@ export class WordAnswer {
   @Column({ name: 'points_awarded', type: 'int' })
   pointsAwarded!: number;
 
+  @Column({ name: 'started_at', type: 'timestamptz' })
+  startedAt!: Date;
+
   @Column({ name: 'answered_at', type: 'timestamptz' })
   answeredAt!: Date;
 
