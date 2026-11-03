@@ -22,3 +22,11 @@ export async function getAllLessons(
 
   return lessons;
 }
+
+export async function getLesson(
+  id: string,
+  signal?: AbortSignal,
+): Promise<Lesson> {
+  const { data } = await api.get<Lesson>(`/lessons/${id}`, { signal });
+  return data;
+}

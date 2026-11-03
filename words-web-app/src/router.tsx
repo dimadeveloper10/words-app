@@ -5,6 +5,7 @@ import { RegisterPage } from './features/auth/RegisterPage';
 import { RequireAuth } from './features/auth/RequireAuth';
 import { AppLayout } from './components/AppLayout';
 import { HomePage } from './features/home/HomePage';
+import { LessonPage } from './features/lessons/LessonPage';
 import { LessonsPage } from './features/lessons/LessonsPage';
 import { TopicPage } from './features/topics/TopicPage';
 import { TopicsPage } from './features/topics/TopicsPage';
@@ -20,6 +21,7 @@ export const router = createBrowserRouter([
           { path: '/topics', element: <TopicsPage /> },
           { path: '/topics/:topicId', element: <TopicPage /> },
           { path: '/lessons', element: <LessonsPage /> },
+          { path: '/lessons/:lessonId', element: <LessonPage /> },
         ],
       },
     ],

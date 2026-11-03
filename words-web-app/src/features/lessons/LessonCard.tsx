@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { formatLessonTitle } from './formatLessonTitle';
 import type { Lesson } from './lessons.types';
 import '../../components/Carousel.css';
 
@@ -10,11 +12,11 @@ export function LessonCard({ lesson, headingLevel = 'h3' }: LessonCardProps) {
   const Heading = headingLevel;
 
   return (
-    <article className="carousel-card">
-      <Heading>
-        {lesson.lessonNumber !== null && `${lesson.lessonNumber}. `}
-        {lesson.name}
-      </Heading>
+    <Link
+      to={`/lessons/${lesson.id}`}
+      className="carousel-card carousel-card-link"
+    >
+      <Heading>{formatLessonTitle(lesson)}</Heading>
       <dl className="carousel-card-stats">
         <div>
           <dt>Points</dt>
@@ -27,6 +29,6 @@ export function LessonCard({ lesson, headingLevel = 'h3' }: LessonCardProps) {
           <dd>{lesson.wordCount}</dd>
         </div>
       </dl>
-    </article>
+    </Link>
   );
 }
