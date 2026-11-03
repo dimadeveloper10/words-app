@@ -14,6 +14,7 @@ export interface Lesson {
     email: string;
   } | null;
   wordCount: number;
+  wordIds: string[];
   createdAt: string;
   updatedAt: string;
 }

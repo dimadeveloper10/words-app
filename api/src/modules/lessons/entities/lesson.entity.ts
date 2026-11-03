@@ -73,6 +73,12 @@ export class Lesson {
   })
   wordCount!: number;
 
+  @VirtualColumn({
+    query: (alias) =>
+      `SELECT COALESCE(array_agg("lesson_word"."id" ORDER BY "lesson_word"."created_at", "lesson_word"."id"), '{}') FROM "lesson_words" "lesson_words" INNER JOIN "words" "lesson_word" ON "lesson_word"."id" = "lesson_words"."word_id" WHERE "lesson_words"."lesson_id" = ${alias}."id"`,
+  })
+  wordIds!: string[];
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 
