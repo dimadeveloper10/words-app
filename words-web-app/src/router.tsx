@@ -7,6 +7,7 @@ import { AppLayout } from './components/AppLayout';
 import { HomePage } from './features/home/HomePage';
 import { LessonPage } from './features/lessons/LessonPage';
 import { LessonsPage } from './features/lessons/LessonsPage';
+import { LessonWordsPage } from './features/words/LessonWordsPage';
 import { TopicPage } from './features/topics/TopicPage';
 import { TopicsPage } from './features/topics/TopicsPage';
 
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
           { path: '/topics/:topicId', element: <TopicPage /> },
           { path: '/lessons', element: <LessonsPage /> },
           { path: '/lessons/:lessonId', element: <LessonPage /> },
+          { path: '/lessons/:lessonId/words', element: <LessonWordsPage /> },
         ],
       },
     ],

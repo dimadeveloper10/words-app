@@ -1,0 +1,9 @@
+.word-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+.session-page .word-nav button {
+  margin: 0;
+}

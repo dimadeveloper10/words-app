@@ -1,3 +1,4 @@
+import type { Word } from '../features/words/words.types';
 import type { CatalogState } from './catalog';
 
 export const selectTopics = (state: CatalogState) => state.topics;
@@ -12,3 +13,12 @@ export const selectTopicLessons = (state: CatalogState, topicId: string) =>
 
 export const selectLesson = (state: CatalogState, id: string) =>
   state.lessons.find((lesson) => lesson.id === id);
+
+export const selectWord = (state: CatalogState, id: string): Word | undefined =>
+  state.wordsById[id];
+
+export const selectLessonWords = (state: CatalogState, lessonId: string) =>
+  (selectLesson(state, lessonId)?.wordIds ?? []).flatMap((id) => {
+    const word = selectWord(state, id);
+    return word ? [word] : [];
+  });

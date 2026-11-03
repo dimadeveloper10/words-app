@@ -1,0 +1,86 @@
+.word-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid #cbdccf;
+  border-radius: 16px;
+  background: #fff;
+  text-align: center;
+}
+.word-card-check {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+}
+.word-card-check input {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: #9aa5a0;
+  cursor: not-allowed;
+}
+.word-card-image {
+  display: grid;
+  place-items: center;
+  width: 180px;
+  height: 180px;
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #e8efe4;
+  color: #27634d;
+  font-size: 64px;
+  font-weight: 700;
+}
+.word-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.word-card-word {
+  margin: 8px 0 0;
+  font-size: 30px;
+  letter-spacing: -0.6px;
+  overflow-wrap: anywhere;
+}
+.word-card-transcription {
+  margin: 0;
+  color: #5d6c65;
+  font-size: 17px;
+}
+.word-card .word-card-sound {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  border: 1px solid #cbdccf;
+  border-radius: 50%;
+  background: #e8efe4;
+  color: #27634d;
+  cursor: pointer;
+}
+.word-card-sound:not(:disabled):hover {
+  background: #d9e6d5;
+}
+.word-card-sound:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+.word-card-translation {
+  margin: 4px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #27634d;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
