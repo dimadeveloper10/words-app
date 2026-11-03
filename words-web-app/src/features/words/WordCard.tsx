@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
 import { getWordImageUrl } from './words.api';
 import type { Word } from './words.types';
-import { canSpeak, speakWord } from './speakWord';
+import { canSpeak, speakWord, stopSpeaking } from './speakWord';
 import './WordCard.css';
 
 function formatTranslation(word: Word) {
@@ -10,6 +11,11 @@ function formatTranslation(word: Word) {
 }
 
 export function WordCard({ word }: { word: Word }) {
+  useEffect(() => {
+    speakWord(word.word);
+    return stopSpeaking;
+  }, [word.word]);
+
   return (
     <article className="word-card" aria-label={word.word}>
       <label className="word-card-check">
