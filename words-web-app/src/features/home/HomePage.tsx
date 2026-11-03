@@ -6,6 +6,7 @@ import { getApiErrorMessage } from '../../lib/api';
 import { useTopics } from '../topics/useTopics';
 import { useLessons } from '../lessons/useLessons';
 import { LessonsCarousel } from '../lessons/LessonsCarousel';
+import { TopicsCarousel } from '../topics/TopicsCarousel';
 import { AppHeader } from '../../components/AppHeader';
 
 export function HomePage() {
@@ -31,6 +32,7 @@ export function HomePage() {
             )}
           </h2>
           {topics.isPending && <p role="status">Loading topics…</p>}
+          {topics.isSuccess && <TopicsCarousel topics={topics.data} />}
           {topics.isError && (
             <>
               <p role="alert">

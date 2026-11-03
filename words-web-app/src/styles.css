@@ -167,7 +167,7 @@ a:hover {
 .session-page {
   max-width: 640px;
   margin: 0 auto;
-  padding: 48px 24px;
+  padding: 24px 24px;
 }
 .app-header {
   border-bottom: 1px solid #cbdccf;
@@ -246,7 +246,7 @@ a:hover {
   font-weight: 600;
 }
 
-.lessons-carousel {
+.carousel {
   margin: 16px 0 28px;
   min-width: 0;
 }
@@ -256,7 +256,7 @@ a:hover {
   gap: 8px;
   margin-bottom: 12px;
 }
-.lessons-carousel .carousel-button {
+.carousel .carousel-button {
   display: grid;
   place-items: center;
   width: 44px;
@@ -289,7 +289,7 @@ a:hover {
   flex: 0 0 82%;
   min-width: 0;
 }
-.lesson-card {
+.carousel-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -301,14 +301,20 @@ a:hover {
   border-radius: 16px;
   background: #fff;
 }
-.lesson-card h3 {
+.carousel-card h3 {
   margin: 0;
   font-size: 20px;
   line-height: 1.4;
   letter-spacing: -0.4px;
   overflow-wrap: anywhere;
 }
-.lesson-card-stats {
+.carousel-card p {
+  margin: 8px 0 0;
+  color: #5d6c65;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.carousel-card-stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
@@ -316,12 +322,12 @@ a:hover {
   padding-top: 18px;
   border-top: 1px solid #e8efe4;
 }
-.lesson-card-stats dt {
+.carousel-card-stats dt {
   margin-bottom: 6px;
   color: #5d6c65;
   font-size: 13px;
 }
-.lesson-card-stats dd {
+.carousel-card-stats dd {
   margin: 0;
   color: #27634d;
   font-size: 22px;
