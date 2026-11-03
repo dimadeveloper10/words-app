@@ -9,7 +9,6 @@ export function LessonsCarousel({ lessons }: { lessons: Lesson[] }) {
       items={lessons}
       getKey={(lesson) => lesson.id}
       label="Lesson cards"
-      itemsLabel="lessons"
       renderItem={(lesson) => (
         <article className="carousel-card">
           <h3>

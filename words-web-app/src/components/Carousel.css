@@ -1,45 +1,44 @@
 .carousel {
-  margin: 16px 0 28px;
   min-width: 0;
+  margin: 16px 0 28px;
+  padding-bottom: 12px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
 }
-.carousel-controls {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.carousel .carousel-button {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  margin: 0;
-  border: 1px solid #cbdccf;
-  border-radius: 50%;
-  background: #e8efe4;
-  color: #27634d;
-  font-size: 22px;
-  cursor: pointer;
-}
-.carousel-button:not(:disabled):hover {
-  background: #d9e6d5;
-}
-.carousel-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.4;
-}
-.carousel-viewport {
-  overflow: hidden;
+.carousel:focus-visible {
+  outline: 2px solid #27634d;
+  outline-offset: 4px;
   border-radius: 16px;
+}
+.carousel::-webkit-scrollbar {
+  height: 6px;
+}
+.carousel::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: #e8efe4;
+}
+.carousel::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #27634d;
+}
+@supports not selector(::-webkit-scrollbar) {
+  .carousel {
+    scrollbar-width: thin;
+    scrollbar-color: #27634d #e8efe4;
+  }
 }
 .carousel-track {
   display: flex;
   gap: 16px;
-  touch-action: pan-y pinch-zoom;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 .carousel-slide {
-  flex: 0 0 82%;
+  flex: 0 0 calc((100% - 32px) / 2.25);
   min-width: 0;
+  scroll-snap-align: start;
 }
 .carousel-card {
   display: flex;
@@ -85,10 +84,4 @@
   font-size: 22px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-}
-
-@media (min-width: 640px) {
-  .carousel-slide {
-    flex-basis: calc((100% - 16px) / 2);
-  }
 }

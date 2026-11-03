@@ -9,7 +9,6 @@ export function TopicsCarousel({ topics }: { topics: Topic[] }) {
       items={topics}
       getKey={(topic) => topic.id}
       label="Topic cards"
-      itemsLabel="topics"
       renderItem={(topic) => (
         <article className="carousel-card">
           <div>
