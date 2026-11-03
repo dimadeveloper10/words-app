@@ -1,0 +1,36 @@
+.lesson-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 0 0 24px;
+  padding: 16px 20px;
+  border: 1px solid #cbdccf;
+  border-radius: 16px;
+  background: #fff;
+}
+.lesson-stats dt {
+  margin-bottom: 6px;
+  color: #5d6c65;
+  font-size: 13px;
+}
+.lesson-stats dd {
+  margin: 0;
+  color: #27634d;
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.exercise-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .exercise-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
