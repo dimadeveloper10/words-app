@@ -3,6 +3,7 @@ import { AuthLayout } from './features/auth/AuthLayout';
 import { LoginPage } from './features/auth/LoginPage';
 import { RegisterPage } from './features/auth/RegisterPage';
 import { RequireAuth } from './features/auth/RequireAuth';
+import { AppLayout } from './components/AppLayout';
 import { HomePage } from './features/home/HomePage';
 import { TopicPage } from './features/topics/TopicPage';
 import { TopicsPage } from './features/topics/TopicsPage';
@@ -11,9 +12,14 @@ export const router = createBrowserRouter([
   {
     element: <RequireAuth />,
     children: [
-      { path: '/', element: <HomePage /> },
-      { path: '/topics', element: <TopicsPage /> },
-      { path: '/topics/:topicId', element: <TopicPage /> },
+      {
+        element: <AppLayout />,
+        children: [
+          { path: '/', element: <HomePage /> },
+          { path: '/topics', element: <TopicsPage /> },
+          { path: '/topics/:topicId', element: <TopicPage /> },
+        ],
+      },
     ],
   },
   {
