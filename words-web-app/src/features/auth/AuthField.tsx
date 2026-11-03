@@ -1,4 +1,5 @@
 import type { ComponentPropsWithRef } from 'react';
+import './AuthField.css';
 
 interface AuthFieldProps extends ComponentPropsWithRef<'input'> {
   id: string;

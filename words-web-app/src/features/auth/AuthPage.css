@@ -1,0 +1,28 @@
+.auth-heading {
+  margin-bottom: 32px;
+}
+.auth-heading h2 {
+  margin: 0 0 12px;
+  font-size: 30px;
+  letter-spacing: -1px;
+}
+.auth-heading p,
+.auth-footer {
+  color: #5d6c65;
+  line-height: 1.5;
+  font-size: 14px;
+}
+.auth-heading p {
+  margin: 0;
+}
+.auth-form {
+  display: grid;
+  gap: 22px;
+}
+.auth-footer {
+  margin: 28px 0 0;
+  text-align: center;
+}
+.auth-footer a {
+  font-weight: 600;
+}

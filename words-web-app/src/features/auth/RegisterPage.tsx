@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { getApiErrorMessage } from '../../lib/api';
 import { AuthField } from './AuthField';
 import { useAuthForm } from './useAuthForm';
+import './AuthPage.css';
 
 export function RegisterPage() {
   const { form, mutation, onSubmit } = useAuthForm('register');

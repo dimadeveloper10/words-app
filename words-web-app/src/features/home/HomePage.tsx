@@ -8,6 +8,7 @@ import { useLessons } from '../lessons/useLessons';
 import { LessonsCarousel } from '../lessons/LessonsCarousel';
 import { TopicsCarousel } from '../topics/TopicsCarousel';
 import { AppHeader } from '../../components/AppHeader';
+import './HomePage.css';
 
 export function HomePage() {
   const user = useOutletContext<User>();

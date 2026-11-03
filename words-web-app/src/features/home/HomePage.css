@@ -1,0 +1,20 @@
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  padding: 4px 10px;
+  border: 1px solid #cbdccf;
+  border-radius: 999px;
+  background: #e8efe4;
+  color: #27634d;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}

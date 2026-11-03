@@ -1,5 +1,6 @@
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
+import './Carousel.css';
 
 interface CarouselProps<T> {
   items: T[];
