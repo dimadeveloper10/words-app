@@ -1,0 +1,26 @@
+.page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 20px;
+}
+.page-title {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: -0.6px;
+}
+.back-link {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #cbdccf;
+  border-radius: 50%;
+  background: #e8efe4;
+  color: #27634d;
+}
+.back-link:hover {
+  background: #d9e6d5;
+  color: #27634d;
+}

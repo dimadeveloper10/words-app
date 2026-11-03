@@ -8,7 +8,12 @@ interface CarouselProps<T> {
   label: string;
 }
 
-export function Carousel<T>({ items, getKey, renderItem, label }: CarouselProps<T>) {
+export function Carousel<T>({
+  items,
+  getKey,
+  renderItem,
+  label,
+}: CarouselProps<T>) {
   return (
     <section className="carousel" aria-label={label} tabIndex={0}>
       <ul className="carousel-track">

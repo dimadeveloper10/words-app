@@ -3,6 +3,16 @@
   align-items: center;
   gap: 10px;
 }
+.section-heading-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: #cbdccf;
+  text-decoration-thickness: 2px;
+}
+.section-heading-link:hover {
+  color: #27634d;
+  text-decoration-color: currentColor;
+}
 .section-count {
   display: inline-flex;
   align-items: center;

@@ -1,0 +1,13 @@
+.lesson-grid {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .lesson-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

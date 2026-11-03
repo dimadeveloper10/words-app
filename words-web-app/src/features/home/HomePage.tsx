@@ -1,8 +1,7 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useOutletContext } from 'react-router-dom';
-import { useAuthStore } from '../../stores/auth';
+import { Link, useOutletContext } from 'react-router-dom';
 import type { User } from '../../types/auth';
 import { getApiErrorMessage } from '../../lib/api';
+import { useLogout } from '../auth/useLogout';
 import { useTopics } from '../topics/useTopics';
 import { useLessons } from '../lessons/useLessons';
 import { LessonsCarousel } from '../lessons/LessonsCarousel';
@@ -12,14 +11,9 @@ import './HomePage.css';
 
 export function HomePage() {
   const user = useOutletContext<User>();
-  const queryClient = useQueryClient();
+  const logout = useLogout();
   const topics = useTopics();
   const lessons = useLessons();
-
-  function logout() {
-    useAuthStore.getState().clear();
-    queryClient.clear();
-  }
 
   return (
     <>
@@ -27,7 +21,9 @@ export function HomePage() {
       <main className="session-page" aria-label="Learning overview">
         <section aria-labelledby="topics-heading" aria-busy={topics.isPending}>
           <h2 id="topics-heading" className="section-heading">
-            Topics
+            <Link to="/topics" className="section-heading-link">
+              Topics
+            </Link>
             {topics.isSuccess && (
               <span className="section-count">{topics.data.length}</span>
             )}

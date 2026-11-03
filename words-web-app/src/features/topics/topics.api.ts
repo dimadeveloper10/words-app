@@ -19,3 +19,11 @@ export async function getAllTopics(signal?: AbortSignal): Promise<Topic[]> {
 
   return topics;
 }
+
+export async function getTopic(
+  id: string,
+  signal?: AbortSignal,
+): Promise<Topic> {
+  const { data } = await api.get<Topic>(`/topics/${id}`, { signal });
+  return data;
+}

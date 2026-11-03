@@ -52,6 +52,14 @@
   border-radius: 16px;
   background: #fff;
 }
+.carousel-card-link {
+  color: inherit;
+  text-decoration: none;
+}
+.carousel-card-link:hover {
+  border-color: #27634d;
+  color: inherit;
+}
 .carousel-card h3 {
   margin: 0;
   font-size: 20px;

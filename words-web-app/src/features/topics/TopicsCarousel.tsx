@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Carousel } from '../../components/Carousel';
 import type { Topic } from './topics.types';
 
@@ -10,7 +11,10 @@ export function TopicsCarousel({ topics }: { topics: Topic[] }) {
       getKey={(topic) => topic.id}
       label="Topic cards"
       renderItem={(topic) => (
-        <article className="carousel-card">
+        <Link
+          to={`/topics/${topic.id}`}
+          className="carousel-card carousel-card-link"
+        >
           <div>
             <h3>{topic.name}</h3>
             {topic.description && <p>{topic.description}</p>}
@@ -25,7 +29,7 @@ export function TopicsCarousel({ topics }: { topics: Topic[] }) {
               <dd>{topic.wordCount}</dd>
             </div>
           </dl>
-        </article>
+        </Link>
       )}
     />
   );
