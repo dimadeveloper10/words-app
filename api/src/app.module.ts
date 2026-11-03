@@ -4,18 +4,20 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { AuthModule } from './modules/auth/auth.module';
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { validateEnv } from './config/env.validation';
 import { buildDataSourceOptions } from './database/data-source';
-import { UsersModule } from './users/users.module';
-import { WordsModule } from './words/words.module';
-import { TopicsModule } from './topics/topics.module';
+import { UsersModule } from './modules/users/users.module';
+import { WordsModule } from './modules/words/words.module';
+import { TopicsModule } from './modules/topics/topics.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { LessonsModule } from './lessons/lessons.module';
-import { DictionaryModule } from './dictionary/dictionary.module';
+import { LessonsModule } from './modules/lessons/lessons.module';
+import { DictionaryModule } from './modules/dictionary/dictionary.module';
+import { WordAnswersModule } from './modules/word-answers/word-answers.module';
+import { ExerciseTypesModule } from './modules/exercise-types/exercise-types.module';
 
 @Module({
   imports: [
@@ -39,6 +41,8 @@ import { DictionaryModule } from './dictionary/dictionary.module';
     TopicsModule,
     LessonsModule,
     DictionaryModule,
+    WordAnswersModule,
+    ExerciseTypesModule,
   ],
   controllers: [AppController],
   providers: [

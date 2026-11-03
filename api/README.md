@@ -44,6 +44,27 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## API documentation
+
+Start the API with `npm run start:dev`, then open
+[Swagger UI](http://localhost:3000/docs). The OpenAPI JSON document is available at
+[docs-json](http://localhost:3000/docs-json). Use your configured `PORT` if it
+differs from 3000.
+
+Call `POST /auth/login` (or register), copy the returned `accessToken`, and paste
+the token into **Authorize**. Swagger adds the `Bearer` prefix automatically.
+Login, registration, and the root endpoint are public; other operations require
+authentication and retain their normal role restrictions.
+
+The Swagger Nest CLI plugin generates DTO/entity schemas from TypeScript types
+and validation decorators, respecting fields hidden with `@Exclude()`.
+Use `nest build` / the npm build and start scripts so the plugin runs; plain
+`ts-node` does not apply the compiler plugin. Explicit Swagger decorators describe
+generic pagination, authentication responses, and multipart image uploads.
+
+The documentation routes are publicly accessible. **Try it out** sends real
+requests to the running API, including writes.
+
 ## Run tests
 
 ```bash
