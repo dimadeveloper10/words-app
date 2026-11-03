@@ -40,7 +40,9 @@ export function HomePage() {
       </section>
       <section aria-labelledby="lessons-heading" aria-busy={lessons.isPending}>
         <h2 id="lessons-heading" className="section-heading">
-          Lessons
+          <Link to="/lessons" className="section-heading-link">
+            Lessons
+          </Link>
           {lessons.isSuccess && (
             <span className="section-count">{lessons.data.length}</span>
           )}
