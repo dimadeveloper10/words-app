@@ -1,18 +1,15 @@
 import { Link } from 'react-router-dom';
 import type { Topic } from '../topics/topics.types';
 import { LessonsCarousel } from './LessonsCarousel';
-import type { Lesson } from './lessons.types';
-
-interface LessonsTopicItemProps {
-  topic: Topic;
-  lessons: Lesson[];
-}
+import { useTopicLessons } from './useLessons';
 
 function formatLessonCount(count: number) {
   return `${count} ${count === 1 ? 'lesson' : 'lessons'}`;
 }
 
-export function LessonsTopicItem({ topic, lessons }: LessonsTopicItemProps) {
+export function LessonsTopicItem({ topic }: { topic: Topic }) {
+  const lessons = useTopicLessons(topic.id);
+
   return (
     <li>
       <Link to={`/topics/${topic.id}`} className="lessons-topic-row">

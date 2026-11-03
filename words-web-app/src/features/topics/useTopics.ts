@@ -1,25 +1,10 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getAllTopics, getTopic } from './topics.api';
-import type { Topic } from './topics.types';
+import { useCatalogStore } from '../../stores/catalog';
+import { selectTopic, selectTopics } from '../../stores/catalog.selectors';
 
 export function useTopics() {
-  return useQuery({
-    queryKey: ['topics', 'all'],
-    queryFn: ({ signal }) => getAllTopics(signal),
-    staleTime: 60_000,
-  });
+  return useCatalogStore(selectTopics);
 }
 
 export function useTopic(id: string) {
-  const queryClient = useQueryClient();
-  const cachedTopic = queryClient
-    .getQueryData<Topic[]>(['topics', 'all'])
-    ?.find((topic) => topic.id === id);
-
-  return useQuery({
-    queryKey: ['topics', id],
-    queryFn: ({ signal }) => getTopic(id, signal),
-    staleTime: 60_000,
-    placeholderData: cachedTopic,
-  });
+  return useCatalogStore((state) => selectTopic(state, id));
 }

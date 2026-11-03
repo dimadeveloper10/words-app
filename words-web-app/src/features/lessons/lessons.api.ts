@@ -2,13 +2,10 @@ import { api } from '../../lib/api';
 import type { Paginated } from '../../types/pagination';
 import type { Lesson } from './lessons.types';
 
-export async function getAllLessons(
-  topicId?: string,
-  signal?: AbortSignal,
-): Promise<Lesson[]> {
+export async function getAllLessons(signal?: AbortSignal): Promise<Lesson[]> {
   const fetchPage = (page: number) =>
     api.get<Paginated<Lesson>>('/lessons', {
-      params: { page, limit: 100, topicId },
+      params: { page, limit: 100 },
       signal,
     });
 
@@ -21,12 +18,4 @@ export async function getAllLessons(
   }
 
   return lessons;
-}
-
-export async function getLesson(
-  id: string,
-  signal?: AbortSignal,
-): Promise<Lesson> {
-  const { data } = await api.get<Lesson>(`/lessons/${id}`, { signal });
-  return data;
 }

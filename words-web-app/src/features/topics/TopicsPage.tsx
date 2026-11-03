@@ -1,5 +1,4 @@
 import { PageHeader } from '../../components/PageHeader';
-import { getApiErrorMessage } from '../../lib/api';
 import { TopicListItem } from './TopicListItem';
 import { useTopics } from './useTopics';
 import './TopicsPage.css';
@@ -8,34 +7,16 @@ export function TopicsPage() {
   const topics = useTopics();
 
   return (
-    <main
-      className="session-page"
-      aria-labelledby="topics-page-title"
-      aria-busy={topics.isPending}
-    >
+    <main className="session-page" aria-labelledby="topics-page-title">
       <PageHeader id="topics-page-title" title="Topics" backTo="/" />
-      {topics.isPending && <p role="status">Loading topics…</p>}
-      {topics.isSuccess && topics.data.length === 0 && <p>No topics yet.</p>}
-      {topics.isSuccess && topics.data.length > 0 && (
+      {topics.length === 0 ? (
+        <p>No topics yet.</p>
+      ) : (
         <ul className="topic-list">
-          {topics.data.map((topic) => (
+          {topics.map((topic) => (
             <TopicListItem key={topic.id} topic={topic} />
           ))}
         </ul>
-      )}
-      {topics.isError && (
-        <>
-          <p role="alert">
-            {getApiErrorMessage(topics.error, 'Unable to load topics.')}
-          </p>
-          <button
-            className="auth-submit"
-            onClick={() => void topics.refetch()}
-            disabled={topics.isFetching}
-          >
-            {topics.isFetching ? 'Retrying…' : 'Try again'}
-          </button>
-        </>
       )}
     </main>
   );

@@ -1,26 +1,21 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getAllLessons, getLesson } from './lessons.api';
-import type { Lesson } from './lessons.types';
+import { useShallow } from 'zustand/react/shallow';
+import { useCatalogStore } from '../../stores/catalog';
+import {
+  selectLesson,
+  selectLessons,
+  selectTopicLessons,
+} from '../../stores/catalog.selectors';
 
-export function useLessons(topicId?: string) {
-  return useQuery({
-    queryKey: ['lessons', topicId ?? 'all'],
-    queryFn: ({ signal }) => getAllLessons(topicId, signal),
-    staleTime: 60_000,
-  });
+export function useLessons() {
+  return useCatalogStore(selectLessons);
+}
+
+export function useTopicLessons(topicId: string) {
+  return useCatalogStore(
+    useShallow((state) => selectTopicLessons(state, topicId)),
+  );
 }
 
 export function useLesson(id: string) {
-  const queryClient = useQueryClient();
-  const cachedLesson = queryClient
-    .getQueriesData<Lesson[]>({ queryKey: ['lessons'] })
-    .flatMap(([, lessons]) => (Array.isArray(lessons) ? lessons : []))
-    .find((lesson) => lesson.id === id);
-
-  return useQuery({
-    queryKey: ['lesson', id],
-    queryFn: ({ signal }) => getLesson(id, signal),
-    staleTime: 60_000,
-    placeholderData: cachedLesson,
-  });
+  return useCatalogStore((state) => selectLesson(state, id));
 }
