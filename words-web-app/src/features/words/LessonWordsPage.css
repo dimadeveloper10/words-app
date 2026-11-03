@@ -1,8 +1,21 @@
+.lesson-words-page {
+  padding-bottom: calc(112px + env(safe-area-inset-bottom));
+}
 .word-nav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid #cbdccf;
+  background: #fafbf8;
+}
+.word-nav-inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-top: 20px;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
 }
 .session-page .word-nav button {
   margin: 0;

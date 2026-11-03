@@ -38,7 +38,10 @@ export function LessonWordsPage() {
   const word = words[current];
 
   return (
-    <main className="session-page" aria-labelledby="lesson-words-title">
+    <main
+      className="session-page lesson-words-page"
+      aria-labelledby="lesson-words-title"
+    >
       <PageHeader
         id="lesson-words-title"
         title={`${current + 1} / ${words.length}`}
@@ -46,22 +49,24 @@ export function LessonWordsPage() {
       />
       <WordCard key={word.id} word={word} />
       <nav className="word-nav" aria-label="Word navigation">
-        <button
-          type="button"
-          className="auth-submit"
-          disabled={current === 0}
-          onClick={() => setIndex(current - 1)}
-        >
-          Previous
-        </button>
-        <button
-          type="button"
-          className="auth-submit"
-          disabled={current === words.length - 1}
-          onClick={() => setIndex(current + 1)}
-        >
-          Next
-        </button>
+        <div className="word-nav-inner">
+          <button
+            type="button"
+            className="auth-submit"
+            disabled={current === 0}
+            onClick={() => setIndex(current - 1)}
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            className="auth-submit"
+            disabled={current === words.length - 1}
+            onClick={() => setIndex(current + 1)}
+          >
+            Next
+          </button>
+        </div>
       </nav>
     </main>
   );
