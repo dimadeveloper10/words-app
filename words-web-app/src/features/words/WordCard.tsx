@@ -1,14 +1,9 @@
 import { useEffect } from 'react';
+import { formatTranslation } from './formatTranslation';
 import { getWordImageUrl } from './words.api';
 import type { Word } from './words.types';
 import { canSpeak, speakWord, stopSpeaking } from './speakWord';
 import './WordCard.css';
-
-function formatTranslation(word: Word) {
-  const primary = word.translations.filter((t) => t.isPrimary);
-  const shown = primary.length > 0 ? primary : word.translations.slice(0, 1);
-  return shown.map((t) => t.text).join(', ');
-}
 
 export function WordCard({ word }: { word: Word }) {
   useEffect(() => {

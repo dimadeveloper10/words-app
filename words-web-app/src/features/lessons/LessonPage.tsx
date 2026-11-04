@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { PageHeader } from '../../components/PageHeader';
-import { ExerciseCard } from '../exercises/ExerciseCard';
-import { exerciseTypes } from '../exercises/exerciseType';
+import { CompileWordCard } from '../exercises/CompileWordCard';
 import { formatLessonTitle } from './formatLessonTitle';
 import { LessonWordsCard } from './LessonWordsCard';
 import { useLesson } from './useLessons';
@@ -43,11 +42,9 @@ export function LessonPage() {
         <li>
           <LessonWordsCard lessonId={lesson.id} wordCount={lesson.wordCount} />
         </li>
-        {exerciseTypes.map((type) => (
-          <li key={type}>
-            <ExerciseCard type={type} />
-          </li>
-        ))}
+        <li>
+          <CompileWordCard lessonId={lesson.id} />
+        </li>
       </ul>
     </main>
   );

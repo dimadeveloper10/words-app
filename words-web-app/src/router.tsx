@@ -5,6 +5,7 @@ import { RegisterPage } from './features/auth/RegisterPage';
 import { RequireAuth } from './features/auth/RequireAuth';
 import { AppLayout } from './components/AppLayout';
 import { CatalogLoader } from './components/CatalogLoader';
+import { CompileWordPage } from './features/exercises/CompileWordPage';
 import { HomePage } from './features/home/HomePage';
 import { LessonPage } from './features/lessons/LessonPage';
 import { LessonsPage } from './features/lessons/LessonsPage';
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
             ],
           },
           { path: '/lessons/:lessonId/words', element: <LessonWordsPage /> },
+          {
+            path: '/lessons/:lessonId/compile-word',
+            element: <CompileWordPage />,
+          },
         ],
       },
     ],
