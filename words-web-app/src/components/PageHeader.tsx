@@ -1,5 +1,5 @@
-import type { MouseEvent } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useGoBack } from './useGoBack';
 import './PageHeader.css';
 
 interface PageHeaderProps {
@@ -9,17 +9,7 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ id, title, backTo }: PageHeaderProps) {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const hasAppHistory = location.key !== 'default';
-
-  function goBack(event: MouseEvent<HTMLAnchorElement>) {
-    const opensNewTab =
-      event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey;
-    if (!hasAppHistory || opensNewTab) return;
-    event.preventDefault();
-    void navigate(-1);
-  }
+  const goBack = useGoBack();
 
   return (
     <div className="page-title-row">

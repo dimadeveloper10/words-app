@@ -1,0 +1,31 @@
+.exercise-header {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 8px;
+}
+.exercise-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  color: #27634d;
+}
+.exercise-close:hover {
+  background: #e8efe4;
+}
+.exercise-close:focus-visible {
+  outline: 2px solid #27634d;
+  outline-offset: 2px;
+}
+.exercise-title {
+  grid-column: 2;
+  margin: 0;
+  color: #5d6c65;
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}

@@ -4,6 +4,7 @@ import { PageHeader } from '../../components/PageHeader';
 import { useLesson } from '../lessons/useLessons';
 import { formatTranslation } from '../words/formatTranslation';
 import { useLessonWords } from '../words/useWords';
+import { ExerciseHeader } from './ExerciseHeader';
 import './CompileWordPage.css';
 
 export function CompileWordPage() {
@@ -45,10 +46,10 @@ export function CompileWordPage() {
       className="session-page compile-word-page"
       aria-labelledby="compile-word-title"
     >
-      <PageHeader
+      <ExerciseHeader
         id="compile-word-title"
         title={`1 / ${words.length}`}
-        backTo={`/lessons/${lesson.id}`}
+        closeTo={`/lessons/${lesson.id}`}
       />
       <section className="compile-word-body">
         <p id="compile-word-prompt" className="compile-word-translation">
