@@ -11,7 +11,9 @@ export function LessonsCarousel({
   lessons,
   label = 'Lesson cards',
 }: LessonsCarouselProps) {
-  if (lessons.length === 0) return <p>No lessons yet.</p>;
+  if (lessons.length === 0) {
+    return <p>No lessons yet.</p>;
+  }
 
   return (
     <Carousel

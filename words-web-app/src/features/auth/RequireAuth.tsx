@@ -15,7 +15,9 @@ export function RequireAuth() {
     staleTime: 60_000,
   });
 
-  if (!token) return <Navigate to="/login" replace />;
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
   if (session.isPending) {
     return (
       <main className="session-page" role="status">

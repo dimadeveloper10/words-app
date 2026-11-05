@@ -3,7 +3,9 @@ import { Carousel } from '../../components/Carousel';
 import type { Topic } from './topics.types';
 
 export function TopicsCarousel({ topics }: { topics: Topic[] }) {
-  if (topics.length === 0) return <p>No topics yet.</p>;
+  if (topics.length === 0) {
+    return <p>No topics yet.</p>;
+  }
 
   return (
     <Carousel

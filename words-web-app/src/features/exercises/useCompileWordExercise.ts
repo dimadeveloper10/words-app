@@ -33,7 +33,9 @@ export function useCompileWordExercise(words: Word[]) {
   }, [step]);
 
   useEffect(() => {
-    if (status !== 'correct') return;
+    if (status !== 'correct') {
+      return;
+    }
     const timer = setTimeout(() => {
       startedAt.current = null;
       setWord(pickRandom(words));
@@ -47,13 +49,17 @@ export function useCompileWordExercise(words: Word[]) {
   useEffect(() => stopSpeaking, []);
 
   function changeAnswer(value: string) {
-    if (status !== 'typing') return;
+    if (status !== 'typing') {
+      return;
+    }
     startedAt.current ??= new Date();
     setAnswer(value);
   }
 
   function submitAnswer() {
-    if (status !== 'typing' || normalize(answer) === '') return;
+    if (status !== 'typing' || normalize(answer) === '') {
+      return;
+    }
 
     const isCorrect = normalize(answer) === normalize(word.word);
     const answeredAt = new Date();
@@ -68,7 +74,9 @@ export function useCompileWordExercise(words: Word[]) {
       },
     ]);
     setStatus(isCorrect ? 'correct' : 'wrong');
-    if (isCorrect) speakWord(word.word);
+    if (isCorrect) {
+      speakWord(word.word);
+    }
   }
 
   function playAgain() {

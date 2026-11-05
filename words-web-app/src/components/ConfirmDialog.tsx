@@ -29,7 +29,9 @@ export function ConfirmDialog({
   }
 
   function handleBackdropClick(event: MouseEvent<HTMLDialogElement>) {
-    if (event.target === event.currentTarget) onCancel();
+    if (event.target === event.currentTarget) {
+      onCancel();
+    }
   }
 
   return (

@@ -9,7 +9,9 @@ export function useGoBack() {
   return function goBack(event: MouseEvent<HTMLAnchorElement>) {
     const opensNewTab =
       event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey;
-    if (!hasAppHistory || opensNewTab) return;
+    if (!hasAppHistory || opensNewTab) {
+      return;
+    }
     event.preventDefault();
     void navigate(-1);
   };

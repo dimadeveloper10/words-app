@@ -17,7 +17,9 @@ export function CatalogLoader() {
     void load();
   }, [load]);
 
-  if (status === 'ready') return <Outlet context={user} />;
+  if (status === 'ready') {
+    return <Outlet context={user} />;
+  }
 
   return (
     <>

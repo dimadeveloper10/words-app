@@ -30,7 +30,9 @@ export const useCatalogStore = create<CatalogState>()((set, get) => ({
   ...initialData,
   load: async () => {
     const { status } = get();
-    if (status === 'loading' || status === 'ready') return;
+    if (status === 'loading' || status === 'ready') {
+      return;
+    }
 
     const loadId = ++currentLoad;
     set({ status: 'loading', error: null });
@@ -47,7 +49,9 @@ export const useCatalogStore = create<CatalogState>()((set, get) => ({
         set({ topics, lessons, wordsById, status: 'ready' });
       }
     } catch (error) {
-      if (loadId === currentLoad) set({ status: 'error', error });
+      if (loadId === currentLoad) {
+        set({ status: 'error', error });
+      }
     }
   },
   reset: () => {

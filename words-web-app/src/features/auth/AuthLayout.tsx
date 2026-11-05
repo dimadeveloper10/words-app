@@ -4,7 +4,9 @@ import './AuthLayout.css';
 
 export function AuthLayout() {
   const token = useAuthStore((state) => state.token);
-  if (token) return <Navigate to="/" replace />;
+  if (token) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <main className="auth-layout">
