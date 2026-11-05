@@ -1,9 +1,10 @@
-import { type FormEvent, useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { type FormEvent, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useGoBack } from '../../components/useGoBack';
 import { formatTranslation } from '../words/formatTranslation';
 import { useLessonWords } from '../words/useWords';
 import { ExerciseHeader } from './ExerciseHeader';
+import { FinishExerciseDialog } from './FinishExerciseDialog';
 import { useCompileWordExercise } from './useCompileWordExercise';
 import './CompileWordPage.css';
 
@@ -22,6 +23,7 @@ export function CompileWordPage() {
     playAgain,
   } = useCompileWordExercise(words);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [finishOpen, setFinishOpen] = useState(false);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,6 +31,7 @@ export function CompileWordPage() {
   }
 
   function handlePlayAgain() {
+    setFinishOpen(false);
     playAgain();
     inputRef.current?.focus();
   }
@@ -72,27 +75,26 @@ export function CompileWordPage() {
         )}
       </form>
       {status === 'wrong' && (
-        <section className="compile-word-footer" aria-label="Result">
+        <div className="compile-word-footer">
           <div className="compile-word-footer-inner">
-            <dl className="compile-word-stats">
-              <dt>Correct answers</dt>
-              <dd>{correctCount}</dd>
-            </dl>
-            <div className="compile-word-actions">
-              <button
-                type="button"
-                className="auth-submit"
-                onClick={handlePlayAgain}
-              >
-                Play again
-              </button>
-              <Link to={lessonPath} className="auth-submit" onClick={goBack}>
-                Finish
-              </Link>
-            </div>
+            <button
+              type="button"
+              className="auth-submit compile-word-continue"
+              autoFocus
+              onClick={() => setFinishOpen(true)}
+            >
+              Continue
+            </button>
           </div>
-        </section>
+        </div>
       )}
+      <FinishExerciseDialog
+        open={finishOpen}
+        correctCount={correctCount}
+        finishTo={lessonPath}
+        onFinish={goBack}
+        onPlayAgain={handlePlayAgain}
+      />
     </main>
   );
 }

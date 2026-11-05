@@ -2,10 +2,9 @@ import {
   type MouseEvent,
   type ReactNode,
   type SyntheticEvent,
-  useEffect,
   useId,
-  useRef,
 } from 'react';
+import { useModalDialog } from './useModalDialog';
 import './ConfirmDialog.css';
 
 interface ConfirmDialogProps {
@@ -21,15 +20,8 @@ export function ConfirmDialog({
   onCancel,
   children,
 }: ConfirmDialogProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const dialogRef = useModalDialog(open);
   const titleId = useId();
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
-    if (!open && dialog.open) dialog.close();
-  }, [open]);
 
   function handleCancel(event: SyntheticEvent<HTMLDialogElement>) {
     event.preventDefault();
