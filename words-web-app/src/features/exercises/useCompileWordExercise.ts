@@ -4,7 +4,7 @@ import type { Word } from '../words/words.types';
 import type { WordAnswer } from './exercises.types';
 
 const START_DELAY_MS = 2000;
-const NEXT_WORD_DELAY_MS = 1000;
+const NEXT_WORD_DELAY_MS = 1500;
 
 export type AnswerStatus = 'typing' | 'correct' | 'wrong';
 
