@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { useGoBack } from '../../components/useGoBack';
 import './ExerciseHeader.css';
 
@@ -10,14 +12,16 @@ interface ExerciseHeaderProps {
 
 export function ExerciseHeader({ id, title, closeTo }: ExerciseHeaderProps) {
   const goBack = useGoBack();
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   return (
     <header className="exercise-header">
-      <Link
-        to={closeTo}
+      <button
+        type="button"
         className="exercise-close"
         aria-label="Close exercise"
-        onClick={goBack}
+        aria-haspopup="dialog"
+        onClick={() => setConfirmOpen(true)}
       >
         <svg
           aria-hidden="true"
@@ -32,10 +36,31 @@ export function ExerciseHeader({ id, title, closeTo }: ExerciseHeaderProps) {
         >
           <path d="M18 6 6 18M6 6l12 12" />
         </svg>
-      </Link>
+      </button>
       <h1 id={id} className="exercise-title">
         {title}
       </h1>
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Are you sure you want to close the exercise?"
+        onCancel={() => setConfirmOpen(false)}
+      >
+        <button
+          type="button"
+          className="auth-submit"
+          autoFocus
+          onClick={() => setConfirmOpen(false)}
+        >
+          Resume
+        </button>
+        <Link
+          to={closeTo}
+          className="confirm-dialog-secondary"
+          onClick={goBack}
+        >
+          Close
+        </Link>
+      </ConfirmDialog>
     </header>
   );
 }
