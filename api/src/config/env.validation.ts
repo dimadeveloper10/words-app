@@ -64,7 +64,9 @@ class EnvironmentVariables {
   SUPERADMIN_PASSWORD?: string;
 }
 
-export function validateEnv(config: Record<string, unknown>): EnvironmentVariables {
+export function validateEnv(
+  config: Record<string, unknown>,
+): EnvironmentVariables {
   const validated = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: false,
   });

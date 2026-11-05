@@ -1,5 +1,9 @@
 import { CACHE_MANAGER, type Cache } from '@nestjs/cache-manager';
-import { Inject, Injectable, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import type { DictionaryApiEntry } from './interfaces/dictionary-api-response.interface';
 
 const DICTIONARY_API_URL = 'https://api.dictionaryapi.dev/api/v2/entries/en';
