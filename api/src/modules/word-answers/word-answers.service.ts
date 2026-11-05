@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  HttpException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { User } from '../users/entities/user.entity';
 import { Word } from '../words/entities/word.entity';
 import { CreateWordAnswerDto } from './dto/create-word-answer.dto';
 import { WordAnswerResponseDto } from './dto/word-answer-response.dto';
+import { WordAnswersBatchResponseDto } from './dto/word-answers-batch-response.dto';
 import { WordAnswer } from './entities/word-answer.entity';
 
 @Injectable()
@@ -87,6 +89,27 @@ export class WordAnswersService {
       throw new ConflictException('Answer was removed during submission');
     }
     return { answer: this.toResponse(saved), created: true };
+  }
+
+  async createMany(
+    dtos: CreateWordAnswerDto[],
+    user: User,
+  ): Promise<WordAnswersBatchResponseDto> {
+    const result: WordAnswersBatchResponseDto = { savedIds: [], failed: [] };
+    for (const dto of dtos) {
+      try {
+        await this.create(dto, user);
+        result.savedIds.push(dto.id);
+      } catch (error) {
+        if (!(error instanceof HttpException)) throw error;
+        result.failed.push({
+          id: dto.id,
+          statusCode: error.getStatus(),
+          message: error.message,
+        });
+      }
+    }
+    return result;
   }
 
   private async validateReferences(
