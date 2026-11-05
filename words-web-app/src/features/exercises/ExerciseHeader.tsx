@@ -9,6 +9,7 @@ interface ExerciseHeaderProps {
   title: string;
   closeTo: string;
   confirmClose: boolean;
+  onConfirmClose: () => void;
 }
 
 const closeIcon = (
@@ -32,6 +33,7 @@ export function ExerciseHeader({
   title,
   closeTo,
   confirmClose,
+  onConfirmClose,
 }: ExerciseHeaderProps) {
   const goBack = useGoBack();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -77,7 +79,10 @@ export function ExerciseHeader({
         <Link
           to={closeTo}
           className="confirm-dialog-secondary"
-          onClick={goBack}
+          onClick={(event) => {
+            onConfirmClose();
+            goBack(event);
+          }}
         >
           Close
         </Link>

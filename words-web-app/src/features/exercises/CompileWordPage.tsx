@@ -1,4 +1,4 @@
-import { type FormEvent, useRef, useState } from 'react';
+import { type FormEvent, type MouseEvent, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGoBack } from '../../components/useGoBack';
 import { formatTranslation } from '../words/formatTranslation';
@@ -6,6 +6,7 @@ import { useLessonWords } from '../words/useWords';
 import { ExerciseHeader } from './ExerciseHeader';
 import { FinishExerciseDialog } from './FinishExerciseDialog';
 import { useCompileWordExercise } from './useCompileWordExercise';
+import { useSaveWordAnswers } from './useSaveWordAnswers';
 import './CompileWordPage.css';
 
 export function CompileWordPage() {
@@ -23,6 +24,7 @@ export function CompileWordPage() {
     submitAnswer,
     playAgain,
   } = useCompileWordExercise(words);
+  const saveAnswers = useSaveWordAnswers(lessonId);
   const inputRef = useRef<HTMLInputElement>(null);
   const [finishOpen, setFinishOpen] = useState(false);
 
@@ -32,9 +34,15 @@ export function CompileWordPage() {
   }
 
   function handlePlayAgain() {
+    saveAnswers(answers);
     setFinishOpen(false);
     playAgain();
     inputRef.current?.focus();
+  }
+
+  function handleFinish(event: MouseEvent<HTMLAnchorElement>) {
+    saveAnswers(answers);
+    goBack(event);
   }
 
   return (
@@ -47,6 +55,7 @@ export function CompileWordPage() {
         title={String(correctCount)}
         closeTo={lessonPath}
         confirmClose={answers.length > 0}
+        onConfirmClose={() => saveAnswers(answers)}
       />
       <form className="compile-word-body" onSubmit={handleSubmit}>
         <p id="compile-word-prompt" className="compile-word-translation">
@@ -94,7 +103,7 @@ export function CompileWordPage() {
         open={finishOpen}
         correctCount={correctCount}
         finishTo={lessonPath}
-        onFinish={goBack}
+        onFinish={handleFinish}
         onPlayAgain={handlePlayAgain}
       />
     </main>

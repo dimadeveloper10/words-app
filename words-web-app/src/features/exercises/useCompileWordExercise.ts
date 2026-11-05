@@ -60,6 +60,7 @@ export function useCompileWordExercise(words: Word[]) {
     setAnswers((prev) => [
       ...prev,
       {
+        id: crypto.randomUUID(),
         wordId: word.id,
         startedAt: startedAt.current ?? answeredAt,
         answeredAt,
