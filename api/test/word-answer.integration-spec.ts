@@ -50,12 +50,16 @@ describe('Word answer database', () => {
   });
 
   afterAll(async () => {
-    if (!db?.isInitialized) return;
+    if (!db?.isInitialized) {
+      return;
+    }
     try {
       if (ownsSchema) {
         // Undo only migrations this suite applied to its initially empty DB.
         const rows: unknown[] = await db.query('SELECT id FROM migrations');
-        for (let i = 0; i < rows.length; i++) await db.undoLastMigration();
+        for (let i = 0; i < rows.length; i++) {
+          await db.undoLastMigration();
+        }
         await db.query('DROP TABLE migrations');
       }
     } finally {
@@ -126,7 +130,9 @@ describe('Word answer database', () => {
     });
 
     afterEach(async () => {
-      if (runner?.isTransactionActive) await runner.rollbackTransaction();
+      if (runner?.isTransactionActive) {
+        await runner.rollbackTransaction();
+      }
       await runner?.release();
     });
 
@@ -204,7 +210,9 @@ describe('Word answer database', () => {
     });
 
     it('combines global knowledge while isolating lesson, exercise, and user points', async () => {
-      for (let i = 0; i < 7; i++) await insert();
+      for (let i = 0; i < 7; i++) {
+        await insert();
+      }
       for (let i = 0; i < 3; i++) {
         await insert(
           answer({

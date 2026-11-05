@@ -101,7 +101,9 @@ export class WordAnswersService {
         await this.create(dto, user);
         result.savedIds.push(dto.id);
       } catch (error) {
-        if (!(error instanceof HttpException)) throw error;
+        if (!(error instanceof HttpException)) {
+          throw error;
+        }
         result.failed.push({
           id: dto.id,
           statusCode: error.getStatus(),

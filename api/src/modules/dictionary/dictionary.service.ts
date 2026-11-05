@@ -26,7 +26,9 @@ export class DictionaryService {
     const cacheKey = `dictionary:transcription:${normalizedWord}`;
     const cached = await this.cacheManager.get<CachedTranscription>(cacheKey);
 
-    if (cached !== undefined) return cached.transcription;
+    if (cached !== undefined) {
+      return cached.transcription;
+    }
 
     try {
       const response = await fetch(
@@ -60,19 +62,25 @@ export class DictionaryService {
   }
 
   private extractTranscription(payload: DictionaryApiEntry[]): string | null {
-    if (!Array.isArray(payload)) return null;
+    if (!Array.isArray(payload)) {
+      return null;
+    }
 
     for (const item of payload) {
       if (typeof item.phonetic === 'string' && item.phonetic.trim()) {
         return item.phonetic.trim();
       }
 
-      if (!Array.isArray(item.phonetics)) continue;
+      if (!Array.isArray(item.phonetics)) {
+        continue;
+      }
       const phonetic = item.phonetics.find(
         (candidate) =>
           typeof candidate.text === 'string' && candidate.text.trim(),
       );
-      if (phonetic?.text) return phonetic.text.trim();
+      if (phonetic?.text) {
+        return phonetic.text.trim();
+      }
     }
 
     return null;
