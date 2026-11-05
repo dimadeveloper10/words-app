@@ -52,7 +52,9 @@ export function TopicsPage() {
   }, [data, page]);
 
   const confirmDelete = () => {
-    if (!topicToDelete) return;
+    if (!topicToDelete) {
+      return;
+    }
     deleteTopic.mutate(topicToDelete.id, {
       onSuccess: () => setTopicToDelete(null),
     });
@@ -142,7 +144,9 @@ export function TopicsPage() {
                         className="focus-visible:ring-ring cursor-pointer focus-visible:ring-2 focus-visible:ring-inset focus-visible:outline-none"
                         onClick={() => void navigate(`/topics/${topic.id}`)}
                         onKeyDown={(event) => {
-                          if (event.target !== event.currentTarget) return;
+                          if (event.target !== event.currentTarget) {
+                            return;
+                          }
                           if (event.key === 'Enter' || event.key === ' ') {
                             event.preventDefault();
                             void navigate(`/topics/${topic.id}`);
@@ -226,7 +230,9 @@ export function TopicsPage() {
           topic={editing.topic}
           open
           onOpenChange={(open) => {
-            if (!open) setEditing(null);
+            if (!open) {
+              setEditing(null);
+            }
           }}
         />
       )}
@@ -234,7 +240,9 @@ export function TopicsPage() {
       <AlertDialog
         open={topicToDelete !== null}
         onOpenChange={(open) => {
-          if (!open) setTopicToDelete(null);
+          if (!open) {
+            setTopicToDelete(null);
+          }
         }}
       >
         <AlertDialogContent>

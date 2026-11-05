@@ -62,7 +62,9 @@ export function WordsPage() {
   }, [data, page]);
 
   const confirmDelete = () => {
-    if (!wordToDelete) return;
+    if (!wordToDelete) {
+      return;
+    }
     deleteWord.mutate(wordToDelete.id, {
       onSuccess: () => {
         setSelectedIds((currentIds) =>
@@ -271,7 +273,9 @@ export function WordsPage() {
           word={editing.word}
           open
           onOpenChange={(open) => {
-            if (!open) setEditing(null);
+            if (!open) {
+              setEditing(null);
+            }
           }}
         />
       )}
@@ -319,7 +323,9 @@ export function WordsPage() {
       <AlertDialog
         open={wordToDelete !== null}
         onOpenChange={(open) => {
-          if (!open) setWordToDelete(null);
+          if (!open) {
+            setWordToDelete(null);
+          }
         }}
       >
         <AlertDialogContent>

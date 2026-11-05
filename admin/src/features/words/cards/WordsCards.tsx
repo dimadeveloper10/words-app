@@ -103,7 +103,9 @@ export function WordsCards({
           className="focus-visible:ring-ring flex cursor-pointer flex-col overflow-hidden rounded-md border transition hover:bg-muted/30 focus-visible:ring-2 focus-visible:outline-none"
           onClick={() => onEdit(word)}
           onKeyDown={(event) => {
-            if (event.target !== event.currentTarget) return;
+            if (event.target !== event.currentTarget) {
+              return;
+            }
             if (event.key === 'Enter' || event.key === ' ') {
               event.preventDefault();
               onEdit(word);

@@ -219,7 +219,9 @@ export function TopicDetailsPage() {
                         className="focus-visible:ring-ring cursor-pointer focus-visible:ring-2 focus-visible:ring-inset focus-visible:outline-none"
                         onClick={() => void navigate(`/lessons/${lesson.id}`)}
                         onKeyDown={(event) => {
-                          if (event.target !== event.currentTarget) return;
+                          if (event.target !== event.currentTarget) {
+                            return;
+                          }
                           if (event.key === 'Enter' || event.key === ' ') {
                             event.preventDefault();
                             void navigate(`/lessons/${lesson.id}`);
@@ -341,7 +343,9 @@ export function TopicDetailsPage() {
           fixedTopic={{ id: topic.id, name: topic.name }}
           open
           onOpenChange={(open) => {
-            if (!open) setAddingLesson(false);
+            if (!open) {
+              setAddingLesson(false);
+            }
           }}
         />
       )}
@@ -352,7 +356,9 @@ export function TopicDetailsPage() {
           lesson={managingLessonWords}
           open
           onOpenChange={(open) => {
-            if (!open) setManagingLessonWords(null);
+            if (!open) {
+              setManagingLessonWords(null);
+            }
           }}
         />
       )}
@@ -363,7 +369,9 @@ export function TopicDetailsPage() {
           fixedTopic={{ id: topic.id, name: topic.name }}
           open
           onOpenChange={(open) => {
-            if (!open) setAddingWord(false);
+            if (!open) {
+              setAddingWord(false);
+            }
           }}
         />
       )}
@@ -374,7 +382,9 @@ export function TopicDetailsPage() {
           word={editingWord}
           open
           onOpenChange={(open) => {
-            if (!open) setEditingWord(null);
+            if (!open) {
+              setEditingWord(null);
+            }
           }}
         />
       )}

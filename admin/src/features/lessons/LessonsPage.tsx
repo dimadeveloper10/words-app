@@ -60,7 +60,9 @@ export function LessonsPage() {
   }, [data, page]);
 
   const confirmDelete = () => {
-    if (!lessonToDelete) return;
+    if (!lessonToDelete) {
+      return;
+    }
     deleteLesson.mutate(lessonToDelete.id, {
       onSuccess: () => setLessonToDelete(null),
     });
@@ -146,7 +148,9 @@ export function LessonsPage() {
                         className="focus-visible:ring-ring cursor-pointer focus-visible:ring-2 focus-visible:ring-inset focus-visible:outline-none"
                         onClick={() => void navigate(`/lessons/${lesson.id}`)}
                         onKeyDown={(event) => {
-                          if (event.target !== event.currentTarget) return;
+                          if (event.target !== event.currentTarget) {
+                            return;
+                          }
                           if (event.key === 'Enter' || event.key === ' ') {
                             event.preventDefault();
                             void navigate(`/lessons/${lesson.id}`);
@@ -237,7 +241,9 @@ export function LessonsPage() {
           lesson={editing.lesson}
           open
           onOpenChange={(open) => {
-            if (!open) setEditing(null);
+            if (!open) {
+              setEditing(null);
+            }
           }}
         />
       )}
@@ -245,7 +251,9 @@ export function LessonsPage() {
       <AlertDialog
         open={lessonToDelete !== null}
         onOpenChange={(open) => {
-          if (!open) setLessonToDelete(null);
+          if (!open) {
+            setLessonToDelete(null);
+          }
         }}
       >
         <AlertDialogContent>

@@ -20,7 +20,9 @@ export function ProtectedRoute() {
   });
 
   useEffect(() => {
-    if (data) setUser(data);
+    if (data) {
+      setUser(data);
+    }
   }, [data, setUser]);
 
   if (!token) {

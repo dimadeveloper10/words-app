@@ -89,7 +89,9 @@ export function WordsTable({
             className="focus-visible:ring-ring cursor-pointer focus-visible:ring-2 focus-visible:ring-inset focus-visible:outline-none"
             onClick={() => onEdit(word)}
             onKeyDown={(event) => {
-              if (event.target !== event.currentTarget) return;
+              if (event.target !== event.currentTarget) {
+                return;
+              }
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
                 onEdit(word);

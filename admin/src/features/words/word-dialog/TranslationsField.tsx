@@ -98,7 +98,9 @@ export function TranslationsField() {
                             id={id}
                             checked={field.value === part.value}
                             onCheckedChange={(checked) => {
-                              if (checked) field.onChange(part.value);
+                              if (checked) {
+                                field.onChange(part.value);
+                              }
                             }}
                           />
                           <label htmlFor={id} className="text-sm">

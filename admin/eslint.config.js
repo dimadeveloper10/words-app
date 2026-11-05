@@ -40,4 +40,9 @@ export default tseslint.config(
   },
   // Keep ESLint focused on code quality; Prettier owns formatting.
   prettier,
+  {
+    rules: {
+      curly: ['error', 'all'],
+    },
+  },
 );
