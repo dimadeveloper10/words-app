@@ -8,35 +8,56 @@ interface ExerciseHeaderProps {
   id: string;
   title: string;
   closeTo: string;
+  confirmClose: boolean;
 }
 
-export function ExerciseHeader({ id, title, closeTo }: ExerciseHeaderProps) {
+const closeIcon = (
+  <svg
+    aria-hidden="true"
+    viewBox="0 0 24 24"
+    width="22"
+    height="22"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M18 6 6 18M6 6l12 12" />
+  </svg>
+);
+
+export function ExerciseHeader({
+  id,
+  title,
+  closeTo,
+  confirmClose,
+}: ExerciseHeaderProps) {
   const goBack = useGoBack();
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   return (
     <header className="exercise-header">
-      <button
-        type="button"
-        className="exercise-close"
-        aria-label="Close exercise"
-        aria-haspopup="dialog"
-        onClick={() => setConfirmOpen(true)}
-      >
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 24 24"
-          width="22"
-          height="22"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+      {confirmClose ? (
+        <button
+          type="button"
+          className="exercise-close"
+          aria-label="Close exercise"
+          aria-haspopup="dialog"
+          onClick={() => setConfirmOpen(true)}
         >
-          <path d="M18 6 6 18M6 6l12 12" />
-        </svg>
-      </button>
+          {closeIcon}
+        </button>
+      ) : (
+        <Link
+          to={closeTo}
+          className="exercise-close"
+          aria-label="Close exercise"
+          onClick={goBack}
+        >
+          {closeIcon}
+        </Link>
+      )}
       <h1 id={id} className="exercise-title">
         {title}
       </h1>

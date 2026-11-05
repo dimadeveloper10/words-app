@@ -16,6 +16,7 @@ export function CompileWordPage() {
   const {
     word,
     answer,
+    answers,
     status,
     correctCount,
     changeAnswer,
@@ -45,6 +46,7 @@ export function CompileWordPage() {
         id="compile-word-title"
         title={String(correctCount)}
         closeTo={lessonPath}
+        confirmClose={answers.length > 0}
       />
       <form className="compile-word-body" onSubmit={handleSubmit}>
         <p id="compile-word-prompt" className="compile-word-translation">
