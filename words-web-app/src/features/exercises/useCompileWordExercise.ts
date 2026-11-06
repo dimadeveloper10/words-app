@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { speakWord, stopSpeaking } from '../words/speakWord';
 import type { Word } from '../words/words.types';
-import type { WordAnswer } from '../word-answers/word-answer.types';
+import type { PendingWordAnswer } from '../word-answers/word-answer.types';
 
 const START_DELAY_MS = 2000;
 const NEXT_WORD_DELAY_MS = 1500;
@@ -20,7 +20,7 @@ export function useCompileWordExercise(words: Word[]) {
   const [word, setWord] = useState(() => pickRandom(words));
   const [step, setStep] = useState(0);
   const [answer, setAnswer] = useState('');
-  const [answers, setAnswers] = useState<WordAnswer[]>([]);
+  const [answers, setAnswers] = useState<PendingWordAnswer[]>([]);
   const [status, setStatus] = useState<AnswerStatus>('typing');
   const startedAt = useRef<Date | null>(null);
   const correctCount = answers.filter((a) => a.isCorrect).length;

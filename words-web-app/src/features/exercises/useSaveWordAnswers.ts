@@ -1,19 +1,19 @@
 import { toast } from 'sonner';
 import { useCatalogStore } from '../../stores/catalog';
 import type {
-  SavedWordAnswer,
   WordAnswer,
+  PendingWordAnswer,
 } from '../word-answers/word-answer.types';
 import {
   EXERCISE_TYPE,
   saveWordAnswers,
 } from '../word-answers/word-answers.api';
 
-function toSavedAnswer(
-  answer: WordAnswer,
+function toWordAnswer(
+  answer: PendingWordAnswer,
   lessonId: string,
   savedAt: string,
-): SavedWordAnswer {
+): WordAnswer {
   return {
     id: answer.id,
     wordId: answer.wordId,
@@ -30,7 +30,7 @@ function toSavedAnswer(
 export function useSaveWordAnswers(lessonId: string) {
   const addAnswers = useCatalogStore((state) => state.addAnswers);
 
-  return function saveAnswers(answers: WordAnswer[]) {
+  return function saveAnswers(answers: PendingWordAnswer[]) {
     if (answers.length === 0) {
       return;
     }
@@ -41,7 +41,7 @@ export function useSaveWordAnswers(lessonId: string) {
         addAnswers(
           answers
             .filter((answer) => saved.has(answer.id))
-            .map((answer) => toSavedAnswer(answer, lessonId, savedAt)),
+            .map((answer) => toWordAnswer(answer, lessonId, savedAt)),
         );
         if (failed.length > 0) {
           toast.error('Some answers were rejected');

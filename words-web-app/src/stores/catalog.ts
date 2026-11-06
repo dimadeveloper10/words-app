@@ -4,7 +4,7 @@ import type { Lesson } from '../features/lessons/lessons.types';
 import { getAllTopics } from '../features/topics/topics.api';
 import type { Topic } from '../features/topics/topics.types';
 import { getAllWordAnswers } from '../features/word-answers/word-answers.api';
-import type { SavedWordAnswer } from '../features/word-answers/word-answer.types';
+import type { WordAnswer } from '../features/word-answers/word-answer.types';
 import { getAllWords } from '../features/words/words.api';
 import type { Word } from '../features/words/words.types';
 
@@ -12,11 +12,11 @@ export interface CatalogState {
   topics: Topic[];
   lessons: Lesson[];
   wordsById: Record<string, Word>;
-  answers: SavedWordAnswer[];
+  answers: WordAnswer[];
   status: 'idle' | 'loading' | 'ready' | 'error';
   error: unknown;
   load: () => Promise<void>;
-  addAnswers: (answers: SavedWordAnswer[]) => void;
+  addAnswers: (answers: WordAnswer[]) => void;
   reset: () => void;
 }
 

@@ -1,22 +1,20 @@
 import { api } from '../../lib/api';
 import { fetchAllPages } from '../../lib/fetchAllPages';
 import type {
-  SavedWordAnswer,
-  SaveWordAnswersResult,
   WordAnswer,
+  SaveWordAnswersResult,
+  PendingWordAnswer,
 } from './word-answer.types';
 
 export const EXERCISE_TYPE = 'compile_word';
 
-export function getAllWordAnswers(
-  signal?: AbortSignal,
-): Promise<SavedWordAnswer[]> {
-  return fetchAllPages<SavedWordAnswer>('/word-answers', signal);
+export function getAllWordAnswers(signal?: AbortSignal): Promise<WordAnswer[]> {
+  return fetchAllPages<WordAnswer>('/word-answers', signal);
 }
 
 export interface SaveWordAnswersInput {
   lessonId: string;
-  answers: WordAnswer[];
+  answers: PendingWordAnswer[];
 }
 
 export async function saveWordAnswers({

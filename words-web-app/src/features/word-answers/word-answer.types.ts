@@ -1,4 +1,4 @@
-export interface WordAnswer {
+export interface PendingWordAnswer {
   id: string;
   wordId: string;
   startedAt: Date;
@@ -17,7 +17,7 @@ export interface SaveWordAnswersResult {
   failed: FailedWordAnswer[];
 }
 
-export interface SavedWordAnswer {
+export interface WordAnswer {
   id: string;
   wordId: string;
   lessonId: string | null;
