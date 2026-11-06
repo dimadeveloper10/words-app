@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
 import { getAllLessons } from '../features/lessons/lessons.api';
 import type { Lesson } from '../features/lessons/lessons.types';
 import { getAllTopics } from '../features/topics/topics.api';
@@ -31,44 +32,51 @@ const initialData = {
 
 let currentLoad = 0;
 
-export const useCatalogStore = create<CatalogState>()((set, get) => ({
-  ...initialData,
-  load: async () => {
-    const { status } = get();
-    if (status === 'loading' || status === 'ready') {
-      return;
-    }
+export const useCatalogStore = create<CatalogState>()(
+  devtools(
+    (set, get) => ({
+      ...initialData,
+      load: async () => {
+        const { status } = get();
+        if (status === 'loading' || status === 'ready') {
+          return;
+        }
 
-    const loadId = ++currentLoad;
-    set({ status: 'loading', error: null });
-    try {
-      const [topics, lessons, words, answers] = await Promise.all([
-        getAllTopics(),
-        getAllLessons(),
-        getAllWords(),
-        getAllWordAnswers(),
-      ]);
-      if (loadId === currentLoad) {
-        const wordsById = Object.fromEntries(
-          words.map((word) => [word.id, word]),
-        );
-        set({ topics, lessons, wordsById, answers, status: 'ready' });
-      }
-    } catch (error) {
-      if (loadId === currentLoad) {
-        set({ status: 'error', error });
-      }
-    }
-  },
-  addAnswers: (newAnswers) => {
-    set((state) => {
-      const knownIds = new Set(state.answers.map((answer) => answer.id));
-      const added = newAnswers.filter((answer) => !knownIds.has(answer.id));
-      return added.length > 0 ? { answers: [...state.answers, ...added] } : {};
-    });
-  },
-  reset: () => {
-    currentLoad++;
-    set(initialData);
-  },
-}));
+        const loadId = ++currentLoad;
+        set({ status: 'loading', error: null });
+        try {
+          const [topics, lessons, words, answers] = await Promise.all([
+            getAllTopics(),
+            getAllLessons(),
+            getAllWords(),
+            getAllWordAnswers(),
+          ]);
+          if (loadId === currentLoad) {
+            const wordsById = Object.fromEntries(
+              words.map((word) => [word.id, word]),
+            );
+            set({ topics, lessons, wordsById, answers, status: 'ready' });
+          }
+        } catch (error) {
+          if (loadId === currentLoad) {
+            set({ status: 'error', error });
+          }
+        }
+      },
+      addAnswers: (newAnswers) => {
+        set((state) => {
+          const knownIds = new Set(state.answers.map((answer) => answer.id));
+          const added = newAnswers.filter((answer) => !knownIds.has(answer.id));
+          return added.length > 0
+            ? { answers: [...state.answers, ...added] }
+            : {};
+        });
+      },
+      reset: () => {
+        currentLoad++;
+        set(initialData);
+      },
+    }),
+    { name: 'catalog', enabled: import.meta.env.DEV },
+  ),
+);
