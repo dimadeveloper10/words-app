@@ -1,7 +1,18 @@
 import { api } from '../../lib/api';
-import type { SaveWordAnswersResult, WordAnswer } from './exercises.types';
+import { fetchAllPages } from '../../lib/fetchAllPages';
+import type {
+  SavedWordAnswer,
+  SaveWordAnswersResult,
+  WordAnswer,
+} from './word-answer.types';
 
-const EXERCISE_TYPE = 'compile_word';
+export const EXERCISE_TYPE = 'compile_word';
+
+export function getAllWordAnswers(
+  signal?: AbortSignal,
+): Promise<SavedWordAnswer[]> {
+  return fetchAllPages<SavedWordAnswer>('/word-answers', signal);
+}
 
 export interface SaveWordAnswersInput {
   lessonId: string;

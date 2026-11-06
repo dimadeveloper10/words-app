@@ -22,3 +22,11 @@ export const selectLessonWords = (state: CatalogState, lessonId: string) =>
     const word = selectWord(state, id);
     return word ? [word] : [];
   });
+
+export const selectAnswers = (state: CatalogState) => state.answers;
+
+export const selectLessonAnswers = (state: CatalogState, lessonId: string) =>
+  state.answers.filter((answer) => answer.lessonId === lessonId);
+
+export const selectWordAnswers = (state: CatalogState, wordId: string) =>
+  state.answers.filter((answer) => answer.wordId === wordId);

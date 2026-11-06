@@ -16,3 +16,15 @@ export interface SaveWordAnswersResult {
   savedIds: string[];
   failed: FailedWordAnswer[];
 }
+
+export interface SavedWordAnswer {
+  id: string;
+  wordId: string;
+  lessonId: string | null;
+  exerciseType: string;
+  isCorrect: boolean;
+  pointsAwarded: number;
+  startedAt: string;
+  answeredAt: string;
+  createdAt: string;
+}

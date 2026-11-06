@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { speakWord, stopSpeaking } from '../words/speakWord';
 import type { Word } from '../words/words.types';
-import type { WordAnswer } from './exercises.types';
+import type { WordAnswer } from '../word-answers/word-answer.types';
 
 const START_DELAY_MS = 2000;
 const NEXT_WORD_DELAY_MS = 1500;

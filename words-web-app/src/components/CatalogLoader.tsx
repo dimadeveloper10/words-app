@@ -27,7 +27,7 @@ export function CatalogLoader() {
       {status === 'error' ? (
         <main className="session-page">
           <p role="alert">
-            {getApiErrorMessage(error, 'Unable to load lessons.')}
+            {getApiErrorMessage(error, 'Unable to load data.')}
           </p>
           <button className="auth-submit" onClick={() => void load()}>
             Try again
