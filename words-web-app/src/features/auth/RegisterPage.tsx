@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { getApiErrorMessage } from '../../lib/api';
 import { AuthField } from './components/AuthField';
-import { useAuthForm } from './useAuthForm';
+import { useRegisterForm } from './useRegisterForm';
 import './AuthPage.css';
 
 export function RegisterPage() {
-  const { form, mutation, onSubmit } = useAuthForm('register');
+  const { form, mutation, onSubmit } = useRegisterForm();
   const { errors, isSubmitting } = form.formState;
   const pending = isSubmitting || mutation.isPending;
 
