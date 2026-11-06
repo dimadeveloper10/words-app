@@ -14,8 +14,8 @@ export function CatalogLoader() {
   const load = useCatalogStore((state) => state.load);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    void load(user.id);
+  }, [load, user.id]);
 
   if (status === 'ready') {
     return <Outlet context={user} />;
@@ -29,7 +29,7 @@ export function CatalogLoader() {
           <p role="alert">
             {getApiErrorMessage(error, 'Unable to load data.')}
           </p>
-          <button className="auth-submit" onClick={() => void load()}>
+          <button className="auth-submit" onClick={() => void load(user.id)}>
             Try again
           </button>
         </main>
