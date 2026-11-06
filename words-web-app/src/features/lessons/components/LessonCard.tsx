@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useLessonPoints } from '../../word-answers/useWordAnswers';
 import { formatLessonTitle } from '../formatLessonTitle';
 import type { Lesson } from '../lessons.types';
 import '../../../components/Carousel.css';
@@ -10,6 +11,7 @@ interface LessonCardProps {
 
 export function LessonCard({ lesson, headingLevel = 'h3' }: LessonCardProps) {
   const Heading = headingLevel;
+  const points = useLessonPoints(lesson.id);
 
   return (
     <Link
@@ -20,9 +22,7 @@ export function LessonCard({ lesson, headingLevel = 'h3' }: LessonCardProps) {
       <dl className="carousel-card-stats">
         <div>
           <dt>Points</dt>
-          <dd>
-            <span aria-label="Not available">—</span>
-          </dd>
+          <dd>{points}</dd>
         </div>
         <div>
           <dt>Words</dt>

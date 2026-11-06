@@ -32,3 +32,9 @@ export const selectLessonAnswers = (state: CatalogState, lessonId: string) =>
 
 export const selectWordAnswers = (state: CatalogState, wordId: string) =>
   state.answers.filter((answer) => answer.wordId === wordId);
+
+export const selectLessonPoints = (state: CatalogState, lessonId: string) =>
+  selectLessonAnswers(state, lessonId).reduce(
+    (sum, answer) => sum + answer.pointsAwarded,
+    0,
+  );
