@@ -1,6 +1,14 @@
 import { useShallow } from 'zustand/react/shallow';
 import { useCatalogStore } from '../../stores/catalog';
-import { selectLessonWords, selectWord } from '../../stores/catalog.selectors';
+import {
+  selectLessonWords,
+  selectWord,
+  selectWords,
+} from '../../stores/catalog.selectors';
+
+export function useWords() {
+  return useCatalogStore(selectWords);
+}
 
 export function useWord(id: string) {
   return useCatalogStore((state) => selectWord(state, id));

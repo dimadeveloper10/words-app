@@ -14,8 +14,10 @@ export const selectTopicLessons = (state: CatalogState, topicId: string) =>
 export const selectLesson = (state: CatalogState, id: string) =>
   state.lessons.find((lesson) => lesson.id === id);
 
+export const selectWords = (state: CatalogState) => state.words;
+
 export const selectWord = (state: CatalogState, id: string): Word | undefined =>
-  state.wordsById[id];
+  state.words.find((word) => word.id === id);
 
 export const selectLessonWords = (state: CatalogState, lessonId: string) =>
   (selectLesson(state, lessonId)?.wordIds ?? []).flatMap((id) => {

@@ -12,7 +12,7 @@ import type { Word } from '../features/words/words.types';
 export interface CatalogState {
   topics: Topic[];
   lessons: Lesson[];
-  wordsById: Record<string, Word>;
+  words: Word[];
   answers: WordAnswer[];
   status: 'idle' | 'loading' | 'ready' | 'error';
   error: unknown;
@@ -24,7 +24,7 @@ export interface CatalogState {
 const initialData = {
   topics: [],
   lessons: [],
-  wordsById: {},
+  words: [],
   answers: [],
   status: 'idle',
   error: null,
@@ -52,10 +52,7 @@ export const useCatalogStore = create<CatalogState>()(
             getAllWordAnswers(),
           ]);
           if (loadId === currentLoad) {
-            const wordsById = Object.fromEntries(
-              words.map((word) => [word.id, word]),
-            );
-            set({ topics, lessons, wordsById, answers, status: 'ready' });
+            set({ topics, lessons, words, answers, status: 'ready' });
           }
         } catch (error) {
           if (loadId === currentLoad) {
