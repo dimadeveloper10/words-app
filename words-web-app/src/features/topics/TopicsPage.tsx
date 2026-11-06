@@ -1,5 +1,5 @@
 import { PageHeader } from '../../components/PageHeader';
-import { TopicListItem } from './TopicListItem';
+import { TopicListItem } from './components/TopicListItem';
 import { useTopics } from './useTopics';
 import './TopicsPage.css';
 

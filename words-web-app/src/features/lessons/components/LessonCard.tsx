@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { formatLessonTitle } from './formatLessonTitle';
-import type { Lesson } from './lessons.types';
-import '../../components/Carousel.css';
+import { formatLessonTitle } from '../formatLessonTitle';
+import type { Lesson } from '../lessons.types';
+import '../../../components/Carousel.css';
 
 interface LessonCardProps {
   lesson: Lesson;

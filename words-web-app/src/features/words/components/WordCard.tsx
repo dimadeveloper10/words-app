@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { formatTranslation } from './formatTranslation';
-import { getWordImageUrl } from './words.api';
-import type { Word } from './words.types';
-import { canSpeak, speakWord, stopSpeaking } from './speakWord';
+import { formatTranslation } from '../formatTranslation';
+import { getWordImageUrl } from '../words.api';
+import type { Word } from '../words.types';
+import { canSpeak, speakWord, stopSpeaking } from '../speakWord';
 import './WordCard.css';
 
 export function WordCard({ word }: { word: Word }) {

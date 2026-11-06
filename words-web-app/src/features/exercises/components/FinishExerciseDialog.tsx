@@ -1,6 +1,6 @@
 import type { MouseEvent, SyntheticEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useModalDialog } from '../../components/useModalDialog';
+import { useModalDialog } from '../../../components/useModalDialog';
 import './FinishExerciseDialog.css';
 
 interface FinishExerciseDialogProps {

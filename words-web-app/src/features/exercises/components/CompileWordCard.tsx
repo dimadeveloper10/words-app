@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import '../../components/Carousel.css';
+import '../../../components/Carousel.css';
 
 export function CompileWordCard({ lessonId }: { lessonId: string }) {
   return (

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import type { Topic } from '../topics/topics.types';
+import type { Topic } from '../../topics/topics.types';
 import { LessonsCarousel } from './LessonsCarousel';
-import { useTopicLessons } from './useLessons';
+import { useTopicLessons } from '../useLessons';
 
 function formatLessonCount(count: number) {
   return `${count} ${count === 1 ? 'lesson' : 'lessons'}`;

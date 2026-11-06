@@ -1,6 +1,6 @@
-import { Carousel } from '../../components/Carousel';
+import { Carousel } from '../../../components/Carousel';
 import { LessonCard } from './LessonCard';
-import type { Lesson } from './lessons.types';
+import type { Lesson } from '../lessons.types';
 
 interface LessonsCarouselProps {
   lessons: Lesson[];

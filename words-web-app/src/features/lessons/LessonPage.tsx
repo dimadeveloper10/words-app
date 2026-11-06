@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { PageHeader } from '../../components/PageHeader';
-import { CompileWordCard } from '../exercises/CompileWordCard';
+import { CompileWordCard } from '../exercises/components/CompileWordCard';
 import { formatLessonTitle } from './formatLessonTitle';
-import { LessonWordsCard } from './LessonWordsCard';
+import { LessonWordsCard } from './components/LessonWordsCard';
 import { useLesson } from './useLessons';
 import './LessonPage.css';
 

@@ -1,8 +1,8 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Navigate, Outlet } from 'react-router-dom';
-import { getApiErrorMessage } from '../../lib/api';
-import { useAuthStore } from '../../stores/auth';
-import { getMe } from './auth.api';
+import { getApiErrorMessage } from '../../../lib/api';
+import { useAuthStore } from '../../../stores/auth';
+import { getMe } from '../auth.api';
 
 export function RequireAuth() {
   const queryClient = useQueryClient();

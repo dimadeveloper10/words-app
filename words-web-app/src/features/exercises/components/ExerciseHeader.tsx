@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { useGoBack } from '../../components/useGoBack';
+import { ConfirmDialog } from '../../../components/ConfirmDialog';
+import { useGoBack } from '../../../components/useGoBack';
 import './ExerciseHeader.css';
 
 interface ExerciseHeaderProps {

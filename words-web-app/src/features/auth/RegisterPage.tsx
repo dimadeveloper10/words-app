@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { getApiErrorMessage } from '../../lib/api';
-import { AuthField } from './AuthField';
+import { AuthField } from './components/AuthField';
 import { useAuthForm } from './useAuthForm';
 import './AuthPage.css';
 

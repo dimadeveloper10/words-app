@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { PageHeader } from '../../components/PageHeader';
-import { LessonCard } from '../lessons/LessonCard';
+import { LessonCard } from '../lessons/components/LessonCard';
 import { useTopicLessons } from '../lessons/useLessons';
 import { useTopic } from './useTopics';
 import './TopicPage.css';

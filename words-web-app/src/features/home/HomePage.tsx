@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useTopics } from '../topics/useTopics';
 import { useLessons } from '../lessons/useLessons';
-import { LessonsCarousel } from '../lessons/LessonsCarousel';
-import { TopicsCarousel } from '../topics/TopicsCarousel';
+import { LessonsCarousel } from '../lessons/components/LessonsCarousel';
+import { TopicsCarousel } from '../topics/components/TopicsCarousel';
 import './HomePage.css';
 
 export function HomePage() {

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { PageHeader } from '../../components/PageHeader';
 import { useLesson } from '../lessons/useLessons';
 import { useLessonWords } from './useWords';
-import { WordCard } from './WordCard';
+import { WordCard } from './components/WordCard';
 import './LessonWordsPage.css';
 
 export function LessonWordsPage() {

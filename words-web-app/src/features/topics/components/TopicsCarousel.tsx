@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Carousel } from '../../components/Carousel';
-import type { Topic } from './topics.types';
+import { Carousel } from '../../../components/Carousel';
+import type { Topic } from '../topics.types';
 
 export function TopicsCarousel({ topics }: { topics: Topic[] }) {
   if (topics.length === 0) {

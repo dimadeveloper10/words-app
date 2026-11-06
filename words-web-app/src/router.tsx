@@ -1,8 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { AuthLayout } from './features/auth/AuthLayout';
+import { AuthLayout } from './features/auth/components/AuthLayout';
 import { LoginPage } from './features/auth/LoginPage';
 import { RegisterPage } from './features/auth/RegisterPage';
-import { RequireAuth } from './features/auth/RequireAuth';
+import { RequireAuth } from './features/auth/components/RequireAuth';
 import { AppLayout } from './components/AppLayout';
 import { CatalogLoader } from './components/CatalogLoader';
 import { CompileWordPage } from './features/exercises/CompileWordPage';
