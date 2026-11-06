@@ -6,7 +6,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
+import {
+  FindOptionsRelations,
+  FindOptionsSelect,
+  QueryFailedError,
+  Repository,
+} from 'typeorm';
+import { Paginated, paginated } from '../../common/dto/paginated';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { ExerciseType } from '../exercise-types/entities/exercise-type.entity';
 import { Lesson } from '../lessons/entities/lesson.entity';
 import { User } from '../users/entities/user.entity';
@@ -15,6 +22,24 @@ import { CreateWordAnswerDto } from './dto/create-word-answer.dto';
 import { WordAnswerResponseDto } from './dto/word-answer-response.dto';
 import { WordAnswersBatchResponseDto } from './dto/word-answers-batch-response.dto';
 import { WordAnswer } from './entities/word-answer.entity';
+
+const ANSWER_RELATIONS = {
+  word: true,
+  lesson: true,
+  exerciseType: true,
+} satisfies FindOptionsRelations<WordAnswer>;
+
+const ANSWER_SELECT = {
+  id: true,
+  isCorrect: true,
+  pointsAwarded: true,
+  startedAt: true,
+  answeredAt: true,
+  createdAt: true,
+  word: { id: true },
+  lesson: { id: true },
+  exerciseType: { id: true, type: true },
+} satisfies FindOptionsSelect<WordAnswer>;
 
 @Injectable()
 export class WordAnswersService {
@@ -28,6 +53,26 @@ export class WordAnswersService {
     @InjectRepository(ExerciseType)
     private readonly exerciseTypesRepository: Repository<ExerciseType>,
   ) {}
+
+  async findAll(
+    { page, limit }: PaginationQueryDto,
+    user: User,
+  ): Promise<Paginated<WordAnswerResponseDto>> {
+    const [answers, total] = await this.answersRepository.findAndCount({
+      where: { user: { id: user.id } },
+      relations: ANSWER_RELATIONS,
+      select: ANSWER_SELECT,
+      order: { answeredAt: 'ASC', id: 'ASC' },
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+    return paginated(
+      answers.map((answer) => this.toResponse(answer)),
+      total,
+      page,
+      limit,
+    );
+  }
 
   async create(
     dto: CreateWordAnswerDto,
@@ -145,19 +190,8 @@ export class WordAnswersService {
   private findStored(id: string): Promise<WordAnswer | null> {
     return this.answersRepository.findOne({
       where: { id },
-      relations: { user: true, word: true, lesson: true, exerciseType: true },
-      select: {
-        id: true,
-        isCorrect: true,
-        pointsAwarded: true,
-        startedAt: true,
-        answeredAt: true,
-        createdAt: true,
-        user: { id: true },
-        word: { id: true },
-        lesson: { id: true },
-        exerciseType: { id: true, type: true },
-      },
+      relations: { user: true, ...ANSWER_RELATIONS },
+      select: { user: { id: true }, ...ANSWER_SELECT },
     });
   }
 

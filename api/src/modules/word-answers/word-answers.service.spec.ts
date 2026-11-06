@@ -89,3 +89,60 @@ describe('WordAnswersService.createMany', () => {
     expect(create).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('WordAnswersService.findAll', () => {
+  const user = { id: 'user-id' } as User;
+
+  it("returns the user's answers as a page of response DTOs", async () => {
+    const startedAt = new Date('2026-11-05T10:00:00.000Z');
+    const answeredAt = new Date('2026-11-05T10:00:05.000Z');
+    const stored = {
+      id: 'a',
+      word: { id: 'word-id' },
+      lesson: null,
+      exerciseType: { id: 'type-id', type: 'compile_word' },
+      isCorrect: true,
+      pointsAwarded: 1,
+      startedAt,
+      answeredAt,
+      createdAt: answeredAt,
+    } as unknown as WordAnswer;
+    const findAndCount = jest.fn().mockResolvedValue([[stored], 21]);
+    const service = new WordAnswersService(
+      { findAndCount } as unknown as Repository<WordAnswer>,
+      {} as Repository<Word>,
+      {} as Repository<Lesson>,
+      {} as Repository<ExerciseType>,
+    );
+
+    const result = await service.findAll({ page: 2, limit: 20 }, user);
+
+    expect(findAndCount).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { user: { id: 'user-id' } },
+        order: { answeredAt: 'ASC', id: 'ASC' },
+        take: 20,
+        skip: 20,
+      }),
+    );
+    expect(result).toEqual({
+      items: [
+        {
+          id: 'a',
+          wordId: 'word-id',
+          lessonId: null,
+          exerciseType: 'compile_word',
+          isCorrect: true,
+          pointsAwarded: 1,
+          startedAt,
+          answeredAt,
+          createdAt: answeredAt,
+        },
+      ],
+      total: 21,
+      page: 2,
+      limit: 20,
+      totalPages: 2,
+    });
+  });
+});

@@ -1,12 +1,17 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import type { Response } from 'express';
+import { ApiPaginatedResponse } from '../../common/decorators/api-paginated-response.decorator';
+import { Paginated } from '../../common/dto/paginated';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { CreateWordAnswerDto } from './dto/create-word-answer.dto';
@@ -23,6 +28,15 @@ import {
 @Controller('word-answers')
 export class WordAnswersController {
   constructor(private readonly wordAnswersService: WordAnswersService) {}
+
+  @Get()
+  @ApiPaginatedResponse(WordAnswerResponseDto)
+  findAll(
+    @Query() query: PaginationQueryDto,
+    @CurrentUser() user: User,
+  ): Promise<Paginated<WordAnswerResponseDto>> {
+    return this.wordAnswersService.findAll(query, user);
+  }
 
   @Post()
   @ApiCreatedResponse({
