@@ -1,38 +1,30 @@
 import { api } from '../../lib/api';
 import { fetchAllPages } from '../../lib/fetchAllPages';
-import type {
-  WordAnswer,
-  SaveWordAnswersResult,
-  PendingWordAnswer,
-} from './word-answer.types';
+import type { WordAnswerDto, SaveWordAnswersResult } from './word-answer.types';
 
 export const EXERCISE_TYPE = 'compile_word';
 
-export function getAllWordAnswers(signal?: AbortSignal): Promise<WordAnswer[]> {
-  return fetchAllPages<WordAnswer>('/word-answers', signal);
+export function getAllWordAnswers(
+  signal?: AbortSignal,
+): Promise<WordAnswerDto[]> {
+  return fetchAllPages<WordAnswerDto>('/word-answers', signal);
 }
 
-export interface SaveWordAnswersInput {
-  lessonId: string;
-  answers: PendingWordAnswer[];
-}
-
-export async function saveWordAnswers({
-  lessonId,
-  answers,
-}: SaveWordAnswersInput): Promise<SaveWordAnswersResult> {
+export async function saveWordAnswers(
+  answers: WordAnswerDto[],
+): Promise<SaveWordAnswersResult> {
   const { data } = await api.post<SaveWordAnswersResult>(
     '/word-answers/batch',
     {
       answers: answers.map((answer) => ({
         id: answer.id,
         wordId: answer.wordId,
-        lessonId,
-        exerciseType: EXERCISE_TYPE,
+        lessonId: answer.lessonId,
+        exerciseType: answer.exerciseType,
         isCorrect: answer.isCorrect,
-        pointsAwarded: answer.isCorrect ? 1 : 0,
-        startedAt: answer.startedAt.toISOString(),
-        answeredAt: answer.answeredAt.toISOString(),
+        pointsAwarded: answer.pointsAwarded,
+        startedAt: answer.startedAt,
+        answeredAt: answer.answeredAt,
       })),
     },
   );

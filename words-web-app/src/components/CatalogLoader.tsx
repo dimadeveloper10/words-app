@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
 import { useLogout } from '../features/auth/useLogout';
+import { useAnswersSync } from '../features/word-answers/useAnswersSync';
 import { getApiErrorMessage } from '../lib/api';
 import { useAnswersStore } from '../stores/answers';
 import { useCatalogStore } from '../stores/catalog';
@@ -10,6 +11,7 @@ import { AppHeader } from './AppHeader';
 export function CatalogLoader() {
   const user = useOutletContext<User>();
   const logout = useLogout();
+  useAnswersSync();
   const catalogStatus = useCatalogStore((state) => state.status);
   const catalogError = useCatalogStore((state) => state.error);
   const loadCatalog = useCatalogStore((state) => state.load);

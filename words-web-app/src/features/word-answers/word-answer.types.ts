@@ -17,7 +17,7 @@ export interface SaveWordAnswersResult {
   failed: FailedWordAnswer[];
 }
 
-export interface WordAnswer {
+export interface WordAnswerDto {
   id: string;
   wordId: string;
   lessonId: string | null;
@@ -26,5 +26,6 @@ export interface WordAnswer {
   pointsAwarded: number;
   startedAt: string;
   answeredAt: string;
-  createdAt: string;
 }
+
+export type WordAnswer = WordAnswerDto & { isSynced: boolean };
