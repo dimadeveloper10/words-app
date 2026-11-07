@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useOnlineStatus } from '../lib/useOnlineStatus';
 import './AppHeader.css';
 
 interface AppHeaderProps {
@@ -7,6 +8,8 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ email, onLogout }: AppHeaderProps) {
+  const isOnline = useOnlineStatus();
+
   return (
     <header className="app-header">
       <div className="app-header-inner">
@@ -14,6 +17,11 @@ export function AppHeader({ email, onLogout }: AppHeaderProps) {
           Words
         </Link>
         <div className="header-account">
+          {!isOnline && (
+            <span className="header-offline" role="status">
+              Offline
+            </span>
+          )}
           <span className="header-email" title={email}>
             {email}
           </span>
