@@ -148,11 +148,7 @@ export const useAnswersStore = create<AnswersState>()(
         },
         reset: () => {
           currentLoad++;
-          set((state) => ({
-            ...initialData,
-            userId: state.userId,
-            answers: state.answers.filter((answer) => !answer.isSynced),
-          }));
+          set(initialData);
         },
       }),
       {

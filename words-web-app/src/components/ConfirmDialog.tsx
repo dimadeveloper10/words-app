@@ -10,6 +10,7 @@ import './ConfirmDialog.css';
 interface ConfirmDialogProps {
   open: boolean;
   title: string;
+  description?: ReactNode;
   onCancel: () => void;
   children: ReactNode;
 }
@@ -17,6 +18,7 @@ interface ConfirmDialogProps {
 export function ConfirmDialog({
   open,
   title,
+  description,
   onCancel,
   children,
 }: ConfirmDialogProps) {
@@ -46,6 +48,9 @@ export function ConfirmDialog({
         <h2 id={titleId} className="confirm-dialog-title">
           {title}
         </h2>
+        {description && (
+          <p className="confirm-dialog-description">{description}</p>
+        )}
         <div className="confirm-dialog-actions">{children}</div>
       </div>
     </dialog>

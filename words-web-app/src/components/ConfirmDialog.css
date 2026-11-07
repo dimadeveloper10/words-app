@@ -22,6 +22,13 @@
   line-height: 1.4;
   text-align: center;
 }
+.confirm-dialog-description {
+  margin: -12px 0 0;
+  color: #5d6c65;
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: center;
+}
 .confirm-dialog-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -46,4 +53,10 @@
 }
 .confirm-dialog-secondary:hover {
   background: #e8efe4;
+}
+button.confirm-dialog-secondary {
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
 }

@@ -4,6 +4,7 @@ import {
   selectAnswers,
   selectLessonAnswers,
   selectLessonPoints,
+  selectUnsyncedCount,
   selectWordAnswers,
 } from '../../stores/answers.selectors';
 
@@ -25,4 +26,8 @@ export function useWordAnswersOf(wordId: string) {
 
 export function useLessonPoints(lessonId: string) {
   return useAnswersStore((state) => selectLessonPoints(state, lessonId));
+}
+
+export function useUnsyncedAnswersCount() {
+  return useAnswersStore(selectUnsyncedCount);
 }

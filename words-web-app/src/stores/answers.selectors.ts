@@ -13,3 +13,6 @@ export const selectLessonPoints = (state: AnswersState, lessonId: string) =>
     (sum, answer) => sum + answer.pointsAwarded,
     0,
   );
+
+export const selectUnsyncedCount = (state: AnswersState) =>
+  state.answers.filter((answer) => !answer.isSynced).length;
