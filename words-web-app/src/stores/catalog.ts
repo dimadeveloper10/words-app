@@ -4,122 +4,111 @@ import { getAllLessons } from '../features/lessons/lessons.api';
 import type { Lesson } from '../features/lessons/lessons.types';
 import { getAllTopics } from '../features/topics/topics.api';
 import type { Topic } from '../features/topics/topics.types';
-import { getAllWordAnswers } from '../features/word-answers/word-answers.api';
-import type { WordAnswer } from '../features/word-answers/word-answer.types';
 import { getAllWords } from '../features/words/words.api';
 import type { Word } from '../features/words/words.types';
 import { createIdbStorage } from '../lib/idbStorage';
+import { waitForHydration } from '../lib/persistHydration';
 
 export interface CatalogState {
-  userId: string | null;
   topics: Topic[];
   lessons: Lesson[];
   words: Word[];
-  answers: WordAnswer[];
+  syncedAt: string | null;
   status: 'idle' | 'loading' | 'ready' | 'error';
   error: unknown;
-  load: (userId: string) => Promise<void>;
-  addAnswers: (answers: WordAnswer[]) => void;
-  reset: () => void;
+  load: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
 type PersistedCatalog = Pick<
   CatalogState,
-  'userId' | 'topics' | 'lessons' | 'words' | 'answers'
+  'topics' | 'lessons' | 'words' | 'syncedAt'
 >;
 
-const initialData = {
-  userId: null,
-  topics: [],
-  lessons: [],
-  words: [],
-  answers: [],
-  status: 'idle',
-  error: null,
-} satisfies Partial<CatalogState>;
-
-let currentLoad = 0;
+let currentRefresh: Promise<void> | null = null;
 
 export const useCatalogStore = create<CatalogState>()(
   devtools(
     persist(
       (set, get) => ({
-        ...initialData,
-        load: async (userId) => {
+        topics: [],
+        lessons: [],
+        words: [],
+        syncedAt: null,
+        status: 'idle',
+        error: null,
+        load: async () => {
           const { status } = get();
           if (status === 'loading' || status === 'ready') {
             return;
           }
 
-          const loadId = ++currentLoad;
           set({ status: 'loading', error: null });
-          await waitForHydration();
-          if (loadId !== currentLoad) {
-            return;
-          }
-          if (get().userId === userId) {
+          await waitForHydration(useCatalogStore.persist);
+
+          if (get().syncedAt !== null) {
             set({ status: 'ready' });
+            void get()
+              .refresh()
+              .catch((error: unknown) => {
+                console.warn('Background catalog refresh failed', error);
+              });
             return;
           }
 
-          set({ ...initialData, status: 'loading' });
           try {
-            const [topics, lessons, words, answers] = await Promise.all([
-              getAllTopics(),
-              getAllLessons(),
-              getAllWords(),
-              getAllWordAnswers(),
-            ]);
-            if (loadId === currentLoad) {
-              set({ userId, topics, lessons, words, answers, status: 'ready' });
-            }
+            await get().refresh();
+            set({ status: 'ready' });
           } catch (error) {
-            if (loadId === currentLoad) {
-              set({ status: 'error', error });
-            }
+            set({ status: 'error', error });
           }
         },
-        addAnswers: (newAnswers) => {
-          set((state) => {
-            const knownIds = new Set(state.answers.map((answer) => answer.id));
-            const added = newAnswers.filter(
-              (answer) => !knownIds.has(answer.id),
-            );
-            return added.length > 0
-              ? { answers: [...state.answers, ...added] }
-              : {};
-          });
-        },
-        reset: () => {
-          currentLoad++;
-          set(initialData);
+        refresh: () => {
+          currentRefresh ??= Promise.all([
+            getAllTopics(),
+            getAllLessons(),
+            getAllWords(),
+          ])
+            .then(([topics, lessons, words]) => {
+              set({
+                topics,
+                lessons,
+                words,
+                syncedAt: new Date().toISOString(),
+              });
+            })
+            .finally(() => {
+              currentRefresh = null;
+            });
+          return currentRefresh;
         },
       }),
       {
         name: 'catalog',
-        version: 1,
+        version: 2,
         storage: createIdbStorage<PersistedCatalog>(),
-        partialize: ({ userId, topics, lessons, words, answers }) => ({
-          userId,
+        partialize: ({ topics, lessons, words, syncedAt }) => ({
           topics,
           lessons,
           words,
-          answers,
+          syncedAt,
         }),
+        migrate: (persisted, version) => {
+          if (version === 1) {
+            const old = persisted as PersistedCatalog & {
+              userId: string | null;
+            };
+            return {
+              topics: old.topics,
+              lessons: old.lessons,
+              words: old.words,
+              syncedAt: old.userId ? new Date(0).toISOString() : null,
+            };
+          }
+          return persisted as PersistedCatalog;
+        },
       },
     ),
     { name: 'catalog', enabled: import.meta.env.DEV },
   ),
 );
-
-function waitForHydration(): Promise<void> {
-  if (useCatalogStore.persist.hasHydrated()) {
-    return Promise.resolve();
-  }
-  return new Promise((resolve) => {
-    const unsubscribe = useCatalogStore.persist.onFinishHydration(() => {
-      unsubscribe();
-      resolve();
-    });
-  });
-}

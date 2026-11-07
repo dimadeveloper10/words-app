@@ -1,5 +1,5 @@
 import { toast } from 'sonner';
-import { useCatalogStore } from '../../stores/catalog';
+import { useAnswersStore } from '../../stores/answers';
 import type {
   WordAnswer,
   PendingWordAnswer,
@@ -28,7 +28,7 @@ function toWordAnswer(
 }
 
 export function useSaveWordAnswers(lessonId: string) {
-  const addAnswers = useCatalogStore((state) => state.addAnswers);
+  const addAnswers = useAnswersStore((state) => state.addAnswers);
 
   return function saveAnswers(answers: PendingWordAnswer[]) {
     if (answers.length === 0) {
