@@ -56,12 +56,12 @@ export function useCompileWordExercise(words: Word[]) {
     setAnswer(value);
   }
 
-  function submitAnswer() {
-    if (status !== 'typing' || normalize(answer) === '') {
+  function submitAnswer(value: string = answer) {
+    if (status !== 'typing' || normalize(value) === '') {
       return;
     }
 
-    const isCorrect = normalize(answer) === normalize(word.word);
+    const isCorrect = normalize(value) === normalize(word.word);
     const answeredAt = new Date();
     setAnswers((prev) => [
       ...prev,
@@ -90,6 +90,7 @@ export function useCompileWordExercise(words: Word[]) {
 
   return {
     word,
+    step,
     answer,
     answers,
     status,

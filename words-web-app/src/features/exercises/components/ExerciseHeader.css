@@ -4,7 +4,8 @@
   align-items: center;
   gap: 8px;
 }
-.exercise-close {
+.exercise-close,
+.exercise-icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -17,10 +18,12 @@
   color: #27634d;
   cursor: pointer;
 }
-.exercise-close:hover {
+.exercise-close:hover,
+.exercise-icon-button:hover:not(:disabled) {
   background: #e8efe4;
 }
-.exercise-close:focus-visible {
+.exercise-close:focus-visible,
+.exercise-icon-button:focus-visible {
   outline: 2px solid #27634d;
   outline-offset: 2px;
 }
@@ -35,4 +38,12 @@
 }
 .exercise-header .exercise-close {
   margin: 0;
+}
+.exercise-icon-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.exercise-actions {
+  display: flex;
+  grid-column: 3;
 }

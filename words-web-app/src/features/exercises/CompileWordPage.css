@@ -56,6 +56,9 @@
   font-size: 22px;
   font-weight: 600;
 }
+.compile-word-page:has(.letter-picker) {
+  padding-bottom: calc(160px + env(safe-area-inset-bottom));
+}
 .compile-word-page:has(.compile-word-footer) {
   padding-bottom: calc(96px + env(safe-area-inset-bottom));
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ConfirmDialog } from '../../../components/ConfirmDialog';
 import { useGoBack } from '../../../components/useGoBack';
@@ -10,6 +10,7 @@ interface ExerciseHeaderProps {
   closeTo: string;
   confirmClose: boolean;
   onConfirmClose: () => void;
+  actions?: ReactNode;
 }
 
 const closeIcon = (
@@ -34,6 +35,7 @@ export function ExerciseHeader({
   closeTo,
   confirmClose,
   onConfirmClose,
+  actions,
 }: ExerciseHeaderProps) {
   const goBack = useGoBack();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -63,6 +65,7 @@ export function ExerciseHeader({
       <h1 id={id} className="exercise-title">
         {title}
       </h1>
+      {actions && <div className="exercise-actions">{actions}</div>}
       <ConfirmDialog
         open={confirmOpen}
         title="Are you sure you want to close the exercise?"
