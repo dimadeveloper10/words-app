@@ -21,7 +21,7 @@ import { WordTranslation } from './entities/word-translation.entity';
 import { WordForm } from './entities/word-form.entity';
 import { WordExample } from './entities/word-example.entity';
 import { DeleteWordsDto } from './dto/delete-words.dto';
-import { deleteWordImage, saveWordImage } from './word-image.storage';
+import { deleteImage, replaceImage } from '../../common/storage/image.storage';
 import { Paginated, paginated } from '../../common/dto/paginated';
 import { LessonsService } from '../lessons/lessons.service';
 
@@ -206,7 +206,7 @@ export class WordsService {
     const word = await this.findOne(id);
     await this.wordsRepository.remove(word);
     if (word.imageUrl) {
-      await deleteWordImage(word.imageUrl);
+      await deleteImage('words', word.imageUrl);
     }
   }
 
@@ -232,7 +232,7 @@ export class WordsService {
     );
 
     for (const imageUrl of imageUrls) {
-      await deleteWordImage(imageUrl);
+      await deleteImage('words', imageUrl);
     }
   }
 
@@ -252,14 +252,8 @@ export class WordsService {
 
   async setImage(id: string, file: Express.Multer.File): Promise<Word> {
     const word = await this.findOne(id);
-    const previousUrl = word.imageUrl;
-
-    const imageUrl = await saveWordImage(file);
+    const imageUrl = await replaceImage('words', id, file, word.imageUrl);
     await this.wordsRepository.update(id, { imageUrl });
-
-    if (previousUrl) {
-      await deleteWordImage(previousUrl);
-    }
     return this.findOne(id);
   }
 }

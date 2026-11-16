@@ -32,6 +32,9 @@ export class Lesson {
   @Column({ name: 'lesson_number', type: 'int', nullable: true })
   lessonNumber!: number | null;
 
+  @Column({ name: 'image_url', type: 'varchar', nullable: true })
+  imageUrl!: string | null;
+
   @ManyToOne(() => Topic, (topic) => topic.lessons, { onDelete: 'CASCADE' })
   @JoinColumn({
     name: 'topic_id',

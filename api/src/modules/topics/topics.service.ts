@@ -13,6 +13,7 @@ import { UpdateTopicDto } from './dto/update-topic.dto';
 import { Topic } from './entities/topic.entity';
 import { Word } from '../words/entities/word.entity';
 import { AddTopicWordsDto } from './dto/add-topic-words.dto';
+import { deleteImage, replaceImage } from '../../common/storage/image.storage';
 
 @Injectable()
 export class TopicsService {
@@ -147,6 +148,16 @@ export class TopicsService {
   async remove(id: string): Promise<void> {
     const topic = await this.findOne(id);
     await this.topicsRepository.remove(topic);
+    if (topic.imageUrl) {
+      await deleteImage('topics', topic.imageUrl);
+    }
+  }
+
+  async setImage(id: string, file: Express.Multer.File): Promise<Topic> {
+    const topic = await this.findOne(id);
+    const imageUrl = await replaceImage('topics', id, file, topic.imageUrl);
+    await this.topicsRepository.update(id, { imageUrl });
+    return this.findOne(id);
   }
 
   private normalizeName(value: string): string {

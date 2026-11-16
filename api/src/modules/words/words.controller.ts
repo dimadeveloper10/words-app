@@ -2,13 +2,10 @@ import {
   Body,
   Controller,
   Delete,
-  FileTypeValidator,
   Get,
   HttpCode,
   HttpStatus,
-  MaxFileSizeValidator,
   Param,
-  ParseFilePipe,
   ParseUUIDPipe,
   Patch,
   Post,
@@ -26,7 +23,8 @@ import { WordsService } from './words.service';
 import { QueryWordsDto } from './dto/query-words.dto';
 import { Paginated } from '../../common/dto/paginated';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiImageUpload } from '../../common/decorators/api-image-upload.decorator';
+import { imageFilePipe } from '../../common/pipes/image-file.pipe';
 import { ApiPaginatedResponse } from '../../common/decorators/api-paginated-response.decorator';
 
 @Controller('words')
@@ -74,33 +72,12 @@ export class WordsController {
   }
 
   @Post(':id/image')
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      required: ['file'],
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-          description: 'JPEG or PNG image, at most 2 MiB',
-        },
-      },
-    },
-  })
+  @ApiImageUpload()
   @Roles(Role.ADMIN)
   @UseInterceptors(FileInterceptor('file'))
   uploadImage(
     @Param('id', ParseUUIDPipe) id: string,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }),
-          new FileTypeValidator({ fileType: /^image\/(jpeg|png)$/ }),
-        ],
-      }),
-    )
-    file: Express.Multer.File,
+    @UploadedFile(imageFilePipe()) file: Express.Multer.File,
   ): Promise<Word> {
     return this.wordsService.setImage(id, file);
   }
