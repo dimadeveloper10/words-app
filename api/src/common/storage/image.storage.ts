@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { mkdir, writeFile, unlink } from 'fs/promises';
 import { basename, join } from 'path';
 
@@ -11,12 +12,22 @@ const EXT_BY_MIME: Record<string, string> = {
   'image/png': 'png',
 };
 
+const detectExtension = async (buffer: Buffer): Promise<string> => {
+  const { fileTypeFromBuffer } = await import('file-type');
+  const fileType = await fileTypeFromBuffer(buffer);
+  const ext = fileType && EXT_BY_MIME[fileType.mime];
+  if (!ext) {
+    throw new BadRequestException('Image must be a JPEG or PNG file');
+  }
+  return ext;
+};
+
 export const saveImage = async (
   folder: ImageFolder,
   id: string,
   file: Express.Multer.File,
 ): Promise<string> => {
-  const ext = EXT_BY_MIME[file.mimetype] ?? 'bin';
+  const ext = await detectExtension(file.buffer);
   const filename = `${id}.${ext}`;
   const dir = join(STATIC_DIR, folder);
   await mkdir(dir, { recursive: true });
