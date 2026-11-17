@@ -38,12 +38,17 @@ export function useLessonWords(id: string) {
   });
 }
 
+interface LessonMutationInput {
+  values: LessonFormValues;
+  imageId?: string;
+}
+
 export function useCreateLesson() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (values: LessonFormValues) =>
-      createLesson(toCreateLessonPayload(values)),
+    mutationFn: ({ values, imageId }: LessonMutationInput) =>
+      createLesson({ ...toCreateLessonPayload(values), imageId }),
     onSuccess: (lesson) => {
       void queryClient.invalidateQueries({ queryKey: ['lessons'] });
       void queryClient.invalidateQueries({ queryKey: ['topics'] });
@@ -59,8 +64,12 @@ export function useUpdateLesson() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, values }: { id: string; values: LessonFormValues }) =>
-      updateLesson(id, toUpdateLessonPayload(values)),
+    mutationFn: ({
+      id,
+      values,
+      imageId,
+    }: LessonMutationInput & { id: string }) =>
+      updateLesson(id, { ...toUpdateLessonPayload(values), imageId }),
     onSuccess: (lesson) => {
       void queryClient.invalidateQueries({ queryKey: ['lessons'] });
       toast.success(`Lesson "${lesson.name}" updated`);

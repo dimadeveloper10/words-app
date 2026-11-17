@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
+import { ImageField } from '@/components/ImageField';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -27,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useUploadImage } from '@/features/images/useUploadImage';
 import { useTopics } from '@/features/topics/useTopics';
 import {
   emptyLessonValues,
@@ -52,6 +55,8 @@ export function LessonDialog({
 }: LessonDialogProps) {
   const createLesson = useCreateLesson();
   const updateLesson = useUpdateLesson();
+  const uploadImage = useUploadImage();
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const topicsQuery = useTopics({ page: 1, limit: 100 });
   const isEdit = lesson !== undefined;
   const form = useForm<LessonFormValues>({
@@ -81,13 +86,21 @@ export function LessonDialog({
       const valuesWithFixedTopic = fixedTopic
         ? { ...values, topicId: fixedTopic.id }
         : values;
+      const imageId = imageFile
+        ? await uploadImage.mutateAsync(imageFile)
+        : undefined;
+
       if (isEdit) {
         await updateLesson.mutateAsync({
           id: lesson.id,
           values: valuesWithFixedTopic,
+          imageId,
         });
       } else {
-        await createLesson.mutateAsync(valuesWithFixedTopic);
+        await createLesson.mutateAsync({
+          values: valuesWithFixedTopic,
+          imageId,
+        });
       }
       onOpenChange(false);
     } catch {
@@ -95,7 +108,8 @@ export function LessonDialog({
     }
   };
 
-  const isSubmitting = createLesson.isPending || updateLesson.isPending;
+  const isSubmitting =
+    createLesson.isPending || updateLesson.isPending || uploadImage.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -217,6 +231,13 @@ export function LessonDialog({
                   <FormMessage />
                 </FormItem>
               )}
+            />
+
+            <ImageField
+              value={imageFile}
+              onChange={setImageFile}
+              currentImageId={lesson?.imageId}
+              alt="Lesson image"
             />
 
             <DialogFooter>

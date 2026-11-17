@@ -241,7 +241,14 @@ export function TopicDetailsPage() {
                           {index + 1}
                         </TableCell>
                         <TableCell className="font-medium">
-                          {lesson.name}
+                          <div className="flex items-center gap-3">
+                            <EntityImage
+                              imageId={lesson.imageId}
+                              alt={lesson.name}
+                              className="size-10 shrink-0 border"
+                            />
+                            {lesson.name}
+                          </div>
                         </TableCell>
                         <TableCell className="text-muted-foreground font-mono text-sm">
                           {lesson.slug}

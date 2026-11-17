@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 
+import { EntityImage } from '@/components/EntityImage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -69,19 +70,27 @@ export function LessonDetailsPage() {
       </Button>
 
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {lesson.name}
-            </h1>
-            {lesson.lessonNumber !== null && (
-              <Badge variant="outline">Lesson #{lesson.lessonNumber}</Badge>
-            )}
-            <Badge variant="secondary">{lesson.wordCount} words</Badge>
+        <div className="flex items-center gap-4">
+          <EntityImage
+            imageId={lesson.imageId}
+            alt={lesson.name}
+            className="size-16 shrink-0 border"
+            iconClassName="size-6"
+          />
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-2xl font-semibold tracking-tight">
+                {lesson.name}
+              </h1>
+              {lesson.lessonNumber !== null && (
+                <Badge variant="outline">Lesson #{lesson.lessonNumber}</Badge>
+              )}
+              <Badge variant="secondary">{lesson.wordCount} words</Badge>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              {lesson.topic.name} · {lesson.slug}
+            </p>
           </div>
-          <p className="text-muted-foreground text-sm">
-            {lesson.topic.name} · {lesson.slug}
-          </p>
         </div>
         {canManage && (
           <div className="flex items-center gap-2">

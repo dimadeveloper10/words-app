@@ -4,6 +4,7 @@ import { AlertCircle, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { DataPagination } from '@/components/DataPagination';
+import { EntityImage } from '@/components/EntityImage';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -161,7 +162,14 @@ export function LessonsPage() {
                           {lesson.lessonNumber ?? '—'}
                         </TableCell>
                         <TableCell className="font-medium">
-                          {lesson.name}
+                          <div className="flex items-center gap-3">
+                            <EntityImage
+                              imageId={lesson.imageId}
+                              alt={lesson.name}
+                              className="size-10 shrink-0 border"
+                            />
+                            {lesson.name}
+                          </div>
                         </TableCell>
                         <TableCell className="text-muted-foreground font-mono text-sm">
                           {lesson.slug}
