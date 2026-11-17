@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { formatTranslation } from '../formatTranslation';
-import { getWordImageUrl } from '../words.api';
+import { Picture } from '../../../components/Picture';
 import type { Word } from '../words.types';
 import { canSpeak, speakWord, stopSpeaking } from '../speakWord';
 import './WordCard.css';
@@ -19,7 +19,7 @@ export function WordCard({ word }: { word: Word }) {
       </label>
       <div className="word-card-image">
         {word.imageId ? (
-          <img src={getWordImageUrl(word.imageId)} alt="" />
+          <Picture imageId={word.imageId} alt="" />
         ) : (
           <span aria-hidden="true">{word.word.charAt(0).toUpperCase()}</span>
         )}

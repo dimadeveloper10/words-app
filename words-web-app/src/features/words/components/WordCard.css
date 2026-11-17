@@ -35,6 +35,10 @@
   font-size: 64px;
   font-weight: 700;
 }
+.word-card-image picture {
+  display: contents;
+}
+
 .word-card-image img {
   width: 100%;
   height: 100%;

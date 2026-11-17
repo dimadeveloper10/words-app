@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { CardImage } from '../../../components/CardImage';
 import { useLessonPoints } from '../../word-answers/useWordAnswers';
 import { formatLessonTitle } from '../formatLessonTitle';
 import type { Lesson } from '../lessons.types';
@@ -18,7 +19,12 @@ export function LessonCard({ lesson, headingLevel = 'h3' }: LessonCardProps) {
       to={`/lessons/${lesson.id}`}
       className="carousel-card carousel-card-link"
     >
-      <Heading>{formatLessonTitle(lesson)}</Heading>
+      <div>
+        <CardImage imageId={lesson.imageId} name={lesson.name} />
+        <div className="carousel-card-text">
+          <Heading>{formatLessonTitle(lesson)}</Heading>
+        </div>
+      </div>
       <dl className="carousel-card-stats">
         <div>
           <dt>Points</dt>

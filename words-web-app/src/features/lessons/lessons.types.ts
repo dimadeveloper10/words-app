@@ -3,6 +3,7 @@ export interface Lesson {
   name: string;
   slug: string;
   lessonNumber: number | null;
+  imageId: string | null;
   topic: {
     id: string;
     name: string;

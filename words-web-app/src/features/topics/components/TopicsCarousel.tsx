@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { CardImage } from '../../../components/CardImage';
 import { Carousel } from '../../../components/Carousel';
 import type { Topic } from '../topics.types';
 
@@ -18,8 +19,11 @@ export function TopicsCarousel({ topics }: { topics: Topic[] }) {
           className="carousel-card carousel-card-link"
         >
           <div>
-            <h3>{topic.name}</h3>
-            {topic.description && <p>{topic.description}</p>}
+            <CardImage imageId={topic.imageId} name={topic.name} />
+            <div className="carousel-card-text">
+              <h3>{topic.name}</h3>
+              {topic.description && <p>{topic.description}</p>}
+            </div>
           </div>
           <dl className="carousel-card-stats">
             <div>

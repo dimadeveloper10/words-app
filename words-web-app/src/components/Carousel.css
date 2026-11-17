@@ -1,7 +1,7 @@
 .carousel {
   min-width: 0;
-  margin: 16px 0 28px;
-  padding-bottom: 12px;
+  margin: 12px 0 20px;
+  padding-bottom: 8px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
@@ -36,7 +36,7 @@
   list-style: none;
 }
 .carousel-slide {
-  flex: 0 0 calc((100% - 32px) / 2.25);
+  flex: 0 0 calc((100% - 32px) / 2.1);
   min-width: 0;
   scroll-snap-align: start;
 }
@@ -59,6 +59,26 @@
 .carousel-card-link:hover {
   border-color: #27634d;
   color: inherit;
+}
+.carousel-card-image {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 2 / 1;
+  margin-bottom: 12px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #e8efe4;
+  color: #27634d;
+  font-size: 32px;
+  font-weight: 700;
+}
+.carousel-card-image picture {
+  display: contents;
+}
+.carousel-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .carousel-card h3 {
   margin: 0;
@@ -92,4 +112,33 @@
   font-size: 22px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+}
+.carousel-slide .carousel-card {
+  gap: 16px;
+  min-height: 140px;
+  padding: 16px;
+}
+.carousel-slide .carousel-card h3 {
+  font-size: 18px;
+}
+.carousel-slide .carousel-card-stats {
+  padding-top: 12px;
+}
+.carousel-slide .carousel-card-stats dd {
+  font-size: 18px;
+}
+.carousel-slide .carousel-card-text {
+  min-height: calc(18px * 1.4 + 8px + 2 * 15px * 1.5);
+}
+.carousel-slide .carousel-card-text h3 {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.carousel-slide .carousel-card-text p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
