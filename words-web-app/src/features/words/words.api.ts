@@ -6,6 +6,6 @@ export function getAllWords(signal?: AbortSignal): Promise<Word[]> {
   return fetchAllPages<Word>('/words', signal);
 }
 
-export function getWordImageUrl(imageUrl: string) {
-  return `${api.defaults.baseURL ?? ''}${imageUrl}`;
+export function getWordImageUrl(imageId: string) {
+  return `${api.defaults.baseURL ?? ''}/static/images/${imageId}.webp`;
 }

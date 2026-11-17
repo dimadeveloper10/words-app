@@ -18,8 +18,8 @@ export function WordCard({ word }: { word: Word }) {
         <span className="visually-hidden">Learned</span>
       </label>
       <div className="word-card-image">
-        {word.imageUrl ? (
-          <img src={getWordImageUrl(word.imageUrl)} alt="" />
+        {word.imageId ? (
+          <img src={getWordImageUrl(word.imageId)} alt="" />
         ) : (
           <span aria-hidden="true">{word.word.charAt(0).toUpperCase()}</span>
         )}

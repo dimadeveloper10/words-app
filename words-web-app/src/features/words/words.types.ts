@@ -10,6 +10,6 @@ export interface Word {
   id: string;
   word: string;
   transcription: string | null;
-  imageUrl: string | null;
+  imageId: string | null;
   translations: WordTranslation[];
 }
