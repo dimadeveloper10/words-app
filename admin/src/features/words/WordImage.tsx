@@ -11,7 +11,7 @@ interface WordImageProps {
 }
 
 export function WordImage({ word, className, iconClassName }: WordImageProps) {
-  const src = word.imageId ? getImageUrl(word.imageId) : word.externalUrl;
+  const src = word.imageId ? getImageUrl(word.imageId) : null;
 
   if (!src) {
     return (

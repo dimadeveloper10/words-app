@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ImageOff, ImagePlus, RefreshCw, X } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -23,16 +23,12 @@ interface ImageFieldProps {
   value: File | null;
   onChange: (file: File | null) => void;
   currentImageId?: string | null;
-  currentExternalUrl?: string | null;
-  alternativeInput: ReactNode;
 }
 
 export function ImageField({
   value,
   onChange,
   currentImageId,
-  currentExternalUrl,
-  alternativeInput,
 }: ImageFieldProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -70,7 +66,7 @@ export function ImageField({
     ? preview
     : currentImageId
       ? getImageUrl(currentImageId)
-      : currentExternalUrl || null;
+      : null;
 
   return (
     <div className="grid gap-2">
@@ -113,7 +109,6 @@ export function ImageField({
               </Button>
             )}
           </div>
-          {alternativeInput}
         </div>
 
         {shownSrc ? (

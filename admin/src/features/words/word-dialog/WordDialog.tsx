@@ -238,31 +238,6 @@ export function WordDialog({
                       value={imageFile}
                       onChange={setImageFile}
                       currentImageId={word?.imageId}
-                      currentExternalUrl={word?.externalUrl}
-                      alternativeInput={
-                        <>
-                          <div className="text-muted-foreground text-center text-sm">
-                            or
-                          </div>
-
-                          <FormField
-                            control={form.control}
-                            name="externalUrl"
-                            render={({ field }) => (
-                              <FormItem className="gap-1">
-                                <FormLabel>External image URL</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="https://example.com/image.jpg"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </>
-                      }
                     />
                   </div>
                 </div>
