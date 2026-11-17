@@ -33,7 +33,10 @@ export class Topic {
   imageId!: string | null;
 
   @Exclude()
-  @ManyToMany(() => Word, (word) => word.topics)
+  @ManyToMany(() => Word, (word) => word.topics, {
+    onDelete: 'CASCADE',
+    onUpdate: 'NO ACTION',
+  })
   words!: Word[];
 
   @Exclude()

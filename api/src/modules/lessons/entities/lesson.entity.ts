@@ -35,7 +35,10 @@ export class Lesson {
   @Column({ name: 'image_id', type: 'uuid', nullable: true })
   imageId!: string | null;
 
-  @ManyToOne(() => Topic, (topic) => topic.lessons, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Topic, (topic) => topic.lessons, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({
     name: 'topic_id',
     foreignKeyConstraintName: 'FK_lessons_topic',

@@ -12,8 +12,14 @@ export class WordExample {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @ManyToOne(() => Word, (word) => word.examples, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'word_id' })
+  @ManyToOne(() => Word, (word) => word.examples, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({
+    name: 'word_id',
+    foreignKeyConstraintName: 'FK_word_examples_word',
+  })
   word!: Word;
 
   // Example sentence using the headword, e.g. "Give me a hand".

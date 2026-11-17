@@ -50,16 +50,21 @@ export class Word {
   })
   examples!: WordExample[];
 
-  @ManyToMany(() => Topic, (topic) => topic.words)
+  @ManyToMany(() => Topic, (topic) => topic.words, {
+    onDelete: 'CASCADE',
+    onUpdate: 'NO ACTION',
+  })
   @JoinTable({
     name: 'topic_words',
     joinColumn: {
       name: 'word_id',
       referencedColumnName: 'id',
+      foreignKeyConstraintName: 'FK_topic_words_word',
     },
     inverseJoinColumn: {
       name: 'topic_id',
       referencedColumnName: 'id',
+      foreignKeyConstraintName: 'FK_topic_words_topic',
     },
   })
   topics!: Topic[];

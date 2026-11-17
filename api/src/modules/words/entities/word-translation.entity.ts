@@ -13,8 +13,14 @@ export class WordTranslation {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @ManyToOne(() => Word, (word) => word.translations, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'word_id' })
+  @ManyToOne(() => Word, (word) => word.translations, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({
+    name: 'word_id',
+    foreignKeyConstraintName: 'FK_word_translations_word',
+  })
   word!: Word;
 
   @Column({ name: 'part_of_speech', type: 'enum', enum: PartOfSpeech })
