@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
 
+import { ImageField } from '@/components/ImageField';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -21,6 +23,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useUploadImage } from '@/features/images/useUploadImage';
 import {
   emptyTopicValues,
   topicFormSchema,
@@ -39,6 +42,8 @@ interface TopicDialogProps {
 export function TopicDialog({ topic, open, onOpenChange }: TopicDialogProps) {
   const createTopic = useCreateTopic();
   const updateTopic = useUpdateTopic();
+  const uploadImage = useUploadImage();
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const isEdit = topic !== undefined;
   const form = useForm<TopicFormValues>({
     resolver: zodResolver(topicFormSchema),
@@ -47,10 +52,14 @@ export function TopicDialog({ topic, open, onOpenChange }: TopicDialogProps) {
 
   const onSubmit = async (values: TopicFormValues) => {
     try {
+      const imageId = imageFile
+        ? await uploadImage.mutateAsync(imageFile)
+        : undefined;
+
       if (isEdit) {
-        await updateTopic.mutateAsync({ id: topic.id, values });
+        await updateTopic.mutateAsync({ id: topic.id, values, imageId });
       } else {
-        await createTopic.mutateAsync(values);
+        await createTopic.mutateAsync({ values, imageId });
       }
       onOpenChange(false);
     } catch {
@@ -58,7 +67,8 @@ export function TopicDialog({ topic, open, onOpenChange }: TopicDialogProps) {
     }
   };
 
-  const isSubmitting = createTopic.isPending || updateTopic.isPending;
+  const isSubmitting =
+    createTopic.isPending || updateTopic.isPending || uploadImage.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -147,6 +157,13 @@ export function TopicDialog({ topic, open, onOpenChange }: TopicDialogProps) {
                   <FormMessage />
                 </FormItem>
               )}
+            />
+
+            <ImageField
+              value={imageFile}
+              onChange={setImageFile}
+              currentImageId={topic?.imageId}
+              alt="Topic image"
             />
 
             <DialogFooter>

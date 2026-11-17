@@ -58,12 +58,17 @@ export function useTopic(id: string) {
   });
 }
 
+interface TopicMutationInput {
+  values: TopicFormValues;
+  imageId?: string;
+}
+
 export function useCreateTopic() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (values: TopicFormValues) =>
-      createTopic(toTopicPayload(values)),
+    mutationFn: ({ values, imageId }: TopicMutationInput) =>
+      createTopic({ ...toTopicPayload(values), imageId }),
     onSuccess: (topic) => {
       void queryClient.invalidateQueries({ queryKey: ['topics'] });
       toast.success(`Topic "${topic.name}" created`);
@@ -78,8 +83,12 @@ export function useUpdateTopic() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, values }: { id: string; values: TopicFormValues }) =>
-      updateTopic(id, toTopicPayload(values)),
+    mutationFn: ({
+      id,
+      values,
+      imageId,
+    }: TopicMutationInput & { id: string }) =>
+      updateTopic(id, { ...toTopicPayload(values), imageId }),
     onSuccess: (topic) => {
       void queryClient.invalidateQueries({ queryKey: ['topics'] });
       toast.success(`Topic "${topic.name}" updated`);

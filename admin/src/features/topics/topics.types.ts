@@ -3,6 +3,7 @@ export interface Topic {
   name: string;
   slug: string;
   description: string | null;
+  imageId: string | null;
   sortOrder: number;
   wordCount: number;
   lessonCount: number;
@@ -15,4 +16,5 @@ export interface TopicPayload {
   slug: string;
   description: string | null;
   sortOrder: number;
+  imageId?: string;
 }

@@ -31,7 +31,7 @@ import { useUploadImage } from '@/features/images/useUploadImage';
 import { useCreateWord, useUpdateWord } from '../useWords';
 import type { Word } from '../words.types';
 import type { Topic } from '@/features/topics/topics.types';
-import { ImageField } from './ImageField';
+import { ImageField } from '@/components/ImageField';
 import { TopicsField } from './TopicsField';
 import { TranslationsField } from './TranslationsField';
 import { FormsField } from './FormsField';
@@ -235,6 +235,7 @@ export function WordDialog({
                       value={imageFile}
                       onChange={setImageFile}
                       currentImageId={word?.imageId}
+                      alt="Word image"
                     />
                   </div>
                 </div>

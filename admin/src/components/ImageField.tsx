@@ -23,12 +23,14 @@ interface ImageFieldProps {
   value: File | null;
   onChange: (file: File | null) => void;
   currentImageId?: string | null;
+  alt: string;
 }
 
 export function ImageField({
   value,
   onChange,
   currentImageId,
+  alt,
 }: ImageFieldProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -114,7 +116,7 @@ export function ImageField({
         {shownSrc ? (
           <img
             src={shownSrc}
-            alt="Word image"
+            alt={alt}
             className="size-20 rounded-md border object-cover"
           />
         ) : (
