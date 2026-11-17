@@ -1,5 +1,6 @@
 import { ImageOff } from 'lucide-react';
 
+import { getImageUrl } from '@/lib/images';
 import { cn } from '@/lib/utils';
 import type { Word } from './words.types';
 
@@ -10,9 +11,7 @@ interface WordImageProps {
 }
 
 export function WordImage({ word, className, iconClassName }: WordImageProps) {
-  const src = word.imageUrl
-    ? `${import.meta.env.VITE_API_URL}${word.imageUrl}`
-    : word.externalUrl;
+  const src = word.imageId ? getImageUrl(word.imageId) : word.externalUrl;
 
   if (!src) {
     return (

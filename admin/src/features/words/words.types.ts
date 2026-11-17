@@ -51,7 +51,7 @@ export interface Word {
   id: string;
   word: string;
   transcription: string | null;
-  imageUrl: string | null;
+  imageId: string | null;
   externalUrl: string | null;
   translations: WordTranslation[];
   forms: WordForm[];

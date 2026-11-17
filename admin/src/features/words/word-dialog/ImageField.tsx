@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { FormLabel } from '@/components/ui/form';
+import { getImageUrl } from '@/lib/images';
 
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png'];
@@ -21,7 +22,7 @@ function validateImageFile(file: File): string | null {
 interface ImageFieldProps {
   value: File | null;
   onChange: (file: File | null) => void;
-  currentUrl?: string | null;
+  currentImageId?: string | null;
   currentExternalUrl?: string | null;
   alternativeInput: ReactNode;
 }
@@ -29,7 +30,7 @@ interface ImageFieldProps {
 export function ImageField({
   value,
   onChange,
-  currentUrl,
+  currentImageId,
   currentExternalUrl,
   alternativeInput,
 }: ImageFieldProps) {
@@ -67,8 +68,8 @@ export function ImageField({
 
   const shownSrc = preview
     ? preview
-    : currentUrl
-      ? `${import.meta.env.VITE_API_URL}${currentUrl}`
+    : currentImageId
+      ? getImageUrl(currentImageId)
       : currentExternalUrl || null;
 
   return (

@@ -237,7 +237,7 @@ export function WordDialog({
                     <ImageField
                       value={imageFile}
                       onChange={setImageFile}
-                      currentUrl={word?.imageUrl}
+                      currentImageId={word?.imageId}
                       currentExternalUrl={word?.externalUrl}
                       alternativeInput={
                         <>
