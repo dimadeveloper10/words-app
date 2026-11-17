@@ -27,8 +27,8 @@ export class Word {
   @Column({ type: 'varchar', nullable: true })
   transcription!: string | null;
 
-  @Column({ name: 'image_url', type: 'varchar', nullable: true })
-  imageUrl!: string | null;
+  @Column({ name: 'image_id', type: 'uuid', nullable: true })
+  imageId!: string | null;
 
   @Column({ name: 'external_url', type: 'varchar', nullable: true })
   externalUrl!: string | null;

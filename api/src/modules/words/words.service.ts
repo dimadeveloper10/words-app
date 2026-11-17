@@ -115,7 +115,6 @@ export class WordsService {
         const word = wordsRepository.create({
           word: headword,
           transcription: dto.transcription ?? null,
-          imageUrl: dto.imageUrl ?? null,
           externalUrl: dto.externalUrl ?? null,
           translations: dto.translations.map(buildTranslation),
           forms: (dto.forms ?? []).map(buildForm),
@@ -162,9 +161,6 @@ export class WordsService {
       if (dto.transcription !== undefined) {
         word.transcription = dto.transcription ?? null;
       }
-      if (dto.imageUrl !== undefined) {
-        word.imageUrl = dto.imageUrl ?? null;
-      }
       if (dto.externalUrl !== undefined) {
         word.externalUrl = dto.externalUrl ?? null;
       }
@@ -205,34 +201,34 @@ export class WordsService {
   async remove(id: string): Promise<void> {
     const word = await this.findOne(id);
     await this.wordsRepository.remove(word);
-    if (word.imageUrl) {
-      await deleteImage('words', word.imageUrl);
+    if (word.imageId) {
+      await deleteImage(word.imageId);
     }
   }
 
   async removeMany(dto: DeleteWordsDto): Promise<void> {
-    const imageUrls = await this.wordsRepository.manager.transaction(
+    const imageIds = await this.wordsRepository.manager.transaction(
       async (manager) => {
         const wordsRepository = manager.getRepository(Word);
         const words = await wordsRepository.find({
           where: { id: In(dto.wordIds) },
-          select: { id: true, imageUrl: true },
+          select: { id: true, imageId: true },
         });
 
         if (words.length !== dto.wordIds.length) {
           throw new NotFoundException('One or more words not found');
         }
 
-        const urls = words
-          .map((word) => word.imageUrl)
-          .filter((imageUrl): imageUrl is string => imageUrl !== null);
+        const ids = words
+          .map((word) => word.imageId)
+          .filter((imageId): imageId is string => imageId !== null);
         await manager.remove(words);
-        return urls;
+        return ids;
       },
     );
 
-    for (const imageUrl of imageUrls) {
-      await deleteImage('words', imageUrl);
+    for (const imageId of imageIds) {
+      await deleteImage(imageId);
     }
   }
 
@@ -252,8 +248,8 @@ export class WordsService {
 
   async setImage(id: string, file: Express.Multer.File): Promise<Word> {
     const word = await this.findOne(id);
-    const imageUrl = await replaceImage('words', id, file, word.imageUrl);
-    await this.wordsRepository.update(id, { imageUrl });
+    const imageId = await replaceImage(file, word.imageId);
+    await this.wordsRepository.update(id, { imageId });
     return this.findOne(id);
   }
 }

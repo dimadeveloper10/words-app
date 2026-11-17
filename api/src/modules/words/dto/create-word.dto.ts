@@ -66,10 +66,6 @@ export class CreateWordDto {
   transcription?: string;
 
   @IsOptional()
-  @IsString()
-  imageUrl?: string;
-
-  @IsOptional()
   @IsUrl()
   externalUrl?: string;
 

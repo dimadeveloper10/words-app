@@ -1,49 +1,35 @@
 import { BadRequestException } from '@nestjs/common';
-import { mkdir, writeFile, unlink } from 'fs/promises';
-import { basename, join } from 'path';
+import { randomUUID } from 'crypto';
+import { mkdir, unlink } from 'fs/promises';
+import { join } from 'path';
+import sharp from 'sharp';
 
-export type ImageFolder = 'words' | 'topics' | 'lessons';
+const IMAGES_DIR = join(process.cwd(), 'static', 'images');
+const IMAGE_FORMAT = 'webp';
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png']);
 
-const STATIC_DIR = join(process.cwd(), 'static');
-const PUBLIC_PREFIX = '/static';
+const imagePath = (imageId: string): string =>
+  join(IMAGES_DIR, `${imageId}.${IMAGE_FORMAT}`);
 
-const EXT_BY_MIME: Record<string, string> = {
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-};
-
-const detectExtension = async (buffer: Buffer): Promise<string> => {
+const ensureAllowedType = async (buffer: Buffer): Promise<void> => {
   const { fileTypeFromBuffer } = await import('file-type');
   const fileType = await fileTypeFromBuffer(buffer);
-  const ext = fileType && EXT_BY_MIME[fileType.mime];
-  if (!ext) {
+  if (!fileType || !ALLOWED_MIME_TYPES.has(fileType.mime)) {
     throw new BadRequestException('Image must be a JPEG or PNG file');
   }
-  return ext;
 };
 
-export const saveImage = async (
-  folder: ImageFolder,
-  id: string,
-  file: Express.Multer.File,
-): Promise<string> => {
-  const ext = await detectExtension(file.buffer);
-  const filename = `${id}.${ext}`;
-  const dir = join(STATIC_DIR, folder);
-  await mkdir(dir, { recursive: true });
-  await writeFile(join(dir, filename), file.buffer);
-  return `${PUBLIC_PREFIX}/${folder}/${filename}`;
+export const saveImage = async (file: Express.Multer.File): Promise<string> => {
+  await ensureAllowedType(file.buffer);
+  const imageId = randomUUID();
+  await mkdir(IMAGES_DIR, { recursive: true });
+  await sharp(file.buffer).webp().toFile(imagePath(imageId));
+  return imageId;
 };
 
-export const deleteImage = async (
-  folder: ImageFolder,
-  imageUrl: string,
-): Promise<void> => {
-  if (!imageUrl.startsWith(`${PUBLIC_PREFIX}/${folder}/`)) {
-    return;
-  }
+export const deleteImage = async (imageId: string): Promise<void> => {
   try {
-    await unlink(join(STATIC_DIR, folder, basename(imageUrl)));
+    await unlink(imagePath(imageId));
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
       throw error;
@@ -52,14 +38,12 @@ export const deleteImage = async (
 };
 
 export const replaceImage = async (
-  folder: ImageFolder,
-  id: string,
   file: Express.Multer.File,
-  previousUrl: string | null,
+  previousImageId: string | null,
 ): Promise<string> => {
-  const imageUrl = await saveImage(folder, id, file);
-  if (previousUrl && previousUrl !== imageUrl) {
-    await deleteImage(folder, previousUrl);
+  const imageId = await saveImage(file);
+  if (previousImageId) {
+    await deleteImage(previousImageId);
   }
-  return imageUrl;
+  return imageId;
 };

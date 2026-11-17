@@ -32,10 +32,6 @@ export class UpdateWordDto {
   transcription?: string;
 
   @IsOptional()
-  @IsString()
-  imageUrl?: string;
-
-  @IsOptional()
   @IsUrl()
   externalUrl?: string;
 

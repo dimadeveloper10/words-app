@@ -148,15 +148,15 @@ export class TopicsService {
   async remove(id: string): Promise<void> {
     const topic = await this.findOne(id);
     await this.topicsRepository.remove(topic);
-    if (topic.imageUrl) {
-      await deleteImage('topics', topic.imageUrl);
+    if (topic.imageId) {
+      await deleteImage(topic.imageId);
     }
   }
 
   async setImage(id: string, file: Express.Multer.File): Promise<Topic> {
     const topic = await this.findOne(id);
-    const imageUrl = await replaceImage('topics', id, file, topic.imageUrl);
-    await this.topicsRepository.update(id, { imageUrl });
+    const imageId = await replaceImage(file, topic.imageId);
+    await this.topicsRepository.update(id, { imageId });
     return this.findOne(id);
   }
 

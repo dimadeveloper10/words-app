@@ -170,15 +170,15 @@ export class LessonsService {
   async remove(id: string): Promise<void> {
     const lesson = await this.findOne(id);
     await this.lessonsRepository.remove(lesson);
-    if (lesson.imageUrl) {
-      await deleteImage('lessons', lesson.imageUrl);
+    if (lesson.imageId) {
+      await deleteImage(lesson.imageId);
     }
   }
 
   async setImage(id: string, file: Express.Multer.File): Promise<Lesson> {
     const lesson = await this.findOne(id);
-    const imageUrl = await replaceImage('lessons', id, file, lesson.imageUrl);
-    await this.lessonsRepository.update(id, { imageUrl });
+    const imageId = await replaceImage(file, lesson.imageId);
+    await this.lessonsRepository.update(id, { imageId });
     return this.findOne(id);
   }
 

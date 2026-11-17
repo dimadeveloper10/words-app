@@ -29,8 +29,8 @@ export class Topic {
   @Column({ name: 'sort_order', type: 'int', default: 0 })
   sortOrder!: number;
 
-  @Column({ name: 'image_url', type: 'varchar', nullable: true })
-  imageUrl!: string | null;
+  @Column({ name: 'image_id', type: 'uuid', nullable: true })
+  imageId!: string | null;
 
   @Exclude()
   @ManyToMany(() => Word, (word) => word.topics)
