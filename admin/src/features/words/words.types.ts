@@ -82,6 +82,7 @@ export interface ExamplePayload {
 export interface WordPayload {
   word: string;
   transcription?: string | null;
+  imageId?: string;
   translations: TranslationPayload[];
   forms?: FormPayload[];
   examples?: ExamplePayload[];

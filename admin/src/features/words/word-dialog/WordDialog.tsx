@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -28,7 +27,8 @@ import {
   wordToFormValues,
   type WordFormValues,
 } from '../words.schemas';
-import { useCreateWord, useUpdateWord, useUploadWordImage } from '../useWords';
+import { useUploadImage } from '@/features/images/useUploadImage';
+import { useCreateWord, useUpdateWord } from '../useWords';
 import type { Word } from '../words.types';
 import type { Topic } from '@/features/topics/topics.types';
 import { ImageField } from './ImageField';
@@ -52,7 +52,7 @@ export function WordDialog({
 }: WordDialogProps) {
   const createWord = useCreateWord();
   const updateWord = useUpdateWord();
-  const uploadImage = useUploadWordImage();
+  const uploadImage = useUploadImage();
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   const form = useForm<WordFormValues>({
@@ -106,21 +106,18 @@ export function WordDialog({
       const valuesWithFixedTopic = fixedTopic
         ? { ...values, topicIds: [fixedTopic.id] }
         : values;
-      const saved = isEdit
-        ? await updateWord.mutateAsync({
-            id: word.id,
-            values: valuesWithFixedTopic,
-          })
-        : await createWord.mutateAsync(valuesWithFixedTopic);
+      const imageId = imageFile
+        ? await uploadImage.mutateAsync(imageFile)
+        : undefined;
 
-      if (imageFile) {
-        try {
-          await uploadImage.mutateAsync({ id: saved.id, file: imageFile });
-        } catch {
-          toast.warning(
-            `Word "${saved.word}" saved, but the image failed to upload.`,
-          );
-        }
+      if (isEdit) {
+        await updateWord.mutateAsync({
+          id: word.id,
+          values: valuesWithFixedTopic,
+          imageId,
+        });
+      } else {
+        await createWord.mutateAsync({ values: valuesWithFixedTopic, imageId });
       }
 
       onOpenChange(false);

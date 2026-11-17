@@ -13,16 +13,21 @@ import {
   deleteWords,
   listWords,
   updateWord,
-  uploadWordImage,
 } from './words.api';
 import type { ListWordsParams } from './words.api';
 import { toWordPayload, type WordFormValues } from './words.schemas';
+
+interface WordMutationInput {
+  values: WordFormValues;
+  imageId?: string;
+}
 
 export function useCreateWord() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (values: WordFormValues) => createWord(toWordPayload(values)),
+    mutationFn: ({ values, imageId }: WordMutationInput) =>
+      createWord({ ...toWordPayload(values), imageId }),
     onSuccess: (word) => {
       void queryClient.invalidateQueries({ queryKey: ['words'] });
       void queryClient.invalidateQueries({ queryKey: ['topics'] });
@@ -38,8 +43,8 @@ export function useUpdateWord() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, values }: { id: string; values: WordFormValues }) =>
-      updateWord(id, toWordPayload(values)),
+    mutationFn: ({ id, values, imageId }: WordMutationInput & { id: string }) =>
+      updateWord(id, { ...toWordPayload(values), imageId }),
     onSuccess: (word) => {
       void queryClient.invalidateQueries({ queryKey: ['words'] });
       void queryClient.invalidateQueries({ queryKey: ['topics'] });
@@ -47,18 +52,6 @@ export function useUpdateWord() {
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, 'Failed to update word'));
-    },
-  });
-}
-
-export function useUploadWordImage() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, file }: { id: string; file: File }) =>
-      uploadWordImage(id, file),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['words'] });
     },
   });
 }
