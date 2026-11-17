@@ -115,7 +115,6 @@ export class WordsService {
         const word = wordsRepository.create({
           word: headword,
           transcription: dto.transcription ?? null,
-          externalUrl: dto.externalUrl ?? null,
           translations: dto.translations.map(buildTranslation),
           forms: (dto.forms ?? []).map(buildForm),
           examples: (dto.examples ?? []).map(buildExample),
@@ -160,9 +159,6 @@ export class WordsService {
       }
       if (dto.transcription !== undefined) {
         word.transcription = dto.transcription ?? null;
-      }
-      if (dto.externalUrl !== undefined) {
-        word.externalUrl = dto.externalUrl ?? null;
       }
       if (dto.topicIds !== undefined) {
         const topics = await this.resolveTopics(manager, dto.topicIds);
