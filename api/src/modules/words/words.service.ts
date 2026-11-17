@@ -21,7 +21,7 @@ import { WordTranslation } from './entities/word-translation.entity';
 import { WordForm } from './entities/word-form.entity';
 import { WordExample } from './entities/word-example.entity';
 import { DeleteWordsDto } from './dto/delete-words.dto';
-import { deleteImage, replaceImage } from '../../common/storage/image.storage';
+import { ImagesService } from '../images/images.service';
 import { Paginated, paginated } from '../../common/dto/paginated';
 import { LessonsService } from '../lessons/lessons.service';
 
@@ -31,6 +31,7 @@ export class WordsService {
     @InjectRepository(Word)
     private readonly wordsRepository: Repository<Word>,
     private readonly lessonsService: LessonsService,
+    private readonly imagesService: ImagesService,
   ) {}
 
   async findAll(query: QueryWordsDto): Promise<Paginated<Word>> {
@@ -107,6 +108,9 @@ export class WordsService {
   async create(dto: CreateWordDto): Promise<Word> {
     const headword = normalizeWord(dto.word);
     await this.ensureUniqueWord(headword);
+    if (dto.imageId) {
+      await this.imagesService.ensureExists(dto.imageId);
+    }
 
     const wordId = await this.wordsRepository.manager.transaction(
       async (manager) => {
@@ -115,6 +119,7 @@ export class WordsService {
         const word = wordsRepository.create({
           word: headword,
           transcription: dto.transcription ?? null,
+          imageId: dto.imageId ?? null,
           translations: dto.translations.map(buildTranslation),
           forms: (dto.forms ?? []).map(buildForm),
           examples: (dto.examples ?? []).map(buildExample),
@@ -150,6 +155,10 @@ export class WordsService {
 
   async update(id: string, dto: UpdateWordDto): Promise<Word> {
     const word = await this.findOne(id); // 404, якщо немає
+    const previousImageId = word.imageId;
+    if (dto.imageId) {
+      await this.imagesService.ensureExists(dto.imageId);
+    }
 
     await this.wordsRepository.manager.transaction(async (manager) => {
       if (dto.word !== undefined) {
@@ -159,6 +168,9 @@ export class WordsService {
       }
       if (dto.transcription !== undefined) {
         word.transcription = dto.transcription ?? null;
+      }
+      if (dto.imageId !== undefined) {
+        word.imageId = dto.imageId ?? null;
       }
       if (dto.topicIds !== undefined) {
         const topics = await this.resolveTopics(manager, dto.topicIds);
@@ -191,6 +203,8 @@ export class WordsService {
       await manager.save(word);
     });
 
+    await this.imagesService.deleteIfReplaced(previousImageId, word.imageId);
+
     return this.findOne(id);
   }
 
@@ -198,7 +212,7 @@ export class WordsService {
     const word = await this.findOne(id);
     await this.wordsRepository.remove(word);
     if (word.imageId) {
-      await deleteImage(word.imageId);
+      await this.imagesService.delete(word.imageId);
     }
   }
 
@@ -224,7 +238,7 @@ export class WordsService {
     );
 
     for (const imageId of imageIds) {
-      await deleteImage(imageId);
+      await this.imagesService.delete(imageId);
     }
   }
 
@@ -240,12 +254,5 @@ export class WordsService {
     if (existing) {
       throw new ConflictException('Word already exists');
     }
-  }
-
-  async setImage(id: string, file: Express.Multer.File): Promise<Word> {
-    const word = await this.findOne(id);
-    const imageId = await replaceImage(file, word.imageId);
-    await this.wordsRepository.update(id, { imageId });
-    return this.findOne(id);
   }
 }

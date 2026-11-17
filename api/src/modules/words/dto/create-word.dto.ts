@@ -65,6 +65,10 @@ export class CreateWordDto {
   transcription?: string;
 
   @IsOptional()
+  @IsUUID('4')
+  imageId?: string;
+
+  @IsOptional()
   @IsArray()
   @ArrayUnique()
   @IsUUID('4', { each: true })

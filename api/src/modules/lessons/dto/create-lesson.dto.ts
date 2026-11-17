@@ -21,6 +21,10 @@ export class CreateLessonDto {
   @IsInt()
   lessonNumber?: number | null;
 
+  @IsOptional()
+  @IsUUID('4')
+  imageId?: string;
+
   @IsUUID('4')
   topicId!: string;
 

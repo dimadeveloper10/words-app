@@ -18,6 +18,7 @@ import { LessonsModule } from './modules/lessons/lessons.module';
 import { DictionaryModule } from './modules/dictionary/dictionary.module';
 import { WordAnswersModule } from './modules/word-answers/word-answers.module';
 import { ExerciseTypesModule } from './modules/exercise-types/exercise-types.module';
+import { ImagesModule } from './modules/images/images.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { ExerciseTypesModule } from './modules/exercise-types/exercise-types.mod
     DictionaryModule,
     WordAnswersModule,
     ExerciseTypesModule,
+    ImagesModule,
   ],
   controllers: [AppController],
   providers: [

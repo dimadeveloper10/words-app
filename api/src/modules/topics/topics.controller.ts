@@ -11,10 +11,7 @@ import {
   Post,
   Put,
   Query,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Paginated } from '../../common/dto/paginated';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
@@ -26,8 +23,6 @@ import { TopicsService } from './topics.service';
 import { Word } from '../words/entities/word.entity';
 import { AddTopicWordsDto } from './dto/add-topic-words.dto';
 import { ApiPaginatedResponse } from '../../common/decorators/api-paginated-response.decorator';
-import { ApiImageUpload } from '../../common/decorators/api-image-upload.decorator';
-import { imageFilePipe } from '../../common/pipes/image-file.pipe';
 
 @Controller('topics')
 export class TopicsController {
@@ -62,17 +57,6 @@ export class TopicsController {
     @Body() dto: UpdateTopicDto,
   ): Promise<Topic> {
     return this.topicsService.update(id, dto);
-  }
-
-  @Post(':id/image')
-  @ApiImageUpload()
-  @Roles(Role.ADMIN)
-  @UseInterceptors(FileInterceptor('file'))
-  uploadImage(
-    @Param('id', ParseUUIDPipe) id: string,
-    @UploadedFile(imageFilePipe()) file: Express.Multer.File,
-  ): Promise<Topic> {
-    return this.topicsService.setImage(id, file);
   }
 
   @Put(':id/add_words')

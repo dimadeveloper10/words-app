@@ -13,7 +13,7 @@ import { UpdateTopicDto } from './dto/update-topic.dto';
 import { Topic } from './entities/topic.entity';
 import { Word } from '../words/entities/word.entity';
 import { AddTopicWordsDto } from './dto/add-topic-words.dto';
-import { deleteImage, replaceImage } from '../../common/storage/image.storage';
+import { ImagesService } from '../images/images.service';
 
 @Injectable()
 export class TopicsService {
@@ -22,6 +22,7 @@ export class TopicsService {
     private readonly topicsRepository: Repository<Topic>,
     @InjectRepository(Word)
     private readonly wordsRepository: Repository<Word>,
+    private readonly imagesService: ImagesService,
   ) {}
 
   async findAll(query: PaginationQueryDto): Promise<Paginated<Topic>> {
@@ -107,11 +108,15 @@ export class TopicsService {
     const name = this.normalizeName(dto.name);
     const slug = this.normalizeSlug(dto.slug);
     await this.ensureUnique(name, slug);
+    if (dto.imageId) {
+      await this.imagesService.ensureExists(dto.imageId);
+    }
 
     const topic = this.topicsRepository.create({
       name,
       slug,
       description: dto.description ?? null,
+      imageId: dto.imageId ?? null,
       sortOrder: dto.sortOrder ?? 0,
     });
 
@@ -121,12 +126,16 @@ export class TopicsService {
 
   async update(id: string, dto: UpdateTopicDto): Promise<Topic> {
     const topic = await this.findOne(id);
+    const previousImageId = topic.imageId;
     const name =
       dto.name === undefined ? undefined : this.normalizeName(dto.name);
     const slug =
       dto.slug === undefined ? undefined : this.normalizeSlug(dto.slug);
 
     await this.ensureUnique(name, slug, id);
+    if (dto.imageId) {
+      await this.imagesService.ensureExists(dto.imageId);
+    }
 
     if (name !== undefined) {
       topic.name = name;
@@ -140,8 +149,12 @@ export class TopicsService {
     if (dto.sortOrder !== undefined) {
       topic.sortOrder = dto.sortOrder;
     }
+    if (dto.imageId !== undefined) {
+      topic.imageId = dto.imageId ?? null;
+    }
 
     const savedTopic = await this.topicsRepository.save(topic);
+    await this.imagesService.deleteIfReplaced(previousImageId, topic.imageId);
     return this.findOne(savedTopic.id);
   }
 
@@ -149,15 +162,8 @@ export class TopicsService {
     const topic = await this.findOne(id);
     await this.topicsRepository.remove(topic);
     if (topic.imageId) {
-      await deleteImage(topic.imageId);
+      await this.imagesService.delete(topic.imageId);
     }
-  }
-
-  async setImage(id: string, file: Express.Multer.File): Promise<Topic> {
-    const topic = await this.findOne(id);
-    const imageId = await replaceImage(file, topic.imageId);
-    await this.topicsRepository.update(id, { imageId });
-    return this.findOne(id);
   }
 
   private normalizeName(value: string): string {

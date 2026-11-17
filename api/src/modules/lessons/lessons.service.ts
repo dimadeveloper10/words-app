@@ -14,7 +14,7 @@ import { CreateLessonDto } from './dto/create-lesson.dto';
 import { QueryLessonsDto } from './dto/query-lessons.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { Lesson } from './entities/lesson.entity';
-import { deleteImage, replaceImage } from '../../common/storage/image.storage';
+import { ImagesService } from '../images/images.service';
 
 @Injectable()
 export class LessonsService {
@@ -25,6 +25,7 @@ export class LessonsService {
     private readonly topicsRepository: Repository<Topic>,
     @InjectRepository(Word)
     private readonly wordsRepository: Repository<Word>,
+    private readonly imagesService: ImagesService,
   ) {}
 
   async findAll(query: QueryLessonsDto): Promise<Paginated<Lesson>> {
@@ -90,6 +91,9 @@ export class LessonsService {
   }
 
   async create(dto: CreateLessonDto, addedBy: User): Promise<Lesson> {
+    if (dto.imageId) {
+      await this.imagesService.ensureExists(dto.imageId);
+    }
     const lessonId = await this.lessonsRepository.manager.transaction(
       async (manager) => {
         const topic = await this.findTopic(dto.topicId, manager);
@@ -107,6 +111,7 @@ export class LessonsService {
           name,
           slug,
           lessonNumber: dto.lessonNumber ?? null,
+          imageId: dto.imageId ?? null,
           topic,
           addedBy,
           words,
@@ -121,48 +126,64 @@ export class LessonsService {
   }
 
   async update(id: string, dto: UpdateLessonDto): Promise<Lesson> {
-    await this.lessonsRepository.manager.transaction(async (manager) => {
-      const lessonsRepository = manager.getRepository(Lesson);
-      const lesson = await lessonsRepository.findOne({
-        where: { id },
-        relations: { topic: true },
-      });
-      if (!lesson) {
-        throw new NotFoundException('Lesson not found');
-      }
+    if (dto.imageId) {
+      await this.imagesService.ensureExists(dto.imageId);
+    }
 
-      const name =
-        dto.name === undefined ? undefined : this.normalizeName(dto.name);
-      const slug =
-        dto.slug === undefined ? undefined : this.normalizeSlug(dto.slug);
+    const imageChange = await this.lessonsRepository.manager.transaction(
+      async (manager) => {
+        const lessonsRepository = manager.getRepository(Lesson);
+        const lesson = await lessonsRepository.findOne({
+          where: { id },
+          relations: { topic: true },
+        });
+        if (!lesson) {
+          throw new NotFoundException('Lesson not found');
+        }
 
-      await this.ensureUnique(
-        manager,
-        lesson.topic.id,
-        slug,
-        dto.lessonNumber,
-        id,
-      );
+        const name =
+          dto.name === undefined ? undefined : this.normalizeName(dto.name);
+        const slug =
+          dto.slug === undefined ? undefined : this.normalizeSlug(dto.slug);
 
-      if (name !== undefined) {
-        lesson.name = name;
-      }
-      if (slug !== undefined) {
-        lesson.slug = slug;
-      }
-      if (dto.lessonNumber !== undefined) {
-        lesson.lessonNumber = dto.lessonNumber;
-      }
-      if (dto.wordIds !== undefined) {
-        lesson.words = await this.resolveWords(
+        await this.ensureUnique(
           manager,
           lesson.topic.id,
-          dto.wordIds,
+          slug,
+          dto.lessonNumber,
+          id,
         );
-      }
 
-      await lessonsRepository.save(lesson);
-    });
+        if (name !== undefined) {
+          lesson.name = name;
+        }
+        if (slug !== undefined) {
+          lesson.slug = slug;
+        }
+        if (dto.lessonNumber !== undefined) {
+          lesson.lessonNumber = dto.lessonNumber;
+        }
+        const previous = lesson.imageId;
+        if (dto.imageId !== undefined) {
+          lesson.imageId = dto.imageId ?? null;
+        }
+        if (dto.wordIds !== undefined) {
+          lesson.words = await this.resolveWords(
+            manager,
+            lesson.topic.id,
+            dto.wordIds,
+          );
+        }
+
+        await lessonsRepository.save(lesson);
+        return { previous, next: lesson.imageId };
+      },
+    );
+
+    await this.imagesService.deleteIfReplaced(
+      imageChange.previous,
+      imageChange.next,
+    );
 
     return this.findOne(id);
   }
@@ -171,15 +192,8 @@ export class LessonsService {
     const lesson = await this.findOne(id);
     await this.lessonsRepository.remove(lesson);
     if (lesson.imageId) {
-      await deleteImage(lesson.imageId);
+      await this.imagesService.delete(lesson.imageId);
     }
-  }
-
-  async setImage(id: string, file: Express.Multer.File): Promise<Lesson> {
-    const lesson = await this.findOne(id);
-    const imageId = await replaceImage(file, lesson.imageId);
-    await this.lessonsRepository.update(id, { imageId });
-    return this.findOne(id);
   }
 
   async removeWordFromTopicLessons(

@@ -31,6 +31,10 @@ export class UpdateWordDto {
   transcription?: string;
 
   @IsOptional()
+  @IsUUID('4')
+  imageId?: string | null;
+
+  @IsOptional()
   @IsArray()
   @ArrayUnique()
   @IsUUID('4', { each: true })

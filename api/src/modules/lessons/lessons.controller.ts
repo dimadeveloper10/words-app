@@ -10,10 +10,7 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Paginated } from '../../common/dto/paginated';
@@ -26,8 +23,6 @@ import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { Lesson } from './entities/lesson.entity';
 import { LessonsService } from './lessons.service';
 import { ApiPaginatedResponse } from '../../common/decorators/api-paginated-response.decorator';
-import { ApiImageUpload } from '../../common/decorators/api-image-upload.decorator';
-import { imageFilePipe } from '../../common/pipes/image-file.pipe';
 
 @Controller('lessons')
 export class LessonsController {
@@ -65,17 +60,6 @@ export class LessonsController {
     @Body() dto: UpdateLessonDto,
   ): Promise<Lesson> {
     return this.lessonsService.update(id, dto);
-  }
-
-  @Post(':id/image')
-  @ApiImageUpload()
-  @Roles(Role.ADMIN)
-  @UseInterceptors(FileInterceptor('file'))
-  uploadImage(
-    @Param('id', ParseUUIDPipe) id: string,
-    @UploadedFile(imageFilePipe()) file: Express.Multer.File,
-  ): Promise<Lesson> {
-    return this.lessonsService.setImage(id, file);
   }
 
   @Delete(':id')

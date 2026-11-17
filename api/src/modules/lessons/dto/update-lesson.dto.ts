@@ -24,6 +24,10 @@ export class UpdateLessonDto {
   lessonNumber?: number | null;
 
   @IsOptional()
+  @IsUUID('4')
+  imageId?: string | null;
+
+  @IsOptional()
   @IsArray()
   @ArrayUnique()
   @IsUUID('4', { each: true })

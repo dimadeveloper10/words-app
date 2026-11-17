@@ -1,4 +1,10 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class UpdateTopicDto {
   @IsOptional()
@@ -14,6 +20,10 @@ export class UpdateTopicDto {
   @IsOptional()
   @IsString()
   description?: string | null;
+
+  @IsOptional()
+  @IsUUID('4')
+  imageId?: string | null;
 
   @IsOptional()
   @IsInt()
