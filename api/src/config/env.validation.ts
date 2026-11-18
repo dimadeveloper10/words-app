@@ -2,6 +2,7 @@ import { plainToInstance } from 'class-transformer';
 import {
   IsIn,
   IsNotEmpty,
+  IsNumberString,
   IsOptional,
   IsString,
   MinLength,
@@ -53,6 +54,14 @@ class EnvironmentVariables {
   @IsOptional()
   @IsString()
   REDIS_URL?: string;
+
+  @IsOptional()
+  @IsNumberString()
+  THROTTLE_TTL?: string;
+
+  @IsOptional()
+  @IsNumberString()
+  THROTTLE_LIMIT?: string;
 
   @IsOptional()
   @IsIn(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])

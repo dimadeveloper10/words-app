@@ -6,7 +6,13 @@ import {
   HttpStatus,
   Post,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTooManyRequestsResponse,
+} from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
+import { AUTH_THROTTLE } from '../../config/throttler.config';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { User } from '../users/entities/user.entity';
 import { AuthResult, AuthService } from './auth.service';
@@ -20,16 +26,20 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
+  @Throttle(AUTH_THROTTLE)
   @Post('register')
   @ApiCreatedResponse({ type: AuthResponseDto })
+  @ApiTooManyRequestsResponse({ description: 'Too many attempts, try later' })
   register(@Body() dto: RegisterDto): Promise<AuthResult> {
     return this.authService.register(dto);
   }
 
   @Public()
   @HttpCode(HttpStatus.OK)
+  @Throttle(AUTH_THROTTLE)
   @Post('login')
   @ApiOkResponse({ type: AuthResponseDto })
+  @ApiTooManyRequestsResponse({ description: 'Too many attempts, try later' })
   login(@Body() dto: LoginDto): Promise<AuthResult> {
     return this.authService.login(dto);
   }

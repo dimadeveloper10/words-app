@@ -2,8 +2,10 @@ import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import { buildLoggerOptions } from './config/logger.config';
+import { buildThrottlerOptions } from './config/throttler.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
@@ -32,6 +34,10 @@ import { ImagesModule } from './modules/images/images.module';
       inject: [ConfigService],
       useFactory: buildLoggerOptions,
     }),
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: buildThrottlerOptions,
+    }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         ...buildDataSourceOptions(),
@@ -55,7 +61,8 @@ import { ImagesModule } from './modules/images/images.module';
   controllers: [AppController],
   providers: [
     AppService,
-    // Order matters: authentication runs before authorization.
+    // Order matters: rate limiting, then authentication, then authorization.
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
