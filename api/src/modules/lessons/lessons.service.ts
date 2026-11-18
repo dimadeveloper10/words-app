@@ -134,7 +134,8 @@ export class LessonsService {
       async (manager) => {
         const lesson = await this.findLessonForUpdate(manager, id);
         const previous = lesson.imageId;
-        await this.applyChanges(manager, lesson, dto);
+        const changes = await this.validateLessonUpdate(manager, lesson, dto);
+        await this.assignLessonFields(manager, lesson, changes);
         await manager.getRepository(Lesson).save(lesson);
         return { previous, next: lesson.imageId };
       },
@@ -162,11 +163,11 @@ export class LessonsService {
     return lesson;
   }
 
-  private async applyChanges(
+  private async validateLessonUpdate(
     manager: EntityManager,
     lesson: Lesson,
     dto: UpdateLessonDto,
-  ): Promise<void> {
+  ): Promise<UpdateLessonDto> {
     const name =
       dto.name === undefined ? undefined : this.normalizeName(dto.name);
     const slug =
@@ -178,24 +179,31 @@ export class LessonsService {
       dto.lessonNumber,
       lesson.id,
     );
+    return { ...dto, name, slug };
+  }
 
-    if (name !== undefined) {
-      lesson.name = name;
+  private async assignLessonFields(
+    manager: EntityManager,
+    lesson: Lesson,
+    changes: UpdateLessonDto,
+  ): Promise<void> {
+    if (changes.name !== undefined) {
+      lesson.name = changes.name;
     }
-    if (slug !== undefined) {
-      lesson.slug = slug;
+    if (changes.slug !== undefined) {
+      lesson.slug = changes.slug;
     }
-    if (dto.lessonNumber !== undefined) {
-      lesson.lessonNumber = dto.lessonNumber;
+    if (changes.lessonNumber !== undefined) {
+      lesson.lessonNumber = changes.lessonNumber;
     }
-    if (dto.imageId !== undefined) {
-      lesson.imageId = dto.imageId ?? null;
+    if (changes.imageId !== undefined) {
+      lesson.imageId = changes.imageId ?? null;
     }
-    if (dto.wordIds !== undefined) {
+    if (changes.wordIds !== undefined) {
       lesson.words = await this.resolveWords(
         manager,
         lesson.topic.id,
-        dto.wordIds,
+        changes.wordIds,
       );
     }
   }

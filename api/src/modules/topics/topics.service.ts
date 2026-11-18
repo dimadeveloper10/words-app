@@ -137,7 +137,7 @@ export class TopicsService {
       await this.imagesService.ensureExists(dto.imageId);
     }
 
-    this.applyChanges(topic, { ...dto, name, slug });
+    this.assignTopicFields(topic, { ...dto, name, slug });
 
     const savedTopic = await this.topicsRepository.save(topic);
     await this.imagesService.deleteIfReplaced(previousImageId, topic.imageId);
@@ -152,7 +152,7 @@ export class TopicsService {
     }
   }
 
-  private applyChanges(topic: Topic, changes: UpdateTopicDto): void {
+  private assignTopicFields(topic: Topic, changes: UpdateTopicDto): void {
     if (changes.name !== undefined) {
       topic.name = changes.name;
     }
