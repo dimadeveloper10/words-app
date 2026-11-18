@@ -9,10 +9,10 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
-  const corsOrigin = process.env.CORS_ORIGIN ?? 'http://localhost:5173';
+  const corsOrigin =
+    process.env.CORS_ORIGIN ?? 'http://localhost:5173,http://localhost:5174';
   app.enableCors({
     origin: corsOrigin.split(',').map((o) => o.trim()),
-    credentials: true,
   });
 
   app.useGlobalPipes(
