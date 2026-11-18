@@ -5,6 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
+import sonarjs from 'eslint-plugin-sonarjs';
 
 export default tseslint.config(
   { ignores: ['dist', 'node_modules'] },
@@ -41,8 +42,10 @@ export default tseslint.config(
   // Keep ESLint focused on code quality; Prettier owns formatting.
   prettier,
   {
+    plugins: { sonarjs },
     rules: {
       curly: ['error', 'all'],
+      'sonarjs/cognitive-complexity': ['error', 15],
     },
   },
 );

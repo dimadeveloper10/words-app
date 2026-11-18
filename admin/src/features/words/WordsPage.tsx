@@ -1,14 +1,6 @@
 import { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
-import {
-  AlertCircle,
-  FolderPlus,
-  Loader2,
-  Plus,
-  Search,
-  Trash2,
-  X,
-} from 'lucide-react';
+import { AlertCircle, Loader2, Plus, Search } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +14,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { getApiErrorMessage } from '@/lib/api';
 import { DataPagination } from '@/components/DataPagination';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -33,6 +24,7 @@ import { WordsCards } from './cards/WordsCards';
 import { WordsTable } from './table/WordsTable';
 import type { Word, WordsView } from './words.types';
 import { AddWordsToTopicDialog } from './AddWordsToTopicDialog';
+import { WordsSelectionBar } from './WordsSelectionBar';
 
 const PAGE_SIZE = 20;
 
@@ -104,9 +96,6 @@ export function WordsPage() {
 
   const words = data?.items ?? [];
   const pageWordIds = words.map((word) => word.id);
-  const allPageSelected =
-    words.length > 0 && pageWordIds.every((id) => selectedIds.includes(id));
-  const somePageSelected = pageWordIds.some((id) => selectedIds.includes(id));
   const rangeFrom =
     data && data.total > 0 ? (data.page - 1) * data.limit + 1 : 0;
   const rangeTo = data ? rangeFrom + words.length - 1 : 0;
@@ -143,61 +132,14 @@ export function WordsPage() {
       </div>
 
       {view === 'list' && (
-        <div className="bg-muted/40 flex min-h-14 flex-wrap items-center justify-between gap-3 rounded-md border px-4 py-2">
-          <div className="flex items-center gap-2">
-            <Checkbox
-              checked={
-                allPageSelected
-                  ? true
-                  : somePageSelected
-                    ? 'indeterminate'
-                    : false
-              }
-              disabled={words.length === 0}
-              onCheckedChange={(checked) =>
-                togglePage(pageWordIds, checked === true)
-              }
-              aria-label="Select all words on this page"
-            />
-            <span className="text-sm">
-              {selectedIds.length > 0
-                ? `${selectedIds.length} selected`
-                : 'Select words on this page'}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            {selectedIds.length > 0 && (
-              <>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedIds([])}
-                >
-                  <X className="size-4" />
-                  Clear selection
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => setAddToTopicOpen(true)}
-                >
-                  <FolderPlus className="size-4" />
-                  Add to topic
-                </Button>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => setBulkDeleteOpen(true)}
-                >
-                  <Trash2 className="size-4" />
-                  Delete selected
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
+        <WordsSelectionBar
+          pageWordIds={pageWordIds}
+          selectedIds={selectedIds}
+          onTogglePage={togglePage}
+          onClear={() => setSelectedIds([])}
+          onAddToTopic={() => setAddToTopicOpen(true)}
+          onDelete={() => setBulkDeleteOpen(true)}
+        />
       )}
 
       <Card>
