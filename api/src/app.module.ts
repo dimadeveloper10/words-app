@@ -4,6 +4,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
+import { AppLogger } from './config/app-logger';
 import { buildLoggerOptions } from './config/logger.config';
 import { buildThrottlerOptions } from './config/throttler.config';
 import { AppController } from './app.controller';
@@ -61,6 +62,7 @@ import { ImagesModule } from './modules/images/images.module';
   controllers: [AppController],
   providers: [
     AppService,
+    AppLogger,
     // Order matters: rate limiting, then authentication, then authorization.
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },

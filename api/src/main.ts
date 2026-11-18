@@ -1,8 +1,9 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
+import { LoggerErrorInterceptor } from 'nestjs-pino';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { AppLogger } from './config/app-logger';
 
 function setupSwagger(app: INestApplication): void {
   const swaggerConfig = new DocumentBuilder()
@@ -25,7 +26,7 @@ function setupSwagger(app: INestApplication): void {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
-  app.useLogger(app.get(Logger));
+  app.useLogger(app.get(AppLogger));
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   const corsOrigin =
