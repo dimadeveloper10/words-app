@@ -48,4 +48,10 @@ export default tseslint.config(
       'sonarjs/cognitive-complexity': ['error', 15],
     },
   },
+  {
+    ignores: ['**/*.tsx'],
+    rules: {
+      complexity: ['error', 10],
+    },
+  },
 );
