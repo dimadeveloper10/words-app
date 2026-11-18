@@ -1,7 +1,12 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { ImagesService } from '../images/images.service';
 import { Topic } from '../topics/entities/topic.entity';
+import { User } from '../users/entities/user.entity';
 import { Word } from '../words/entities/word.entity';
 import { Lesson } from './entities/lesson.entity';
 import { LessonsService } from './lessons.service';
@@ -138,5 +143,130 @@ describe('LessonsService.update', () => {
     await expect(
       ctx.service.update('lesson-id', { lessonNumber: 5 }),
     ).rejects.toBeInstanceOf(ConflictException);
+  });
+});
+
+describe('LessonsService.create', () => {
+  const addedBy = { id: 'user-id' } as User;
+  const topic = { id: 'topic-id' } as Topic;
+
+  function setup() {
+    const lessonsRepo = {
+      findOne: jest.fn().mockResolvedValue(null),
+      create: jest.fn((value: object) => ({ ...value })),
+      save: jest.fn().mockResolvedValue({ id: 'new-lesson' }),
+    };
+    const topicsRepo = { findOneBy: jest.fn().mockResolvedValue(topic) };
+    const wordsRepo = { find: jest.fn() };
+    const repos = new Map<unknown, object>([
+      [Lesson, lessonsRepo],
+      [Topic, topicsRepo],
+      [Word, wordsRepo],
+    ]);
+    const manager = { getRepository: jest.fn((e: unknown) => repos.get(e)) };
+    const images = { ensureExists: jest.fn().mockResolvedValue(undefined) };
+    const service = new LessonsService(
+      {
+        manager: {
+          transaction: jest.fn(
+            (work: (m: typeof manager) => Promise<unknown>) => work(manager),
+          ),
+        },
+      } as unknown as Repository<Lesson>,
+      {} as Repository<Topic>,
+      {} as Repository<Word>,
+      images as unknown as ImagesService,
+    );
+    const findOne = jest
+      .spyOn(service, 'findOne')
+      .mockResolvedValue({ id: 'new-lesson' } as Lesson);
+    return { service, lessonsRepo, topicsRepo, wordsRepo, images, findOne };
+  }
+
+  it('creates a minimal lesson with defaults', async () => {
+    const ctx = setup();
+
+    const result = await ctx.service.create(
+      { topicId: 'topic-id', name: ' Breakfast ', slug: 'Breakfast Time' },
+      addedBy,
+    );
+
+    expect(ctx.images.ensureExists).not.toHaveBeenCalled();
+    expect(ctx.wordsRepo.find).not.toHaveBeenCalled();
+    expect(ctx.lessonsRepo.create).toHaveBeenCalledWith({
+      name: 'Breakfast',
+      slug: 'breakfast-time',
+      lessonNumber: null,
+      imageId: null,
+      topic,
+      addedBy,
+      words: [],
+    });
+    expect(ctx.findOne).toHaveBeenCalledWith('new-lesson');
+    expect(result).toEqual({ id: 'new-lesson' });
+  });
+
+  it('creates a lesson with number, image and topic words', async () => {
+    const ctx = setup();
+    const words = [{ id: 'w1', topics: [{ id: 'topic-id' }] }];
+    ctx.wordsRepo.find.mockResolvedValue(words);
+
+    await ctx.service.create(
+      {
+        topicId: 'topic-id',
+        name: 'Lunch',
+        slug: 'lunch',
+        lessonNumber: 3,
+        imageId: 'image-id',
+        wordIds: ['w1'],
+      },
+      addedBy,
+    );
+
+    expect(ctx.images.ensureExists).toHaveBeenCalledWith('image-id');
+    expect(ctx.lessonsRepo.findOne).toHaveBeenCalledTimes(2);
+    expect(ctx.lessonsRepo.create).toHaveBeenCalledWith(
+      expect.objectContaining({ lessonNumber: 3, imageId: 'image-id', words }),
+    );
+  });
+
+  it('throws when the topic does not exist', async () => {
+    const ctx = setup();
+    ctx.topicsRepo.findOneBy.mockResolvedValue(null);
+
+    await expect(
+      ctx.service.create(
+        { topicId: 'missing', name: 'Lunch', slug: 'lunch' },
+        addedBy,
+      ),
+    ).rejects.toThrow('Topic not found');
+  });
+
+  it('rejects words outside the lesson topic', async () => {
+    const ctx = setup();
+    ctx.wordsRepo.find.mockResolvedValue([
+      { id: 'w1', topics: [{ id: 'other-topic' }] },
+    ]);
+
+    await expect(
+      ctx.service.create(
+        { topicId: 'topic-id', name: 'Lunch', slug: 'lunch', wordIds: ['w1'] },
+        addedBy,
+      ),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(ctx.lessonsRepo.save).not.toHaveBeenCalled();
+  });
+
+  it('rejects a duplicate slug before saving', async () => {
+    const ctx = setup();
+    ctx.lessonsRepo.findOne.mockResolvedValueOnce({ id: 'other' });
+
+    await expect(
+      ctx.service.create(
+        { topicId: 'topic-id', name: 'Lunch', slug: 'lunch' },
+        addedBy,
+      ),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(ctx.lessonsRepo.save).not.toHaveBeenCalled();
   });
 });

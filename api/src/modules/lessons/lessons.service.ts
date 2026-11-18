@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, In, Not, Repository } from 'typeorm';
+import { EntityManager, FindOptionsWhere, In, Not, Repository } from 'typeorm';
 import { Paginated, paginated } from '../../common/dto/paginated';
 import { Topic } from '../topics/entities/topic.entity';
 import { User } from '../users/entities/user.entity';
@@ -95,34 +95,36 @@ export class LessonsService {
       await this.imagesService.ensureExists(dto.imageId);
     }
     const lessonId = await this.lessonsRepository.manager.transaction(
-      async (manager) => {
-        const topic = await this.findTopic(dto.topicId, manager);
-        const name = this.normalizeName(dto.name);
-        const slug = this.normalizeSlug(dto.slug);
-        await this.ensureUnique(manager, topic.id, slug, dto.lessonNumber);
-
-        const words = await this.resolveWords(
-          manager,
-          topic.id,
-          dto.wordIds ?? [],
-        );
-        const lessonsRepository = manager.getRepository(Lesson);
-        const lesson = lessonsRepository.create({
-          name,
-          slug,
-          lessonNumber: dto.lessonNumber ?? null,
-          imageId: dto.imageId ?? null,
-          topic,
-          addedBy,
-          words,
-        });
-
-        const savedLesson = await lessonsRepository.save(lesson);
-        return savedLesson.id;
-      },
+      (manager) => this.insertLesson(manager, dto, addedBy),
     );
 
     return this.findOne(lessonId);
+  }
+
+  private async insertLesson(
+    manager: EntityManager,
+    dto: CreateLessonDto,
+    addedBy: User,
+  ): Promise<string> {
+    const topic = await this.findTopic(dto.topicId, manager);
+    const name = this.normalizeName(dto.name);
+    const slug = this.normalizeSlug(dto.slug);
+    await this.ensureUnique(manager, topic.id, slug, dto.lessonNumber);
+
+    const words = await this.resolveWords(manager, topic.id, dto.wordIds ?? []);
+    const lessonsRepository = manager.getRepository(Lesson);
+    const lesson = lessonsRepository.create({
+      name,
+      slug,
+      lessonNumber: dto.lessonNumber ?? null,
+      imageId: dto.imageId ?? null,
+      topic,
+      addedBy,
+      words,
+    });
+
+    const savedLesson = await lessonsRepository.save(lesson);
+    return savedLesson.id;
   }
 
   async update(id: string, dto: UpdateLessonDto): Promise<Lesson> {
@@ -323,28 +325,35 @@ export class LessonsService {
     exceptId?: string,
   ): Promise<void> {
     if (slug !== undefined) {
-      const existingSlug = await manager.getRepository(Lesson).findOne({
-        where: {
-          topic: { id: topicId },
-          slug,
-          ...(exceptId ? { id: Not(exceptId) } : {}),
-        },
-      });
-      if (existingSlug) {
-        throw new ConflictException('Lesson slug already exists in this topic');
-      }
+      await this.ensureNoOtherLesson(
+        manager,
+        { topic: { id: topicId }, slug },
+        exceptId,
+        'Lesson slug already exists in this topic',
+      );
     }
 
     if (lessonNumber !== undefined && lessonNumber !== null) {
-      const existingLessonNumber = await manager.getRepository(Lesson).findOne({
-        where: {
-          lessonNumber,
-          ...(exceptId ? { id: Not(exceptId) } : {}),
-        },
-      });
-      if (existingLessonNumber) {
-        throw new ConflictException('Lesson number already exists');
-      }
+      await this.ensureNoOtherLesson(
+        manager,
+        { lessonNumber },
+        exceptId,
+        'Lesson number already exists',
+      );
+    }
+  }
+
+  private async ensureNoOtherLesson(
+    manager: EntityManager,
+    where: FindOptionsWhere<Lesson>,
+    exceptId: string | undefined,
+    conflictMessage: string,
+  ): Promise<void> {
+    const existing = await manager.getRepository(Lesson).findOne({
+      where: { ...where, ...(exceptId ? { id: Not(exceptId) } : {}) },
+    });
+    if (existing) {
+      throw new ConflictException(conflictMessage);
     }
   }
 }

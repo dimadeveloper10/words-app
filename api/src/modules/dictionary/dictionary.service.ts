@@ -31,24 +31,7 @@ export class DictionaryService {
     }
 
     try {
-      const response = await fetch(
-        `${DICTIONARY_API_URL}/${encodeURIComponent(normalizedWord)}`,
-        { signal: AbortSignal.timeout(DICTIONARY_TIMEOUT_MS) },
-      );
-
-      let transcription: string | null;
-
-      if (response.status === 404) {
-        transcription = null;
-      } else {
-        if (!response.ok) {
-          throw new Error(`Dictionary API returned ${response.status}`);
-        }
-
-        const payload = (await response.json()) as DictionaryApiEntry[];
-        transcription = this.extractTranscription(payload);
-      }
-
+      const transcription = await this.fetchTranscription(normalizedWord);
       await this.cacheManager.set(
         cacheKey,
         { transcription },
@@ -59,6 +42,22 @@ export class DictionaryService {
     } catch {
       throw new ServiceUnavailableException('Dictionary service unavailable');
     }
+  }
+
+  private async fetchTranscription(word: string): Promise<string | null> {
+    const response = await fetch(
+      `${DICTIONARY_API_URL}/${encodeURIComponent(word)}`,
+      { signal: AbortSignal.timeout(DICTIONARY_TIMEOUT_MS) },
+    );
+    if (response.status === 404) {
+      return null;
+    }
+    if (!response.ok) {
+      throw new Error(`Dictionary API returned ${response.status}`);
+    }
+
+    const payload = (await response.json()) as DictionaryApiEntry[];
+    return this.extractTranscription(payload);
   }
 
   private extractTranscription(payload: DictionaryApiEntry[]): string | null {
