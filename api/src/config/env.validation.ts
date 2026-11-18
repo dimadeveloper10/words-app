@@ -54,6 +54,10 @@ class EnvironmentVariables {
   @IsString()
   REDIS_URL?: string;
 
+  @IsOptional()
+  @IsIn(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
+  LOG_LEVEL?: string;
+
   // Only required when running the seed script.
   @IsOptional()
   @IsString()

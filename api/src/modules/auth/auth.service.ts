@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Role } from '../../common/enums/role.enum';
@@ -15,6 +15,8 @@ export interface AuthResult {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -28,6 +30,7 @@ export class AuthService {
       name: dto.name ?? null,
       role: Role.USER,
     });
+    this.logger.log({ userId: user.id }, 'User registered');
 
     return this.buildAuthResult(user);
   }
@@ -36,6 +39,7 @@ export class AuthService {
     const user = await this.usersService.findByEmail(dto.email);
 
     if (!user || !(await bcrypt.compare(dto.password, user.passwordHash))) {
+      this.logger.warn({ email: dto.email }, 'Failed login attempt');
       throw new UnauthorizedException('Invalid credentials');
     }
 

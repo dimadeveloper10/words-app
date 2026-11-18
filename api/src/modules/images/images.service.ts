@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { access, mkdir, unlink } from 'fs/promises';
 import { join } from 'path';
@@ -10,11 +10,14 @@ const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png']);
 
 @Injectable()
 export class ImagesService {
+  private readonly logger = new Logger(ImagesService.name);
+
   async save(file: Express.Multer.File): Promise<string> {
     await this.ensureAllowedType(file.buffer);
     const imageId = randomUUID();
     await mkdir(IMAGES_DIR, { recursive: true });
     await sharp(file.buffer).webp().toFile(this.imagePath(imageId));
+    this.logger.log({ imageId, sizeBytes: file.size }, 'Image saved');
     return imageId;
   }
 
@@ -29,6 +32,7 @@ export class ImagesService {
   async delete(imageId: string): Promise<void> {
     try {
       await unlink(this.imagePath(imageId));
+      this.logger.log({ imageId }, 'Image deleted');
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
         throw error;
