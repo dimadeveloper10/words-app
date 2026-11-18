@@ -132,50 +132,10 @@ export class LessonsService {
 
     const imageChange = await this.lessonsRepository.manager.transaction(
       async (manager) => {
-        const lessonsRepository = manager.getRepository(Lesson);
-        const lesson = await lessonsRepository.findOne({
-          where: { id },
-          relations: { topic: true },
-        });
-        if (!lesson) {
-          throw new NotFoundException('Lesson not found');
-        }
-
-        const name =
-          dto.name === undefined ? undefined : this.normalizeName(dto.name);
-        const slug =
-          dto.slug === undefined ? undefined : this.normalizeSlug(dto.slug);
-
-        await this.ensureUnique(
-          manager,
-          lesson.topic.id,
-          slug,
-          dto.lessonNumber,
-          id,
-        );
-
-        if (name !== undefined) {
-          lesson.name = name;
-        }
-        if (slug !== undefined) {
-          lesson.slug = slug;
-        }
-        if (dto.lessonNumber !== undefined) {
-          lesson.lessonNumber = dto.lessonNumber;
-        }
+        const lesson = await this.findLessonForUpdate(manager, id);
         const previous = lesson.imageId;
-        if (dto.imageId !== undefined) {
-          lesson.imageId = dto.imageId ?? null;
-        }
-        if (dto.wordIds !== undefined) {
-          lesson.words = await this.resolveWords(
-            manager,
-            lesson.topic.id,
-            dto.wordIds,
-          );
-        }
-
-        await lessonsRepository.save(lesson);
+        await this.applyChanges(manager, lesson, dto);
+        await manager.getRepository(Lesson).save(lesson);
         return { previous, next: lesson.imageId };
       },
     );
@@ -186,6 +146,58 @@ export class LessonsService {
     );
 
     return this.findOne(id);
+  }
+
+  private async findLessonForUpdate(
+    manager: EntityManager,
+    id: string,
+  ): Promise<Lesson> {
+    const lesson = await manager.getRepository(Lesson).findOne({
+      where: { id },
+      relations: { topic: true },
+    });
+    if (!lesson) {
+      throw new NotFoundException('Lesson not found');
+    }
+    return lesson;
+  }
+
+  private async applyChanges(
+    manager: EntityManager,
+    lesson: Lesson,
+    dto: UpdateLessonDto,
+  ): Promise<void> {
+    const name =
+      dto.name === undefined ? undefined : this.normalizeName(dto.name);
+    const slug =
+      dto.slug === undefined ? undefined : this.normalizeSlug(dto.slug);
+    await this.ensureUnique(
+      manager,
+      lesson.topic.id,
+      slug,
+      dto.lessonNumber,
+      lesson.id,
+    );
+
+    if (name !== undefined) {
+      lesson.name = name;
+    }
+    if (slug !== undefined) {
+      lesson.slug = slug;
+    }
+    if (dto.lessonNumber !== undefined) {
+      lesson.lessonNumber = dto.lessonNumber;
+    }
+    if (dto.imageId !== undefined) {
+      lesson.imageId = dto.imageId ?? null;
+    }
+    if (dto.wordIds !== undefined) {
+      lesson.words = await this.resolveWords(
+        manager,
+        lesson.topic.id,
+        dto.wordIds,
+      );
+    }
   }
 
   async remove(id: string): Promise<void> {

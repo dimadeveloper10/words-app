@@ -4,7 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, In, Not, Repository } from 'typeorm';
+import {
+  EntityManager,
+  FindOptionsOrder,
+  FindOptionsRelations,
+  In,
+  Not,
+  Repository,
+} from 'typeorm';
 import { Topic } from '../topics/entities/topic.entity';
 import { CreateWordDto } from './dto/create-word.dto';
 import { UpdateWordDto } from './dto/update-word.dto';
@@ -25,6 +32,22 @@ import { ImagesService } from '../images/images.service';
 import { Paginated, paginated } from '../../common/dto/paginated';
 import { LessonsService } from '../lessons/lessons.service';
 
+const WORD_RELATIONS = {
+  translations: true,
+  forms: true,
+  examples: true,
+  topics: true,
+  lessons: true,
+} satisfies FindOptionsRelations<Word>;
+
+const WORD_CHILD_ORDER = {
+  translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
+  forms: { sortOrder: 'ASC' },
+  examples: { sortOrder: 'ASC' },
+  topics: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
+  lessons: { lessonNumber: 'ASC', name: 'ASC', id: 'ASC' },
+} satisfies FindOptionsOrder<Word>;
+
 @Injectable()
 export class WordsService {
   constructor(
@@ -36,46 +59,15 @@ export class WordsService {
 
   async findAll(query: QueryWordsDto): Promise<Paginated<Word>> {
     const { page, limit } = query;
-    const term = query.q?.trim();
-
-    const pageQuery = this.wordsRepository
-      .createQueryBuilder('w')
-      .select('w.id')
-      .orderBy('w.createdAt', 'ASC')
-      .addOrderBy('w.id', 'ASC')
-      .take(limit)
-      .skip((page - 1) * limit);
-
-    if (term) {
-      pageQuery.where(
-        'w.word ILIKE :q OR EXISTS (SELECT 1 FROM word_translations wt WHERE wt.word_id = w.id AND wt.text ILIKE :q)',
-        { q: `%${escapeLike(term)}%` },
-      );
-    }
-
-    const [pageRows, total] = await pageQuery.getManyAndCount();
-    if (pageRows.length === 0) {
+    const [ids, total] = await this.findPageIds(query);
+    if (ids.length === 0) {
       return paginated([], total, page, limit);
     }
 
     const items = await this.wordsRepository.find({
-      where: { id: In(pageRows.map((row) => row.id)) },
-      relations: {
-        translations: true,
-        forms: true,
-        examples: true,
-        topics: true,
-        lessons: true,
-      },
-      order: {
-        createdAt: 'ASC',
-        id: 'ASC',
-        translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
-        forms: { sortOrder: 'ASC' },
-        examples: { sortOrder: 'ASC' },
-        topics: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
-        lessons: { lessonNumber: 'ASC', name: 'ASC', id: 'ASC' },
-      },
+      where: { id: In(ids) },
+      relations: WORD_RELATIONS,
+      order: { createdAt: 'ASC', id: 'ASC', ...WORD_CHILD_ORDER },
     });
 
     return paginated(items, total, page, limit);
@@ -84,20 +76,8 @@ export class WordsService {
   async findOne(id: string): Promise<Word> {
     const word = await this.wordsRepository.findOne({
       where: { id },
-      relations: {
-        translations: true,
-        forms: true,
-        examples: true,
-        topics: true,
-        lessons: true,
-      },
-      order: {
-        translations: { isPrimary: 'DESC', sortOrder: 'ASC' },
-        forms: { sortOrder: 'ASC' },
-        examples: { sortOrder: 'ASC' },
-        topics: { sortOrder: 'ASC', name: 'ASC', id: 'ASC' },
-        lessons: { lessonNumber: 'ASC', name: 'ASC', id: 'ASC' },
-      },
+      relations: WORD_RELATIONS,
+      order: WORD_CHILD_ORDER,
     });
     if (!word) {
       throw new NotFoundException('Word not found');
@@ -134,6 +114,31 @@ export class WordsService {
     return this.findOne(wordId);
   }
 
+  private async findPageIds({
+    page,
+    limit,
+    q,
+  }: QueryWordsDto): Promise<[string[], number]> {
+    const term = q?.trim();
+    const pageQuery = this.wordsRepository
+      .createQueryBuilder('w')
+      .select('w.id')
+      .orderBy('w.createdAt', 'ASC')
+      .addOrderBy('w.id', 'ASC')
+      .take(limit)
+      .skip((page - 1) * limit);
+
+    if (term) {
+      pageQuery.where(
+        'w.word ILIKE :q OR EXISTS (SELECT 1 FROM word_translations wt WHERE wt.word_id = w.id AND wt.text ILIKE :q)',
+        { q: `%${escapeLike(term)}%` },
+      );
+    }
+
+    const [rows, total] = await pageQuery.getManyAndCount();
+    return [rows.map((row) => row.id), total];
+  }
+
   private async resolveTopics(
     manager: EntityManager,
     topicIds: string[],
@@ -161,51 +166,73 @@ export class WordsService {
     }
 
     await this.wordsRepository.manager.transaction(async (manager) => {
-      if (dto.word !== undefined) {
-        const headword = normalizeWord(dto.word);
-        await this.ensureUniqueWord(headword, id);
-        word.word = headword;
-      }
-      if (dto.transcription !== undefined) {
-        word.transcription = dto.transcription ?? null;
-      }
-      if (dto.imageId !== undefined) {
-        word.imageId = dto.imageId ?? null;
-      }
+      await this.applyFieldChanges(word, dto);
       if (dto.topicIds !== undefined) {
-        const topics = await this.resolveTopics(manager, dto.topicIds);
-        const nextTopicIds = new Set(topics.map((topic) => topic.id));
-        const removedTopicIds = word.topics
-          .map((topic) => topic.id)
-          .filter((topicId) => !nextTopicIds.has(topicId));
-
-        await this.lessonsService.removeWordFromTopicLessons(
-          manager,
-          word.id,
-          removedTopicIds,
-        );
-        word.topics = topics;
+        await this.replaceTopics(manager, word, dto.topicIds);
       }
-
-      if (dto.translations !== undefined) {
-        await manager.delete(WordTranslation, { word: { id } });
-        word.translations = dto.translations.map(buildTranslation);
-      }
-      if (dto.forms !== undefined) {
-        await manager.delete(WordForm, { word: { id } });
-        word.forms = dto.forms.map(buildForm);
-      }
-      if (dto.examples !== undefined) {
-        await manager.delete(WordExample, { word: { id } });
-        word.examples = dto.examples.map(buildExample);
-      }
-
+      await this.replaceChildren(manager, word, dto);
       await manager.save(word);
     });
 
     await this.imagesService.deleteIfReplaced(previousImageId, word.imageId);
 
     return this.findOne(id);
+  }
+
+  private async applyFieldChanges(
+    word: Word,
+    dto: UpdateWordDto,
+  ): Promise<void> {
+    if (dto.word !== undefined) {
+      const headword = normalizeWord(dto.word);
+      await this.ensureUniqueWord(headword, word.id);
+      word.word = headword;
+    }
+    if (dto.transcription !== undefined) {
+      word.transcription = dto.transcription ?? null;
+    }
+    if (dto.imageId !== undefined) {
+      word.imageId = dto.imageId ?? null;
+    }
+  }
+
+  private async replaceTopics(
+    manager: EntityManager,
+    word: Word,
+    topicIds: string[],
+  ): Promise<void> {
+    const topics = await this.resolveTopics(manager, topicIds);
+    const nextTopicIds = new Set(topics.map((topic) => topic.id));
+    const removedTopicIds = word.topics
+      .map((topic) => topic.id)
+      .filter((topicId) => !nextTopicIds.has(topicId));
+
+    await this.lessonsService.removeWordFromTopicLessons(
+      manager,
+      word.id,
+      removedTopicIds,
+    );
+    word.topics = topics;
+  }
+
+  private async replaceChildren(
+    manager: EntityManager,
+    word: Word,
+    dto: UpdateWordDto,
+  ): Promise<void> {
+    const byWord = { word: { id: word.id } };
+    if (dto.translations !== undefined) {
+      await manager.delete(WordTranslation, byWord);
+      word.translations = dto.translations.map(buildTranslation);
+    }
+    if (dto.forms !== undefined) {
+      await manager.delete(WordForm, byWord);
+      word.forms = dto.forms.map(buildForm);
+    }
+    if (dto.examples !== undefined) {
+      await manager.delete(WordExample, byWord);
+      word.examples = dto.examples.map(buildExample);
+    }
   }
 
   async remove(id: string): Promise<void> {

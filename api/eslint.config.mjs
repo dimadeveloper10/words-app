@@ -34,4 +34,14 @@ export default tseslint.config(
       "prettier/prettier": ["error", { endOfLine: "auto" }],
     },
   },
+  {
+    files: ['src/**/*.ts'],
+    ignores: ['**/*.spec.ts', 'src/database/migrations/**'],
+    rules: {
+      'max-lines-per-function': [
+        'error',
+        { max: 40, skipBlankLines: true, skipComments: true },
+      ],
+    },
+  },
 );
