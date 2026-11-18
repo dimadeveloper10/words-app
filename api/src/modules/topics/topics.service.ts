@@ -137,21 +137,7 @@ export class TopicsService {
       await this.imagesService.ensureExists(dto.imageId);
     }
 
-    if (name !== undefined) {
-      topic.name = name;
-    }
-    if (slug !== undefined) {
-      topic.slug = slug;
-    }
-    if (dto.description !== undefined) {
-      topic.description = dto.description ?? null;
-    }
-    if (dto.sortOrder !== undefined) {
-      topic.sortOrder = dto.sortOrder;
-    }
-    if (dto.imageId !== undefined) {
-      topic.imageId = dto.imageId ?? null;
-    }
+    this.applyChanges(topic, { ...dto, name, slug });
 
     const savedTopic = await this.topicsRepository.save(topic);
     await this.imagesService.deleteIfReplaced(previousImageId, topic.imageId);
@@ -163,6 +149,24 @@ export class TopicsService {
     await this.topicsRepository.remove(topic);
     if (topic.imageId) {
       await this.imagesService.delete(topic.imageId);
+    }
+  }
+
+  private applyChanges(topic: Topic, changes: UpdateTopicDto): void {
+    if (changes.name !== undefined) {
+      topic.name = changes.name;
+    }
+    if (changes.slug !== undefined) {
+      topic.slug = changes.slug;
+    }
+    if (changes.description !== undefined) {
+      topic.description = changes.description ?? null;
+    }
+    if (changes.sortOrder !== undefined) {
+      topic.sortOrder = changes.sortOrder;
+    }
+    if (changes.imageId !== undefined) {
+      topic.imageId = changes.imageId ?? null;
     }
   }
 

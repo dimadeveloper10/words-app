@@ -41,6 +41,13 @@ const ANSWER_SELECT = {
   exerciseType: { id: true, type: true },
 } satisfies FindOptionsSelect<WordAnswer>;
 
+interface AttemptTimes {
+  startedAt: Date;
+  answeredAt: Date;
+}
+
+type CreateResult = { answer: WordAnswerResponseDto; created: boolean };
+
 @Injectable()
 export class WordAnswersService {
   constructor(
@@ -74,25 +81,12 @@ export class WordAnswersService {
     );
   }
 
-  async create(
-    dto: CreateWordAnswerDto,
-    user: User,
-  ): Promise<{ answer: WordAnswerResponseDto; created: boolean }> {
-    const startedAt = new Date(dto.startedAt);
-    const answeredAt = new Date(dto.answeredAt);
-    if (
-      !Number.isFinite(startedAt.getTime()) ||
-      !Number.isFinite(answeredAt.getTime()) ||
-      startedAt > answeredAt
-    ) {
-      throw new BadRequestException(
-        'startedAt and answeredAt must be valid dates, with startedAt no later than answeredAt',
-      );
-    }
+  async create(dto: CreateWordAnswerDto, user: User): Promise<CreateResult> {
+    const times = this.parseAttemptTimes(dto);
 
     const existing = await this.findStored(dto.id);
     if (existing) {
-      return this.retry(existing, dto, user.id, startedAt, answeredAt);
+      return this.retry(existing, dto, user.id, times);
     }
 
     const exerciseType = await this.validateReferences(dto);
@@ -107,26 +101,10 @@ export class WordAnswersService {
         exerciseType: { id: exerciseType.id },
         isCorrect: dto.isCorrect,
         pointsAwarded: dto.pointsAwarded,
-        startedAt,
-        answeredAt,
+        ...times,
       });
     } catch (error) {
-      if (error instanceof QueryFailedError) {
-        const { code } = error.driverError as { code?: string };
-        if (code === '23505') {
-          // A concurrent request may have inserted the same UUID after our lookup.
-          const saved = await this.findStored(dto.id);
-          if (saved) {
-            return this.retry(saved, dto, user.id, startedAt, answeredAt);
-          }
-        }
-        if (code === '23503') {
-          throw new ConflictException(
-            'An answer reference was removed during submission; reload and try again',
-          );
-        }
-      }
-      throw error;
+      return this.handleInsertError(error, dto, user.id, times);
     }
 
     const saved = await this.findStored(dto.id);
@@ -187,6 +165,46 @@ export class WordAnswersService {
     return exerciseType;
   }
 
+  private parseAttemptTimes(dto: CreateWordAnswerDto): AttemptTimes {
+    const startedAt = new Date(dto.startedAt);
+    const answeredAt = new Date(dto.answeredAt);
+    if (
+      !Number.isFinite(startedAt.getTime()) ||
+      !Number.isFinite(answeredAt.getTime()) ||
+      startedAt > answeredAt
+    ) {
+      throw new BadRequestException(
+        'startedAt and answeredAt must be valid dates, with startedAt no later than answeredAt',
+      );
+    }
+    return { startedAt, answeredAt };
+  }
+
+  private async handleInsertError(
+    error: unknown,
+    dto: CreateWordAnswerDto,
+    userId: string,
+    times: AttemptTimes,
+  ): Promise<CreateResult> {
+    if (!(error instanceof QueryFailedError)) {
+      throw error;
+    }
+    const { code } = error.driverError as { code?: string };
+    if (code === '23505') {
+      // A concurrent request may have inserted the same UUID after our lookup.
+      const saved = await this.findStored(dto.id);
+      if (saved) {
+        return this.retry(saved, dto, userId, times);
+      }
+    }
+    if (code === '23503') {
+      throw new ConflictException(
+        'An answer reference was removed during submission; reload and try again',
+      );
+    }
+    throw error;
+  }
+
   private findStored(id: string): Promise<WordAnswer | null> {
     return this.answersRepository.findOne({
       where: { id },
@@ -199,24 +217,33 @@ export class WordAnswersService {
     saved: WordAnswer,
     dto: CreateWordAnswerDto,
     userId: string,
-    startedAt: Date,
-    answeredAt: Date,
-  ): { answer: WordAnswerResponseDto; created: boolean } {
-    if (
-      saved.user.id !== userId ||
-      saved.word.id !== dto.wordId ||
-      (saved.lesson?.id ?? null) !== (dto.lessonId ?? null) ||
-      saved.exerciseType.type !== dto.exerciseType ||
-      saved.isCorrect !== dto.isCorrect ||
-      saved.pointsAwarded !== dto.pointsAwarded ||
-      saved.startedAt.getTime() !== startedAt.getTime() ||
-      saved.answeredAt.getTime() !== answeredAt.getTime()
-    ) {
+    times: AttemptTimes,
+  ): CreateResult {
+    if (!this.isSameAttempt(saved, dto, userId, times)) {
       throw new ConflictException(
         'Answer ID is already used by another attempt',
       );
     }
     return { answer: this.toResponse(saved), created: false };
+  }
+
+  private isSameAttempt(
+    saved: WordAnswer,
+    dto: CreateWordAnswerDto,
+    userId: string,
+    times: AttemptTimes,
+  ): boolean {
+    const pairs: [unknown, unknown][] = [
+      [saved.user.id, userId],
+      [saved.word.id, dto.wordId],
+      [saved.lesson?.id ?? null, dto.lessonId ?? null],
+      [saved.exerciseType.type, dto.exerciseType],
+      [saved.isCorrect, dto.isCorrect],
+      [saved.pointsAwarded, dto.pointsAwarded],
+      [saved.startedAt.getTime(), times.startedAt.getTime()],
+      [saved.answeredAt.getTime(), times.answeredAt.getTime()],
+    ];
+    return pairs.every(([stored, sent]) => stored === sent);
   }
 
   private toResponse(answer: WordAnswer): WordAnswerResponseDto {

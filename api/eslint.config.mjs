@@ -30,6 +30,7 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
       curly: ['error', 'all'],
+      complexity: ['error', 10],
       "prettier/prettier": ["error", { endOfLine: "auto" }],
     },
   },
