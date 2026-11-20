@@ -130,3 +130,20 @@ Add a page: create `src/features/<feature>/`, register the route under `AppLayou
 in `router.tsx`, and add a `NavLink` in `components/AppLayout.tsx`.
 
 **Run:** `npm run dev` (port 5173). API base URL from `VITE_API_URL` (`.env`).
+
+## Web app (`words-web-app/`)
+
+Learner-facing React app. **Stack:** React 19 · Vite 6 · TypeScript ·
+react-router-dom 7 · Zustand 5 (persisted catalog/answers stores, offline sync) ·
+TanStack Query 5 (auth) · axios · react-hook-form + zod · plain co-located CSS.
+
+Layout mirrors the admin panel: `src/features/<feature>/` with pages, `*.api.ts`,
+`*.types.ts` and `use*.ts` hooks; stores and selectors in `src/stores/`; routes in
+`src/router.tsx`.
+
+**Skills** (in `words-web-app/.claude/skills/`): `react-style-guide` (React best
+practices, with topic files in `references/`), `react-review` (review a diff against
+the guide) and `react-feature` (scaffold a new page/feature).
+
+**Run:** `npm start` (port 5174, proxies `/api` to the NestJS API on port 3000).
+**Checks:** `npm run lint`, `npx tsc --noEmit`.
