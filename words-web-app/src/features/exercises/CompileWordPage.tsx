@@ -1,8 +1,10 @@
 import { type FormEvent, type MouseEvent, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { PageHeader } from '../../components/PageHeader';
 import { useGoBack } from '../../components/useGoBack';
 import { formatTranslation } from '../words/formatTranslation';
 import { useLessonWords } from '../words/useWords';
+import type { Word } from '../words/words.types';
 import { ExerciseHeader } from './components/ExerciseHeader';
 import { FinishExerciseDialog } from './components/FinishExerciseDialog';
 import { LetterPicker } from './components/LetterPicker';
@@ -59,9 +61,32 @@ const lettersIcon = (
   </svg>
 );
 
+interface CompileWordExerciseProps {
+  lessonId: string;
+  words: Word[];
+}
+
 export function CompileWordPage() {
   const { lessonId = '' } = useParams();
   const words = useLessonWords(lessonId);
+
+  if (words.length === 0) {
+    return (
+      <main className="session-page" aria-labelledby="compile-word-title">
+        <PageHeader
+          id="compile-word-title"
+          title="Compile word"
+          backTo={`/lessons/${lessonId}`}
+        />
+        <p>No words in this lesson yet.</p>
+      </main>
+    );
+  }
+
+  return <CompileWordExercise lessonId={lessonId} words={words} />;
+}
+
+function CompileWordExercise({ lessonId, words }: CompileWordExerciseProps) {
   const lessonPath = `/lessons/${lessonId}`;
   const goBack = useGoBack();
   const {
