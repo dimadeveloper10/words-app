@@ -1,27 +1,27 @@
-name: CI
+name: Web
 
 on:
   push:
     branches: [main]
     paths:
-      - 'api/**'
-      - '.github/workflows/ci.yml'
+      - 'words-web-app/**'
+      - '.github/workflows/web.yml'
   pull_request:
     paths:
-      - 'api/**'
-      - '.github/workflows/ci.yml'
+      - 'words-web-app/**'
+      - '.github/workflows/web.yml'
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: web-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  api:
-    name: API · lint, test, build
+  web:
+    name: Web · lint, build
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: api
+        working-directory: words-web-app
     steps:
       - uses: actions/checkout@v4
 
@@ -29,15 +29,12 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: api/package-lock.json
+          cache-dependency-path: words-web-app/package-lock.json
 
       - run: npm ci
 
       - name: Lint
-        run: npm run lint:check
-
-      - name: Unit tests
-        run: npm test
+        run: npm run lint
 
       - name: Build
         run: npm run build
