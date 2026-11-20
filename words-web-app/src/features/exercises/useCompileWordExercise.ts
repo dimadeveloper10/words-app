@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { speakWord, stopSpeaking } from '../words/speakWord';
 import type { Word } from '../words/words.types';
 import type { PendingWordAnswer } from '../word-answers/word-answer.types';
@@ -8,6 +8,8 @@ const NEXT_WORD_DELAY_MS = 1500;
 
 export type AnswerStatus = 'typing' | 'correct' | 'wrong';
 
+type Round = ReturnType<typeof useRound>;
+
 function normalize(value: string) {
   return value.trim().toLowerCase();
 }
@@ -16,14 +18,23 @@ function pickRandom<T>(items: readonly T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-export function useCompileWordExercise(words: Word[]) {
-  const [word, setWord] = useState(() => pickRandom(words));
-  const [step, setStep] = useState(0);
-  const [answer, setAnswer] = useState('');
-  const [answers, setAnswers] = useState<PendingWordAnswer[]>([]);
-  const [status, setStatus] = useState<AnswerStatus>('typing');
+function createPendingAnswer(
+  wordId: string,
+  startedAt: Date | null,
+  isCorrect: boolean,
+): PendingWordAnswer {
+  const answeredAt = new Date();
+  return {
+    id: crypto.randomUUID(),
+    wordId,
+    startedAt: startedAt ?? answeredAt,
+    answeredAt,
+    isCorrect,
+  };
+}
+
+function useAnswerTimer(step: number) {
   const startedAt = useRef<Date | null>(null);
-  const correctCount = answers.filter((a) => a.isCorrect).length;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -32,71 +43,100 @@ export function useCompileWordExercise(words: Word[]) {
     return () => clearTimeout(timer);
   }, [step]);
 
+  return startedAt;
+}
+
+function useAutoAdvance(status: AnswerStatus, nextWord: () => void) {
   useEffect(() => {
     if (status !== 'correct') {
       return;
     }
-    const timer = setTimeout(() => {
-      startedAt.current = null;
-      setWord(pickRandom(words));
-      setStep((s) => s + 1);
-      setAnswer('');
-      setStatus('typing');
-    }, NEXT_WORD_DELAY_MS);
+    const timer = setTimeout(nextWord, NEXT_WORD_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [status, words]);
+  }, [status, nextWord]);
+}
 
-  useEffect(() => stopSpeaking, []);
+function useAnswerInput(step: number, status: AnswerStatus) {
+  const [answer, setAnswer] = useState('');
+  const startedAt = useAnswerTimer(step);
+
+  const reset = useCallback(() => {
+    startedAt.current = null;
+    setAnswer('');
+  }, [startedAt]);
 
   function changeAnswer(value: string) {
-    if (status !== 'typing') {
-      return;
+    if (status === 'typing') {
+      startedAt.current ??= new Date();
+      setAnswer(value);
     }
-    startedAt.current ??= new Date();
-    setAnswer(value);
   }
 
-  function submitAnswer(value: string = answer) {
+  return { answer, startedAt, changeAnswer, reset };
+}
+
+function useRound(words: Word[]) {
+  const [word, setWord] = useState(() => pickRandom(words));
+  const [step, setStep] = useState(0);
+  const [status, setStatus] = useState<AnswerStatus>('typing');
+  const input = useAnswerInput(step, status);
+  const { reset } = input;
+
+  const nextWord = useCallback(() => {
+    reset();
+    setWord(pickRandom(words));
+    setStep((s) => s + 1);
+    setStatus('typing');
+  }, [words, reset]);
+
+  useAutoAdvance(status, nextWord);
+
+  return { ...input, word, step, status, setStatus, nextWord };
+}
+
+function useAnswerLog(round: Round) {
+  const [answers, setAnswers] = useState<PendingWordAnswer[]>([]);
+
+  function submitAnswer(value: string = round.answer) {
+    const { word, status, startedAt } = round;
     if (status !== 'typing' || normalize(value) === '') {
       return;
     }
 
     const isCorrect = normalize(value) === normalize(word.word);
-    const answeredAt = new Date();
     setAnswers((prev) => [
       ...prev,
-      {
-        id: crypto.randomUUID(),
-        wordId: word.id,
-        startedAt: startedAt.current ?? answeredAt,
-        answeredAt,
-        isCorrect,
-      },
+      createPendingAnswer(word.id, startedAt.current, isCorrect),
     ]);
-    setStatus(isCorrect ? 'correct' : 'wrong');
+    round.setStatus(isCorrect ? 'correct' : 'wrong');
     if (isCorrect) {
       speakWord(word.word);
     }
   }
 
+  return { answers, submitAnswer, clear: () => setAnswers([]) };
+}
+
+export function useCompileWordExercise(words: Word[]) {
+  const round = useRound(words);
+  const log = useAnswerLog(round);
+
+  useEffect(() => stopSpeaking, []);
+
   function playAgain() {
-    startedAt.current = null;
-    setWord(pickRandom(words));
-    setStep((s) => s + 1);
-    setAnswer('');
-    setAnswers([]);
-    setStatus('typing');
+    round.nextWord();
+    log.clear();
   }
 
   return {
-    word,
-    step,
-    answer,
-    answers,
-    status,
-    correctCount,
-    changeAnswer,
-    submitAnswer,
+    word: round.word,
+    step: round.step,
+    answer: round.answer,
+    answers: log.answers,
+    status: round.status,
+    correctCount: log.answers.filter((a) => a.isCorrect).length,
+    changeAnswer: round.changeAnswer,
+    submitAnswer: log.submitAnswer,
     playAgain,
   };
 }

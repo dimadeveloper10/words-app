@@ -45,4 +45,14 @@ export default tseslint.config(
       complexity: ['error', 10],
     },
   },
+  {
+    files: ['src/**/*.ts'],
+    ignores: ['src/stores/**'],
+    rules: {
+      'max-lines-per-function': [
+        'error',
+        { max: 30, skipBlankLines: true, skipComments: true },
+      ],
+    },
+  },
 );
