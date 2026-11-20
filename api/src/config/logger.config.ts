@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { Params } from 'nestjs-pino';
-import { stdSerializers } from 'pino';
+import { stdSerializers, type TransportSingleOptions } from 'pino';
 
 type RequestWithUser = IncomingMessage & {
   id?: unknown;
@@ -43,7 +43,7 @@ const SERIALIZERS = {
       : stdSerializers.err(err),
 };
 
-function prettyTransport(isDev: boolean) {
+function prettyTransport(isDev: boolean): TransportSingleOptions | undefined {
   if (!isDev) {
     return undefined;
   }

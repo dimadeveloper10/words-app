@@ -2,7 +2,7 @@ import { applyDecorators, Type } from '@nestjs/common';
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
 
 /** Describe the Paginated<T> wrapper, whose generic type is erased at runtime. */
-export const ApiPaginatedResponse = (model: Type<unknown>) =>
+export const ApiPaginatedResponse = (model: Type<unknown>): MethodDecorator =>
   applyDecorators(
     ApiExtraModels(model),
     ApiOkResponse({

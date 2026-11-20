@@ -8,7 +8,7 @@ export const ROLES_KEY = 'roles';
  * Restrict a route to the given roles (or higher in the hierarchy).
  * Example: `@Roles(Role.ADMIN)` allows admin and superadmin.
  */
-export const Roles = (...roles: Role[]) =>
+export const Roles = (...roles: Role[]): MethodDecorator & ClassDecorator =>
   applyDecorators(
     SetMetadata(ROLES_KEY, roles),
     ApiOperation({

@@ -4,7 +4,7 @@ import { ApiOperation } from '@nestjs/swagger';
 export const IS_PUBLIC_KEY = 'isPublic';
 
 /** Marks a route as public, bypassing the global JWT auth guard. */
-export const Public = () =>
+export const Public = (): MethodDecorator & ClassDecorator =>
   applyDecorators(
     SetMetadata(IS_PUBLIC_KEY, true),
     ApiOperation({ security: [] }),

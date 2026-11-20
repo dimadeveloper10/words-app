@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 
-export const ApiImageUpload = () =>
+export const ApiImageUpload = (): MethodDecorator =>
   applyDecorators(
     ApiConsumes('multipart/form-data'),
     ApiBody({

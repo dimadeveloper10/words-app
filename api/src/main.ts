@@ -24,7 +24,7 @@ function setupSwagger(app: INestApplication): void {
   );
 }
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(AppLogger));
   app.useGlobalInterceptors(new LoggerErrorInterceptor());

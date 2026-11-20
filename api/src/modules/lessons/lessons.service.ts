@@ -5,7 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, FindOptionsWhere, In, Not, Repository } from 'typeorm';
+import {
+  EntityManager,
+  FindOptionsWhere,
+  In,
+  Not,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { Paginated, paginated } from '../../common/dto/paginated';
 import { Topic } from '../topics/entities/topic.entity';
 import { User } from '../users/entities/user.entity';
@@ -239,7 +246,7 @@ export class LessonsService {
       .execute();
   }
 
-  private lessonQuery() {
+  private lessonQuery(): SelectQueryBuilder<Lesson> {
     return this.lessonsRepository
       .createQueryBuilder('lesson')
       .innerJoinAndSelect('lesson.topic', 'topic')

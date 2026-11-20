@@ -31,6 +31,14 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-argument': 'warn',
       curly: ['error', 'all'],
       complexity: ['error', 10],
+      '@typescript-eslint/explicit-function-return-type': [
+        'error',
+        {
+          allowExpressions: true,
+          allowTypedFunctionExpressions: true,
+          allowHigherOrderFunctions: true,
+        },
+      ],
       "prettier/prettier": ["error", { endOfLine: "auto" }],
     },
   },

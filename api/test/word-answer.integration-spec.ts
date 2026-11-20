@@ -21,6 +21,14 @@ async function requireEmptyDatabase(db: DataSource): Promise<void> {
   }
 }
 
+type AnswerRow = Record<string, unknown>;
+
+type InsertedAnswer = {
+  started_at: Date;
+  answered_at: Date;
+  created_at: Date;
+};
+
 describe('Word answer database', () => {
   let db: DataSource;
   let ownsSchema = false;
@@ -136,7 +144,7 @@ describe('Word answer database', () => {
       await runner?.release();
     });
 
-    function answer(overrides: Record<string, unknown> = {}) {
+    function answer(overrides: AnswerRow = {}): AnswerRow {
       return {
         id: randomUUID(),
         user_id: userId,
@@ -151,16 +159,16 @@ describe('Word answer database', () => {
       };
     }
 
-    async function insert(values = answer()) {
+    async function insert(values = answer()): Promise<InsertedAnswer[]> {
       const columns = Object.keys(values);
-      return query<{ started_at: Date; answered_at: Date; created_at: Date }[]>(
+      return query<InsertedAnswer[]>(
         `INSERT INTO word_answers (${columns.map((c) => `"${c}"`).join(', ')})
          VALUES (${columns.map((_, i) => `$${i + 1}`).join(', ')}) RETURNING *`,
         Object.values(values),
       );
     }
 
-    async function rejected(values: ReturnType<typeof answer>, code: string) {
+    async function rejected(values: AnswerRow, code: string): Promise<void> {
       // PostgreSQL aborts a transaction after a constraint violation.
       await query('SAVEPOINT invalid_answer');
       await expect(insert(values)).rejects.toMatchObject({

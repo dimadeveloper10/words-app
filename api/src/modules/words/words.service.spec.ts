@@ -10,7 +10,39 @@ import { Word } from './entities/word.entity';
 import { WordsService } from './words.service';
 import { PartOfSpeech } from '../../common/enums/part-of-speech.enum';
 
-function setup() {
+type QueryBuilderMock = Record<
+  | 'select'
+  | 'orderBy'
+  | 'addOrderBy'
+  | 'take'
+  | 'skip'
+  | 'where'
+  | 'getManyAndCount',
+  jest.Mock
+>;
+
+type ManagerMock = {
+  delete: jest.Mock;
+  save: jest.Mock;
+  getRepository: jest.Mock;
+};
+
+type SetupContext = {
+  service: WordsService;
+  queryBuilder: QueryBuilderMock;
+  findTopics: jest.Mock;
+  manager: ManagerMock;
+  wordsRepository: {
+    find: jest.Mock;
+    findOne: jest.Mock;
+    createQueryBuilder: jest.Mock;
+    manager: { transaction: jest.Mock };
+  };
+  lessons: { removeWordFromTopicLessons: jest.Mock };
+  images: { ensureExists: jest.Mock; deleteIfReplaced: jest.Mock };
+};
+
+function setup(): SetupContext {
   const queryBuilder = {
     select: jest.fn().mockReturnThis(),
     orderBy: jest.fn().mockReturnThis(),

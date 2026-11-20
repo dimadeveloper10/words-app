@@ -11,6 +11,23 @@ import { Word } from '../words/entities/word.entity';
 import { Lesson } from './entities/lesson.entity';
 import { LessonsService } from './lessons.service';
 
+type UpdateContext = {
+  service: LessonsService;
+  lessonsRepo: { findOne: jest.Mock; save: jest.Mock };
+  wordsRepo: { find: jest.Mock };
+  images: { ensureExists: jest.Mock; deleteIfReplaced: jest.Mock };
+  findOne: jest.SpyInstance;
+};
+
+type CreateContext = {
+  service: LessonsService;
+  lessonsRepo: { findOne: jest.Mock; create: jest.Mock; save: jest.Mock };
+  topicsRepo: { findOneBy: jest.Mock };
+  wordsRepo: { find: jest.Mock };
+  images: { ensureExists: jest.Mock };
+  findOne: jest.SpyInstance;
+};
+
 describe('LessonsService.update', () => {
   function storedLesson(): Lesson {
     return {
@@ -24,7 +41,7 @@ describe('LessonsService.update', () => {
     } as unknown as Lesson;
   }
 
-  function setup(lesson: Lesson | null = storedLesson()) {
+  function setup(lesson: Lesson | null = storedLesson()): UpdateContext {
     const lessonsRepo = {
       findOne: jest.fn().mockResolvedValueOnce(lesson).mockResolvedValue(null),
       save: jest.fn().mockResolvedValue(undefined),
@@ -150,7 +167,7 @@ describe('LessonsService.create', () => {
   const addedBy = { id: 'user-id' } as User;
   const topic = { id: 'topic-id' } as Topic;
 
-  function setup() {
+  function setup(): CreateContext {
     const lessonsRepo = {
       findOne: jest.fn().mockResolvedValue(null),
       create: jest.fn((value: object) => ({ ...value })),
