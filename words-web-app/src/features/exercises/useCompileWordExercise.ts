@@ -72,15 +72,18 @@ function useAnswerInput(step: number, status: AnswerStatus) {
     }
   }
 
-  return { answer, startedAt, changeAnswer, reset };
+  function getStartedAt() {
+    return startedAt.current;
+  }
+
+  return { answer, changeAnswer, getStartedAt, reset };
 }
 
 function useRound(words: Word[]) {
   const [word, setWord] = useState(() => pickRandom(words));
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState<AnswerStatus>('typing');
-  const input = useAnswerInput(step, status);
-  const { reset } = input;
+  const { reset, ...input } = useAnswerInput(step, status);
 
   const nextWord = useCallback(() => {
     reset();
@@ -91,14 +94,18 @@ function useRound(words: Word[]) {
 
   useAutoAdvance(status, nextWord);
 
-  return { ...input, word, step, status, setStatus, nextWord };
+  function markAnswered(isCorrect: boolean) {
+    setStatus(isCorrect ? 'correct' : 'wrong');
+  }
+
+  return { ...input, word, step, status, markAnswered, nextWord };
 }
 
 function useAnswerLog(round: Round) {
   const [answers, setAnswers] = useState<PendingWordAnswer[]>([]);
 
   function submitAnswer(value: string = round.answer) {
-    const { word, status, startedAt } = round;
+    const { word, status } = round;
     if (status !== 'typing' || normalize(value) === '') {
       return;
     }
@@ -106,9 +113,9 @@ function useAnswerLog(round: Round) {
     const isCorrect = normalize(value) === normalize(word.word);
     setAnswers((prev) => [
       ...prev,
-      createPendingAnswer(word.id, startedAt.current, isCorrect),
+      createPendingAnswer(word.id, round.getStartedAt(), isCorrect),
     ]);
-    round.setStatus(isCorrect ? 'correct' : 'wrong');
+    round.markAnswered(isCorrect);
     if (isCorrect) {
       speakWord(word.word);
     }
