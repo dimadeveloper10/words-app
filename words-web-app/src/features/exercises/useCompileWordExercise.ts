@@ -103,12 +103,18 @@ function useRound(words: Word[]) {
 
 function useAnswerLog(round: Round) {
   const [answers, setAnswers] = useState<PendingWordAnswer[]>([]);
+  const answeredStep = useRef<number | null>(null);
 
   function submitAnswer(value: string = round.answer) {
-    const { word, status } = round;
-    if (status !== 'typing' || normalize(value) === '') {
+    const { word, status, step } = round;
+    if (
+      status !== 'typing' ||
+      normalize(value) === '' ||
+      answeredStep.current === step
+    ) {
       return;
     }
+    answeredStep.current = step;
 
     const isCorrect = normalize(value) === normalize(word.word);
     setAnswers((prev) => [
