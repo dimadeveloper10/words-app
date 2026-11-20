@@ -1,119 +1,98 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Words API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS REST API for the words-app: authentication and roles, the English →
+Ukrainian dictionary, topics and lessons, uploaded images, and learners' exercise
+answers. Data lives in PostgreSQL through TypeORM.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Development
 
-## Description
+Requirements: Node.js 24 and PostgreSQL. Run these commands from this directory:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+```sh
+npm install
+cp .env.example .env
+npm run migration:run
+npm run seed
+npm run start:dev
 ```
 
-## Compile and run the project
+- `npm run migration:run` creates or updates the schema in the database configured
+  in `.env`.
+- `npm run seed` creates the first superadmin from `SUPERADMIN_EMAIL` /
+  `SUPERADMIN_PASSWORD`. It's idempotent and can be run again safely.
+- `npm run start:dev` starts the API at http://localhost:3000 and restarts on changes.
 
-```bash
-# development
-$ npm run start
+No local PostgreSQL? `docker compose up -d` starts PostgreSQL 16 using the `DB_*`
+values from `.env`.
 
-# watch mode
-$ npm run start:dev
+Interactive API docs (Swagger) are served at http://localhost:3000/docs, and the
+OpenAPI JSON at `/docs-json`. Sign in through `POST /auth/login`, then paste the
+`accessToken` into **Authorize**.
 
-# production mode
-$ npm run start:prod
+## Environment variables
+
+| Variable                                                      | Description                                                        |
+| ------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `NODE_ENV`, `PORT`                                            | runtime mode and HTTP port (default `3000`)                        |
+| `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME` | PostgreSQL connection                                              |
+| `JWT_SECRET`, `JWT_EXPIRES_IN`                                | signing secret and lifetime of access tokens                       |
+| `CORS_ORIGIN`                                                 | comma-separated allowed origins (admin panel and web app)          |
+| `REDIS_URL`                                                   | Redis used to cache dictionary transcription lookups               |
+| `THROTTLE_TTL`, `THROTTLE_LIMIT`                              | rate limit window (ms) and requests per window per client IP       |
+| `SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD`                     | first superadmin created by `npm run seed`                         |
+| `LOG_LEVEL`                                                   | `fatal` · `error` · `warn` · `info` · `debug` · `trace` · `silent` |
+
+All variables are validated at startup in `src/config/env.validation.ts`. See
+`.env.example` for defaults. Never commit `.env`.
+
+## Commands
+
+| Command                                                                    | What it does                             |
+| -------------------------------------------------------------------------- | ---------------------------------------- |
+| `npm run start:dev`                                                        | start in watch mode                      |
+| `npm run build`                                                            | compile to `dist/`                       |
+| `npm run start:prod`                                                       | run the compiled build                   |
+| `npm run lint`                                                             | lint and auto-fix                        |
+| `npm run lint:check`                                                       | lint without changing files (used by CI) |
+| `npm test`                                                                 | unit tests (no database needed)          |
+| `npm run test:e2e`                                                         | end-to-end tests                         |
+| `npm run migration:run`                                                    | apply pending migrations                 |
+| `npm run migration:revert`                                                 | roll back the last applied migration     |
+| `npm run migration:generate -- src/database/migrations/<timestamp>-<Name>` | draft a migration from entity changes    |
+| `npm run seed`                                                             | create the first superadmin              |
+
+`migration:run` and `migration:revert` change the database in `.env`.
+
+## API overview
+
+| Resource          | Routes                                                                                                |
+| ----------------- | ----------------------------------------------------------------------------------------------------- |
+| `/auth`           | register, login, current user (`/auth/me`)                                                            |
+| `/users`          | list users (admin); create users and change roles (superadmin)                                        |
+| `/words`          | paginated search; create, update, delete (single or bulk) words with translations, forms and examples |
+| `/topics`         | topics and their words                                                                                |
+| `/lessons`        | lessons in a topic and their words                                                                    |
+| `/images`         | image upload; files are served from `/static/images/`                                                 |
+| `/dictionary`     | transcription lookup through an external dictionary API                                               |
+| `/exercise-types` | available exercise types                                                                              |
+| `/word-answers`   | the current user's exercise answers, including batch sync                                             |
+
+Every route requires a JWT except `POST /auth/register` and `POST /auth/login`.
+Content changes, image uploads and dictionary lookups require the `admin` role;
+creating users and changing roles require `superadmin`. Requests are rate-limited
+per client IP, with stricter limits on the auth routes.
+
+## Project structure
+
+```text
+src/
+  modules/<feature>/   feature modules: controller, service, entities, DTOs, specs
+  common/              shared decorators, DTOs, enums, guards, pipes
+  config/              env validation, logger and throttler setup
+  database/            data source, migrations, seeds
+static/                uploaded files (not committed)
+test/                  e2e and database integration tests
 ```
 
-## API documentation
-
-Start the API with `npm run start:dev`, then open
-[Swagger UI](http://localhost:3000/docs). The OpenAPI JSON document is available at
-[docs-json](http://localhost:3000/docs-json). Use your configured `PORT` if it
-differs from 3000.
-
-Call `POST /auth/login` (or register), copy the returned `accessToken`, and paste
-the token into **Authorize**. Swagger adds the `Bearer` prefix automatically.
-Login, registration, and the root endpoint are public; other operations require
-authentication and retain their normal role restrictions.
-
-The Swagger Nest CLI plugin generates DTO/entity schemas from TypeScript types
-and validation decorators, respecting fields hidden with `@Exclude()`.
-Use `nest build` / the npm build and start scripts so the plugin runs; plain
-`ts-node` does not apply the compiler plugin. Explicit Swagger decorators describe
-generic pagination, authentication responses, and multipart image uploads.
-
-The documentation routes are publicly accessible. **Try it out** sends real
-requests to the running API, including writes.
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+The schema is managed only through hand-written SQL migrations in
+`src/database/migrations/` (`synchronize` is off).
