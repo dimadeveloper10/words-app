@@ -1,29 +1,29 @@
-.section-heading {
+.home-page__heading {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.625rem;
 }
-.section-heading-link {
+.home-page__heading-link {
   color: inherit;
   text-decoration: underline;
-  text-decoration-color: #cbdccf;
+  text-decoration-color: var(--color-border);
   text-decoration-thickness: 2px;
 }
-.section-heading-link:hover {
-  color: #27634d;
+.home-page__heading-link:hover {
+  color: var(--color-primary);
   text-decoration-color: currentColor;
 }
-.section-count {
+.home-page__count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 30px;
-  padding: 4px 10px;
-  border: 1px solid #cbdccf;
-  border-radius: 999px;
-  background: #e8efe4;
-  color: #27634d;
-  font-size: 14px;
+  padding: var(--space-1) 0.625rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
   font-weight: 600;
   line-height: 1.4;
   font-variant-numeric: tabular-nums;

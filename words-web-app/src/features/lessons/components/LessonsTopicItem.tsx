@@ -1,30 +1,34 @@
 import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
+import { formatLessonCount } from '../../topics/formatLessonCount';
 import type { Topic } from '../../topics/topics.types';
-import { LessonsCarousel } from './LessonsCarousel';
 import { useTopicLessons } from '../useLessons';
+import { LessonsCarousel } from './LessonsCarousel';
+import './LessonsTopicItem.css';
 
-function formatLessonCount(count: number): string {
-  return `${count} ${count === 1 ? 'lesson' : 'lessons'}`;
+interface LessonsTopicItemProps {
+  topic: Topic;
 }
 
-export function LessonsTopicItem({ topic }: { topic: Topic }): JSX.Element {
+export function LessonsTopicItem({
+  topic,
+}: LessonsTopicItemProps): JSX.Element {
   const lessons = useTopicLessons(topic.id);
 
   return (
-    <li>
-      <Link to={`/topics/${topic.id}`} className="lessons-topic-row">
-        <span className="lessons-topic-thumb" aria-hidden="true">
+    <li className="lessons-topic-item">
+      <Link to={`/topics/${topic.id}`} className="lessons-topic-item__row">
+        <span className="lessons-topic-item__thumb" aria-hidden="true">
           {topic.name.charAt(0).toUpperCase()}
         </span>
-        <div className="lessons-topic-text">
-          <h2 className="lessons-topic-name">{topic.name}</h2>
-          <p className="lessons-topic-meta">
+        <div className="lessons-topic-item__text">
+          <h2 className="lessons-topic-item__name">{topic.name}</h2>
+          <p className="lessons-topic-item__meta">
             {formatLessonCount(lessons.length)}
           </p>
         </div>
         <svg
-          className="lessons-topic-arrow"
+          className="lessons-topic-item__arrow"
           aria-hidden="true"
           viewBox="0 0 24 24"
           width="20"

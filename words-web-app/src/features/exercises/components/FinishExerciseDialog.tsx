@@ -31,22 +31,24 @@ export function FinishExerciseDialog({
       aria-label="Exercise results"
       onCancel={preventDismiss}
     >
-      <div className="finish-exercise-content">
-        <dl className="finish-exercise-stats">
-          <dt>Correct answers</dt>
-          <dd>{correctCount}</dd>
+      <div className="finish-exercise-dialog__content">
+        <dl className="finish-exercise-dialog__stats">
+          <dt className="finish-exercise-dialog__stat-label">
+            Correct answers
+          </dt>
+          <dd className="finish-exercise-dialog__stat-value">{correctCount}</dd>
         </dl>
-        <div className="finish-exercise-actions">
+        <div className="finish-exercise-dialog__actions">
           <Link
             to={finishTo}
-            className="finish-exercise-finish"
+            className="button button--secondary"
             onClick={onFinish}
           >
             Finish
           </Link>
           <button
             type="button"
-            className="auth-submit"
+            className="button button--primary"
             autoFocus
             onClick={onPlayAgain}
           >

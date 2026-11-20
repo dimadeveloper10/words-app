@@ -21,7 +21,7 @@ export function LessonsCarousel({
       items={lessons}
       getKey={(lesson) => lesson.id}
       label={label}
-      renderItem={(lesson) => <LessonCard lesson={lesson} />}
+      renderItem={(lesson) => <LessonCard lesson={lesson} compact />}
     />
   );
 }

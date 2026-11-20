@@ -20,10 +20,7 @@ export function AppHeader({ email, onLogout }: AppHeaderProps): JSX.Element {
   const isOnline = useOnlineStatus();
   const unsyncedCount = useUnsyncedAnswersCount();
   const [confirmOpen, setConfirmOpen] = useState(false);
-
-  if (confirmOpen && unsyncedCount === 0) {
-    setConfirmOpen(false);
-  }
+  const isConfirmVisible = confirmOpen && unsyncedCount > 0;
 
   function handleSignOut(): void {
     if (unsyncedCount > 0) {
@@ -35,29 +32,41 @@ export function AppHeader({ email, onLogout }: AppHeaderProps): JSX.Element {
 
   return (
     <header className="app-header">
-      <div className="app-header-inner">
-        <Link className="brand" to="/" aria-label="Words home">
+      <div className="app-header__inner">
+        <Link
+          className="brand app-header__brand"
+          to="/"
+          aria-label="Words home"
+        >
           Words
         </Link>
-        <div className="header-account">
-          <div className="header-badges" role="status">
-            {!isOnline && <span className="header-offline">Offline</span>}
+        <div className="app-header__account">
+          <div className="app-header__badges" role="status">
+            {!isOnline && (
+              <span className="app-header__badge app-header__badge--offline">
+                Offline
+              </span>
+            )}
             {unsyncedCount > 0 && (
-              <span className="header-unsynced">
+              <span className="app-header__badge app-header__badge--unsynced">
                 {unsyncedCount} not synced
               </span>
             )}
           </div>
-          <span className="header-email" title={email}>
+          <span className="app-header__email" title={email}>
             {email}
           </span>
-          <button className="auth-submit" type="button" onClick={handleSignOut}>
+          <button
+            className="button button--primary app-header__sign-out"
+            type="button"
+            onClick={handleSignOut}
+          >
             Sign out
           </button>
         </div>
       </div>
       <ConfirmDialog
-        open={confirmOpen}
+        open={isConfirmVisible}
         title={unsyncedTitle(unsyncedCount)}
         description={
           isOnline
@@ -68,7 +77,7 @@ export function AppHeader({ email, onLogout }: AppHeaderProps): JSX.Element {
       >
         <button
           type="button"
-          className="auth-submit"
+          className="button button--primary"
           autoFocus
           onClick={() => setConfirmOpen(false)}
         >
@@ -76,7 +85,7 @@ export function AppHeader({ email, onLogout }: AppHeaderProps): JSX.Element {
         </button>
         <button
           type="button"
-          className="confirm-dialog-secondary"
+          className="button button--secondary"
           onClick={() => {
             setConfirmOpen(false);
             onLogout();

@@ -17,10 +17,10 @@ export function PageHeader({
   const goBack = useGoBack();
 
   return (
-    <div className="page-title-row">
+    <div className="page-header">
       <Link
         to={backTo}
-        className="back-link"
+        className="page-header__back"
         aria-label="Go back"
         onClick={goBack}
       >
@@ -38,7 +38,7 @@ export function PageHeader({
           <path d="m15 6-6 6 6 6" />
         </svg>
       </Link>
-      <h1 id={id} className="page-title">
+      <h1 id={id} className="page-header__title">
         {title}
       </h1>
     </div>

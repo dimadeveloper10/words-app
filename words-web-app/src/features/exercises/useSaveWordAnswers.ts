@@ -22,10 +22,12 @@ function toWordAnswerDto(
   };
 }
 
-export function useSaveWordAnswers(lessonId: string) {
+type SaveAnswers = (answers: PendingWordAnswer[]) => void;
+
+export function useSaveWordAnswers(lessonId: string): SaveAnswers {
   const enqueue = useAnswersStore((state) => state.enqueue);
 
-  return function saveAnswers(answers: PendingWordAnswer[]) {
+  return function saveAnswers(answers) {
     if (answers.length === 0) {
       return;
     }

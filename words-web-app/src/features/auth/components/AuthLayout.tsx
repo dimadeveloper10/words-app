@@ -11,20 +11,24 @@ export function AuthLayout(): JSX.Element {
 
   return (
     <main className="auth-layout">
-      <section className="auth-intro" aria-labelledby="brand-title">
+      <section className="auth-layout__intro" aria-labelledby="brand-title">
         <span className="brand">Words</span>
         <div>
-          <p className="eyebrow">English → Ukrainian</p>
-          <h1 id="brand-title">A few new words. A little more confidence.</h1>
-          <p className="intro-description">
+          <p className="auth-layout__eyebrow">English → Ukrainian</p>
+          <h1 id="brand-title" className="auth-layout__title">
+            A few new words. A little more confidence.
+          </h1>
+          <p className="auth-layout__description">
             Learn English words, practise with lessons, and make progress one
             day at a time.
           </p>
         </div>
-        <p className="intro-footer">Your next chapter starts with a word.</p>
+        <p className="auth-layout__footer">
+          Your next chapter starts with a word.
+        </p>
       </section>
-      <section className="auth-content" aria-label="Account access">
-        <div className="auth-card">
+      <section className="auth-layout__content" aria-label="Account access">
+        <div className="auth-layout__card">
           <Outlet />
         </div>
       </section>

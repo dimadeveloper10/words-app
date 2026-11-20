@@ -1,36 +1,36 @@
-.lesson-stats {
+.lesson-page__stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin: 0 0 24px;
-  padding: 16px 20px;
-  border: 1px solid #cbdccf;
-  border-radius: 16px;
-  background: #fff;
+  gap: var(--space-4);
+  margin: 0 0 var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
 }
-.lesson-stats dt {
-  margin-bottom: 6px;
-  color: #5d6c65;
-  font-size: 13px;
+.lesson-page__stat-label {
+  margin-bottom: 0.375rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
 }
-.lesson-stats dd {
+.lesson-page__stat-value {
   margin: 0;
-  color: #27634d;
-  font-size: 22px;
+  color: var(--color-primary);
+  font-size: var(--font-size-3xl);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
-.exercise-grid {
+.lesson-page__activities {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
+  gap: var(--space-4);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 @media (min-width: 640px) {
-  .exercise-grid {
+  .lesson-page__activities {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

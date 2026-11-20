@@ -1,49 +1,19 @@
 .exercise-header {
   display: grid;
-  grid-template-columns: 44px 1fr 44px;
+  grid-template-columns: var(--icon-button-size) 1fr var(--icon-button-size);
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
-.exercise-close,
-.exercise-icon-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 0;
-  border-radius: 999px;
-  padding: 0;
-  background: none;
-  color: #27634d;
-  cursor: pointer;
-}
-.exercise-close:hover,
-.exercise-icon-button:hover:not(:disabled) {
-  background: #e8efe4;
-}
-.exercise-close:focus-visible,
-.exercise-icon-button:focus-visible {
-  outline: 2px solid #27634d;
-  outline-offset: 2px;
-}
-.exercise-title {
+.exercise-header__title {
   grid-column: 2;
   margin: 0;
-  color: #5d6c65;
-  font-size: 18px;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xl);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
-.exercise-header .exercise-close {
-  margin: 0;
-}
-.exercise-icon-button:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-.exercise-actions {
+.exercise-header__actions {
   display: flex;
   grid-column: 3;
 }

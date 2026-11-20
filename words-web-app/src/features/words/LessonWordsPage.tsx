@@ -14,7 +14,7 @@ export function LessonWordsPage(): JSX.Element {
 
   if (!lesson) {
     return (
-      <main className="session-page" aria-labelledby="lesson-words-title">
+      <main className="page" aria-labelledby="lesson-words-title">
         <PageHeader id="lesson-words-title" title="Words" backTo="/lessons" />
         <p role="alert">Lesson not found.</p>
       </main>
@@ -23,7 +23,7 @@ export function LessonWordsPage(): JSX.Element {
 
   if (words.length === 0) {
     return (
-      <main className="session-page" aria-labelledby="lesson-words-title">
+      <main className="page" aria-labelledby="lesson-words-title">
         <PageHeader
           id="lesson-words-title"
           title="Words"
@@ -39,7 +39,7 @@ export function LessonWordsPage(): JSX.Element {
 
   return (
     <main
-      className="session-page lesson-words-page"
+      className="page lesson-words-page"
       aria-labelledby="lesson-words-title"
     >
       <PageHeader
@@ -48,11 +48,11 @@ export function LessonWordsPage(): JSX.Element {
         backTo={`/lessons/${lesson.id}`}
       />
       <WordCard key={word.id} word={word} />
-      <nav className="word-nav" aria-label="Word navigation">
-        <div className="word-nav-inner">
+      <nav className="lesson-words-page__nav" aria-label="Word navigation">
+        <div className="lesson-words-page__nav-inner">
           <button
             type="button"
-            className="auth-submit"
+            className="button button--primary"
             disabled={current === 0}
             onClick={() => setIndex(current - 1)}
           >
@@ -60,7 +60,7 @@ export function LessonWordsPage(): JSX.Element {
           </button>
           <button
             type="button"
-            className="auth-submit"
+            className="button button--primary"
             disabled={current === words.length - 1}
             onClick={() => setIndex(current + 1)}
           >

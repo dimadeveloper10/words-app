@@ -2,7 +2,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../stores/auth';
 import { useAnswersStore } from '../../stores/answers';
 
-export function useLogout() {
+type Logout = () => void;
+
+export function useLogout(): Logout {
   const queryClient = useQueryClient();
 
   return () => {

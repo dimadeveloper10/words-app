@@ -8,12 +8,12 @@ export function TopicsPage(): JSX.Element {
   const topics = useTopics();
 
   return (
-    <main className="session-page" aria-labelledby="topics-page-title">
+    <main className="page" aria-labelledby="topics-page-title">
       <PageHeader id="topics-page-title" title="Topics" backTo="/" />
       {topics.length === 0 ? (
         <p>No topics yet.</p>
       ) : (
-        <ul className="topic-list">
+        <ul className="topics-page__list">
           {topics.map((topic) => (
             <TopicListItem key={topic.id} topic={topic} />
           ))}

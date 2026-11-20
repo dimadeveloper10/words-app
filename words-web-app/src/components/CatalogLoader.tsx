@@ -42,16 +42,22 @@ export function CatalogLoader(): JSX.Element {
     <>
       <AppHeader email={user.email} onLogout={logout} />
       {status === 'error' ? (
-        <main className="session-page">
+        <main className="page">
           <p role="alert">
             {getApiErrorMessage(error, 'Unable to load data.')}
           </p>
-          <button className="auth-submit" onClick={load}>
-            Try again
-          </button>
+          <div className="page__actions">
+            <button
+              type="button"
+              className="button button--primary"
+              onClick={load}
+            >
+              Try again
+            </button>
+          </div>
         </main>
       ) : (
-        <main className="session-page" role="status">
+        <main className="page" role="status">
           Loading…
         </main>
       )}

@@ -90,22 +90,22 @@ export function LetterPicker({
 
   return (
     <div className="letter-picker">
-      <div className="letter-picker-inner">
+      <div className="letter-picker__inner">
         <button
           type="button"
-          className="letter-picker-remove"
+          className="icon-button letter-picker__remove"
           aria-label="Remove letter"
           disabled={pickedIds.length === 0}
           onClick={removeLast}
         >
           {removeIcon}
         </button>
-        <div className="letter-picker-tiles" role="group" aria-label="Letters">
+        <div className="letter-picker__tiles" role="group" aria-label="Letters">
           {tiles.map((tile) => (
             <button
               key={tile.id}
               type="button"
-              className="letter-picker-tile"
+              className="letter-picker__tile"
               aria-label={tile.char === ' ' ? 'Space' : tile.char}
               disabled={pickedIds.includes(tile.id)}
               onClick={() => pick(tile)}

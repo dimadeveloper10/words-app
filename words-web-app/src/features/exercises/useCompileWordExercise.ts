@@ -14,13 +14,19 @@ const NEXT_WORD_DELAY_MS = 1500;
 
 export type AnswerStatus = 'typing' | 'correct' | 'wrong';
 
-type Round = ReturnType<typeof useRound>;
-
 type AnswerInput = {
   answer: string;
   changeAnswer: (value: string) => void;
   getStartedAt: () => Date | null;
   reset: () => void;
+};
+
+type Round = Omit<AnswerInput, 'reset'> & {
+  word: Word;
+  step: number;
+  status: AnswerStatus;
+  markAnswered: (isCorrect: boolean) => void;
+  nextWord: () => void;
 };
 
 type AnswerLog = {
@@ -110,13 +116,7 @@ function useAnswerInput(step: number, status: AnswerStatus): AnswerInput {
   return { answer, changeAnswer, getStartedAt, reset };
 }
 
-function useRound(words: Word[]): Omit<AnswerInput, 'reset'> & {
-  word: Word;
-  step: number;
-  status: AnswerStatus;
-  markAnswered: (isCorrect: boolean) => void;
-  nextWord: () => void;
-} {
+function useRound(words: Word[]): Round {
   const [word, setWord] = useState(() => pickRandom(words));
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState<AnswerStatus>('typing');

@@ -12,12 +12,12 @@ export function LoginPage(): JSX.Element {
 
   return (
     <>
-      <header className="auth-heading">
-        <h2>Welcome back</h2>
-        <p>Sign in to continue learning.</p>
+      <header className="auth-page__heading">
+        <h2 className="auth-page__title">Welcome back</h2>
+        <p className="auth-page__subtitle">Sign in to continue learning.</p>
       </header>
       <form
-        className="auth-form"
+        className="auth-page__form"
         noValidate
         onSubmit={(event) => void onSubmit(event)}
         aria-busy={pending}
@@ -46,19 +46,26 @@ export function LoginPage(): JSX.Element {
           {...form.register('password')}
         />
         {mutation.isError && (
-          <p className="field-error" role="alert">
+          <p className="form-error" role="alert">
             {getApiErrorMessage(
               mutation.error,
               'Sign in failed. Please try again.',
             )}
           </p>
         )}
-        <button className="auth-submit" type="submit" disabled={pending}>
+        <button
+          className="button button--primary"
+          type="submit"
+          disabled={pending}
+        >
           {pending ? 'Signing in…' : 'Sign in'}
         </button>
       </form>
-      <p className="auth-footer">
-        Don’t have an account? <Link to="/register">Create account</Link>
+      <p className="auth-page__footer">
+        Don’t have an account?{' '}
+        <Link className="auth-page__footer-link" to="/register">
+          Create account
+        </Link>
       </p>
     </>
   );

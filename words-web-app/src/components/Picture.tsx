@@ -1,19 +1,15 @@
 import type { JSX } from 'react';
 import { FALLBACK_FORMAT, IMAGE_FORMATS, getImageUrl } from '../lib/images';
+import './Picture.css';
 
 interface PictureProps {
   imageId: string;
   alt: string;
-  className?: string;
 }
 
-export function Picture({
-  imageId,
-  alt,
-  className,
-}: PictureProps): JSX.Element {
+export function Picture({ imageId, alt }: PictureProps): JSX.Element {
   return (
-    <picture className={className}>
+    <picture className="picture">
       {IMAGE_FORMATS.map((format) => (
         <source
           key={format.ext}
@@ -22,6 +18,7 @@ export function Picture({
         />
       ))}
       <img
+        className="picture__img"
         src={getImageUrl(imageId, FALLBACK_FORMAT)}
         alt={alt}
         loading="lazy"

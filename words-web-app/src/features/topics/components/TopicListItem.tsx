@@ -1,26 +1,28 @@
 import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
+import { formatLessonCount } from '../formatLessonCount';
 import type { Topic } from '../topics.types';
+import './TopicListItem.css';
 
-function formatLessonCount(count: number): string {
-  return `${count} ${count === 1 ? 'lesson' : 'lessons'}`;
+interface TopicListItemProps {
+  topic: Topic;
 }
 
-export function TopicListItem({ topic }: { topic: Topic }): JSX.Element {
+export function TopicListItem({ topic }: TopicListItemProps): JSX.Element {
   return (
     <li>
       <Link to={`/topics/${topic.id}`} className="topic-list-item">
-        <span className="topic-thumb" aria-hidden="true">
+        <span className="topic-list-item__thumb" aria-hidden="true">
           {topic.name.charAt(0).toUpperCase()}
         </span>
-        <div className="topic-list-text">
-          <h2 className="topic-list-name">{topic.name}</h2>
-          <p className="topic-list-meta">
+        <div className="topic-list-item__text">
+          <h2 className="topic-list-item__name">{topic.name}</h2>
+          <p className="topic-list-item__meta">
             {formatLessonCount(topic.lessonCount)}
           </p>
         </div>
         <svg
-          className="topic-list-arrow"
+          className="topic-list-item__arrow"
           aria-hidden="true"
           viewBox="0 0 24 24"
           width="20"

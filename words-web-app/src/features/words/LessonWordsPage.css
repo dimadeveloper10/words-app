@@ -1,22 +1,20 @@
 .lesson-words-page {
-  padding-bottom: calc(112px + env(safe-area-inset-bottom));
+  padding-bottom: calc(7rem + env(safe-area-inset-bottom));
 }
-.word-nav {
+.lesson-words-page__nav {
   position: fixed;
   right: 0;
   bottom: 0;
   left: 0;
-  border-top: 1px solid #cbdccf;
-  background: #fafbf8;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
 }
-.word-nav-inner {
+.lesson-words-page__nav-inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  max-width: 640px;
+  gap: var(--space-3);
+  max-width: var(--page-width);
   margin: 0 auto;
-  padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
-}
-.session-page .word-nav button {
-  margin: 0;
+  padding: var(--space-4) var(--space-6)
+    calc(var(--space-4) + env(safe-area-inset-bottom));
 }

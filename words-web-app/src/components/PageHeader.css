@@ -1,26 +1,26 @@
-.page-title-row {
+.page-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 8px 0 20px;
+  gap: var(--space-3);
+  margin: var(--space-2) 0 var(--space-5);
 }
-.page-title {
+.page-header__title {
   margin: 0;
-  font-size: 28px;
+  font-size: var(--font-size-5xl);
   letter-spacing: -0.6px;
 }
-.back-link {
+.page-header__back,
+.page-header__back:hover {
   display: grid;
   place-items: center;
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  border: 1px solid #cbdccf;
+  border: 1px solid var(--color-border);
   border-radius: 50%;
-  background: #e8efe4;
-  color: #27634d;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
 }
-.back-link:hover {
-  background: #d9e6d5;
-  color: #27634d;
+.page-header__back:hover {
+  background: var(--color-primary-soft-hover);
 }

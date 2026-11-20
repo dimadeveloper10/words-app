@@ -45,14 +45,14 @@ export function ConfirmDialog({
       onCancel={handleCancel}
       onClick={handleBackdropClick}
     >
-      <div className="confirm-dialog-content">
-        <h2 id={titleId} className="confirm-dialog-title">
+      <div className="confirm-dialog__content">
+        <h2 id={titleId} className="confirm-dialog__title">
           {title}
         </h2>
         {description && (
-          <p className="confirm-dialog-description">{description}</p>
+          <p className="confirm-dialog__description">{description}</p>
         )}
-        <div className="confirm-dialog-actions">{children}</div>
+        <div className="confirm-dialog__actions">{children}</div>
       </div>
     </dialog>
   );

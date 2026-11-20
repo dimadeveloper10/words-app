@@ -15,7 +15,7 @@ export function LessonPage(): JSX.Element {
 
   if (!lesson) {
     return (
-      <main className="session-page" aria-labelledby="lesson-page-title">
+      <main className="page" aria-labelledby="lesson-page-title">
         <PageHeader id="lesson-page-title" title="Lesson" backTo="/lessons" />
         <p role="alert">Lesson not found.</p>
       </main>
@@ -23,23 +23,23 @@ export function LessonPage(): JSX.Element {
   }
 
   return (
-    <main className="session-page" aria-labelledby="lesson-page-title">
+    <main className="page" aria-labelledby="lesson-page-title">
       <PageHeader
         id="lesson-page-title"
         title={formatLessonTitle(lesson)}
         backTo="/lessons"
       />
-      <dl className="lesson-stats" aria-label="Lesson summary">
+      <dl className="lesson-page__stats" aria-label="Lesson summary">
         <div>
-          <dt>Points</dt>
-          <dd>{points}</dd>
+          <dt className="lesson-page__stat-label">Points</dt>
+          <dd className="lesson-page__stat-value">{points}</dd>
         </div>
         <div>
-          <dt>Words</dt>
-          <dd>{lesson.wordCount}</dd>
+          <dt className="lesson-page__stat-label">Words</dt>
+          <dd className="lesson-page__stat-value">{lesson.wordCount}</dd>
         </div>
       </dl>
-      <ul className="exercise-grid" aria-label="Lesson activities">
+      <ul className="lesson-page__activities" aria-label="Lesson activities">
         <li>
           <LessonWordsCard lessonId={lesson.id} wordCount={lesson.wordCount} />
         </li>

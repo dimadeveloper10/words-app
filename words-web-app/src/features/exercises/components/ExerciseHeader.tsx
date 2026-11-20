@@ -45,7 +45,7 @@ export function ExerciseHeader({
       {confirmClose ? (
         <button
           type="button"
-          className="exercise-close"
+          className="icon-button"
           aria-label="Close exercise"
           aria-haspopup="dialog"
           onClick={() => setConfirmOpen(true)}
@@ -55,17 +55,17 @@ export function ExerciseHeader({
       ) : (
         <Link
           to={closeTo}
-          className="exercise-close"
+          className="icon-button"
           aria-label="Close exercise"
           onClick={goBack}
         >
           {closeIcon}
         </Link>
       )}
-      <h1 id={id} className="exercise-title">
+      <h1 id={id} className="exercise-header__title">
         {title}
       </h1>
-      {actions && <div className="exercise-actions">{actions}</div>}
+      {actions && <div className="exercise-header__actions">{actions}</div>}
       <ConfirmDialog
         open={confirmOpen}
         title="Are you sure you want to close the exercise?"
@@ -73,7 +73,7 @@ export function ExerciseHeader({
       >
         <button
           type="button"
-          className="auth-submit"
+          className="button button--primary"
           autoFocus
           onClick={() => setConfirmOpen(false)}
         >
@@ -81,7 +81,7 @@ export function ExerciseHeader({
         </button>
         <Link
           to={closeTo}
-          className="confirm-dialog-secondary"
+          className="button button--secondary"
           onClick={(event) => {
             onConfirmClose();
             goBack(event);

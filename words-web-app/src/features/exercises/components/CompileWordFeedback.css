@@ -1,0 +1,6 @@
+.compile-word-feedback {
+  margin: 0;
+  color: var(--color-success);
+  font-size: var(--font-size-3xl);
+  font-weight: 600;
+}

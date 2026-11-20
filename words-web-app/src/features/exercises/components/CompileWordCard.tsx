@@ -1,26 +1,25 @@
 import type { JSX } from 'react';
-import { Link } from 'react-router-dom';
-import '../../../components/Carousel.css';
+import { Card } from '../../../components/Card';
+import { CardStats } from '../../../components/CardStats';
+
+interface CompileWordCardProps {
+  lessonId: string;
+}
+
+const notAvailable = (
+  <>
+    <span aria-hidden="true">—</span>
+    <span className="visually-hidden">Not available</span>
+  </>
+);
 
 export function CompileWordCard({
   lessonId,
-}: {
-  lessonId: string;
-}): JSX.Element {
+}: CompileWordCardProps): JSX.Element {
   return (
-    <Link
-      to={`/lessons/${lessonId}/compile-word`}
-      className="carousel-card carousel-card-link"
-    >
-      <h2>Compile word</h2>
-      <dl className="carousel-card-stats">
-        <div>
-          <dt>Points</dt>
-          <dd>
-            <span aria-label="Not available">—</span>
-          </dd>
-        </div>
-      </dl>
-    </Link>
+    <Card to={`/lessons/${lessonId}/compile-word`}>
+      <h2 className="card__title">Compile word</h2>
+      <CardStats stats={[{ label: 'Points', value: notAvailable }]} />
+    </Card>
   );
 }

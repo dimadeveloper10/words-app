@@ -1,28 +1,28 @@
-.auth-heading {
-  margin-bottom: 32px;
+.auth-page__heading {
+  margin-bottom: var(--space-8);
 }
-.auth-heading h2 {
-  margin: 0 0 12px;
-  font-size: 30px;
+.auth-page__title {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-6xl);
   letter-spacing: -1px;
 }
-.auth-heading p,
-.auth-footer {
-  color: #5d6c65;
-  line-height: 1.5;
-  font-size: 14px;
-}
-.auth-heading p {
+.auth-page__subtitle {
   margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
 }
-.auth-form {
+.auth-page__form {
   display: grid;
-  gap: 22px;
+  gap: 1.375rem;
 }
-.auth-footer {
-  margin: 28px 0 0;
+.auth-page__footer {
+  margin: 1.75rem 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
   text-align: center;
 }
-.auth-footer a {
+.auth-page__footer-link {
   font-weight: 600;
 }

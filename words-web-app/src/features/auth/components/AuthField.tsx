@@ -16,10 +16,13 @@ export function AuthField({
   ...props
 }: AuthFieldProps): JSX.Element {
   return (
-    <div className="form-field">
-      <label htmlFor={id}>{label}</label>
+    <div className="auth-field">
+      <label className="auth-field__label" htmlFor={id}>
+        {label}
+      </label>
       <input
         {...props}
+        className="auth-field__input"
         id={id}
         aria-invalid={Boolean(error)}
         aria-describedby={error || hint ? `${id}-description` : undefined}
@@ -27,7 +30,7 @@ export function AuthField({
       {(error || hint) && (
         <p
           id={`${id}-description`}
-          className={error ? 'field-error' : 'field-hint'}
+          className={error ? 'form-error' : 'auth-field__hint'}
           role={error ? 'alert' : undefined}
         >
           {error || hint}

@@ -5,7 +5,11 @@ import type { Word } from '../words.types';
 import { canSpeak, speakWord, stopSpeaking } from '../speakWord';
 import './WordCard.css';
 
-export function WordCard({ word }: { word: Word }): JSX.Element {
+interface WordCardProps {
+  word: Word;
+}
+
+export function WordCard({ word }: WordCardProps): JSX.Element {
   useEffect(() => {
     speakWord(word.word);
     return stopSpeaking;
@@ -13,24 +17,24 @@ export function WordCard({ word }: { word: Word }): JSX.Element {
 
   return (
     <article className="word-card" aria-label={word.word}>
-      <label className="word-card-check">
-        <input type="checkbox" disabled />
+      <label className="word-card__check">
+        <input className="word-card__checkbox" type="checkbox" disabled />
         <span className="visually-hidden">Learned</span>
       </label>
-      <div className="word-card-image">
+      <div className="word-card__image">
         {word.imageId ? (
           <Picture imageId={word.imageId} alt="" />
         ) : (
           <span aria-hidden="true">{word.word.charAt(0).toUpperCase()}</span>
         )}
       </div>
-      <h2 className="word-card-word">{word.word}</h2>
+      <h2 className="word-card__word">{word.word}</h2>
       {word.transcription && (
-        <p className="word-card-transcription">{word.transcription}</p>
+        <p className="word-card__transcription">{word.transcription}</p>
       )}
       <button
         type="button"
-        className="word-card-sound"
+        className="word-card__sound"
         aria-label={`Play pronunciation of ${word.word}`}
         disabled={!canSpeak}
         onClick={() => speakWord(word.word)}
@@ -51,7 +55,7 @@ export function WordCard({ word }: { word: Word }): JSX.Element {
           <path d="M19 5a10 10 0 0 1 0 14" />
         </svg>
       </button>
-      <p className="word-card-translation">{formatTranslation(word)}</p>
+      <p className="word-card__translation">{formatTranslation(word)}</p>
     </article>
   );
 }
