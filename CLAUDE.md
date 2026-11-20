@@ -52,11 +52,11 @@ Follow the existing repository history for commit messages:
 **Stack:** NestJS 11 · TypeORM 1.x · PostgreSQL (`pg`) · JWT (`@nestjs/jwt` +
 `passport-jwt`) · `bcrypt` · validation via `class-validator` / `class-transformer`.
 
-**Layout** — feature modules under `src/`, each with the same shape (see `src/users/`
-and `src/words/` as templates):
+**Layout** — feature modules under `src/modules/`, each with the same shape (see
+`src/modules/lessons/` and `src/modules/words/` as templates):
 
 ```
-src/<feature>/
+src/modules/<feature>/
   <feature>.module.ts       # @Module, TypeOrmModule.forFeature([...])
   <feature>.controller.ts   # @Controller('<feature>'), route handlers
   <feature>.service.ts      # @Injectable, injects Repository<Entity>
@@ -98,6 +98,11 @@ migrations in `src/database/migrations/`, hand-written as raw SQL (see
   is available but not used.
 
 **Run:** `npm run start:dev`. **Tests:** `npm test` (unit), `npm run test:e2e`.
+**Checks:** `npm run lint:check`, `npm test`, `npm run build`.
+
+**Skills** (in `api/.claude/skills/`): `nestjs-style-guide` (NestJS, TypeORM and
+PostgreSQL best practices, with topic files in `references/`), `nestjs-review`
+(review a diff against the guide) and `nestjs-feature` (scaffold a new module).
 
 ### Domain: words
 
