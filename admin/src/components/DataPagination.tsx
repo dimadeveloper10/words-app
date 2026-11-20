@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import {
   Pagination,
   PaginationContent,
@@ -29,7 +30,7 @@ export function DataPagination({
   page,
   totalPages,
   onPageChange,
-}: DataPaginationProps) {
+}: DataPaginationProps): JSX.Element | null {
   if (totalPages <= 1) {
     return null;
   }

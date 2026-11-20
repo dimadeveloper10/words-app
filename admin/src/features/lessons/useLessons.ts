@@ -1,12 +1,17 @@
 import {
   keepPreviousData,
   useMutation,
+  type UseMutationResult,
   useQuery,
   useQueryClient,
+  type UseQueryResult,
 } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { getApiErrorMessage } from '@/lib/api';
+import type { Lesson } from './lessons.types';
+import type { Paginated } from '@/types/pagination';
+import type { Word } from '@/features/words/words.types';
 import {
   createLesson,
   deleteLesson,
@@ -22,7 +27,7 @@ import {
 } from './lessons.schemas';
 import type { LessonFormValues } from './lessons.schemas';
 
-export function useLesson(id: string) {
+export function useLesson(id: string): UseQueryResult<Lesson> {
   return useQuery({
     queryKey: ['lessons', 'detail', id],
     queryFn: () => getLesson(id),
@@ -30,7 +35,7 @@ export function useLesson(id: string) {
   });
 }
 
-export function useLessonWords(id: string) {
+export function useLessonWords(id: string): UseQueryResult<Word[]> {
   return useQuery({
     queryKey: ['lessons', id, 'words'],
     queryFn: () => listLessonWords(id),
@@ -43,7 +48,11 @@ interface LessonMutationInput {
   imageId?: string;
 }
 
-export function useCreateLesson() {
+export function useCreateLesson(): UseMutationResult<
+  Lesson,
+  Error,
+  LessonMutationInput
+> {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -60,7 +69,11 @@ export function useCreateLesson() {
   });
 }
 
-export function useUpdateLesson() {
+export function useUpdateLesson(): UseMutationResult<
+  Lesson,
+  Error,
+  LessonMutationInput & { id: string }
+> {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -80,7 +93,11 @@ export function useUpdateLesson() {
   });
 }
 
-export function useUpdateLessonWords() {
+export function useUpdateLessonWords(): UseMutationResult<
+  Lesson,
+  Error,
+  { id: string; wordIds: string[] }
+> {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -100,7 +117,9 @@ export function useUpdateLessonWords() {
   });
 }
 
-export function useLessons(params: ListLessonsParams) {
+export function useLessons(
+  params: ListLessonsParams,
+): UseQueryResult<Paginated<Lesson>> {
   return useQuery({
     queryKey: ['lessons', params.page, params.limit, params.topicId],
     queryFn: () => listLessons(params),
@@ -109,7 +128,7 @@ export function useLessons(params: ListLessonsParams) {
   });
 }
 
-export function useDeleteLesson() {
+export function useDeleteLesson(): UseMutationResult<void, Error, string> {
   const queryClient = useQueryClient();
 
   return useMutation({

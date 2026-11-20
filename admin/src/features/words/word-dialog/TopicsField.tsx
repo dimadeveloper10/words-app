@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import {
@@ -18,7 +19,7 @@ interface TopicsFieldProps {
   fixedTopic?: Pick<Topic, 'id' | 'name'>;
 }
 
-export function TopicsField({ fixedTopic }: TopicsFieldProps) {
+export function TopicsField({ fixedTopic }: TopicsFieldProps): JSX.Element {
   const form = useFormContext<WordFormValues>();
   const { data, isLoading, isError } = useTopics({
     page: 1,

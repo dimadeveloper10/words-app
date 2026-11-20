@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { LayoutGrid, List } from 'lucide-react';
 
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -8,7 +9,7 @@ interface ViewToggleProps {
   onChange: (view: WordsView) => void;
 }
 
-export function ViewToggle({ value, onChange }: ViewToggleProps) {
+export function ViewToggle({ value, onChange }: ViewToggleProps): JSX.Element {
   return (
     <ToggleGroup
       type="single"

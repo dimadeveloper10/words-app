@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -26,11 +27,11 @@ interface WordsTableProps extends WordsViewProps {
   onToggleWord: (wordId: string, checked: boolean) => void;
 }
 
-function ImageCell({ word }: { word: Word }) {
+function ImageCell({ word }: { word: Word }): JSX.Element {
   return <WordImage word={word} className="size-10 shrink-0 border" />;
 }
 
-function TranslationsCell({ word }: { word: Word }) {
+function TranslationsCell({ word }: { word: Word }): JSX.Element {
   const groups = groupByPartOfSpeech(word.translations);
 
   if (groups.length === 0) {
@@ -63,7 +64,7 @@ export function WordsTable({
   onDelete,
   selectedIds,
   onToggleWord,
-}: WordsTableProps) {
+}: WordsTableProps): JSX.Element {
   return (
     <Table>
       <TableHeader>

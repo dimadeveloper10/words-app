@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type JSX, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
@@ -39,7 +39,11 @@ interface TopicDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function TopicDialog({ topic, open, onOpenChange }: TopicDialogProps) {
+export function TopicDialog({
+  topic,
+  open,
+  onOpenChange,
+}: TopicDialogProps): JSX.Element {
   const createTopic = useCreateTopic();
   const updateTopic = useUpdateTopic();
   const uploadImage = useUploadImage();
@@ -50,7 +54,7 @@ export function TopicDialog({ topic, open, onOpenChange }: TopicDialogProps) {
     defaultValues: topic ? topicToFormValues(topic) : emptyTopicValues(),
   });
 
-  const onSubmit = async (values: TopicFormValues) => {
+  const onSubmit = async (values: TopicFormValues): Promise<void> => {
     try {
       const imageId = imageFile
         ? await uploadImage.mutateAsync(imageFile)

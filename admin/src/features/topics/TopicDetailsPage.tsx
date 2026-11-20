@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type JSX, useState } from 'react';
 import { isAxiosError } from 'axios';
 import {
   AlertCircle,
@@ -35,7 +35,7 @@ import type { Word } from '@/features/words/words.types';
 
 type TopicTab = 'lessons' | 'words';
 
-export function TopicDetailsPage() {
+export function TopicDetailsPage(): JSX.Element {
   const [activeTab, setActiveTab] = useState<TopicTab>('lessons');
   const [addingLesson, setAddingLesson] = useState(false);
   const [addingWord, setAddingWord] = useState(false);

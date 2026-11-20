@@ -14,7 +14,7 @@ export function WordTopics({
   topics,
   empty = null,
   className,
-}: WordTopicsProps) {
+}: WordTopicsProps): ReactNode {
   if (topics.length === 0) {
     return empty;
   }

@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { FolderPlus, Trash2, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -30,7 +31,7 @@ export function WordsSelectionBar({
   onClear,
   onAddToTopic,
   onDelete,
-}: WordsSelectionBarProps) {
+}: WordsSelectionBarProps): JSX.Element {
   const hasSelection = selectedIds.length > 0;
 
   return (

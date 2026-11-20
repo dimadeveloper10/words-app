@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Plus, Trash2 } from 'lucide-react';
 
@@ -12,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import type { WordFormValues } from '../words.schemas';
 
-export function ExamplesField() {
+export function ExamplesField(): JSX.Element {
   const { control } = useFormContext<WordFormValues>();
   const { fields, append, remove } = useFieldArray({
     control,

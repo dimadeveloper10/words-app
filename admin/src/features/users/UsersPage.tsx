@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { isAxiosError } from 'axios';
 
@@ -23,7 +24,7 @@ function formatDate(iso: string): string {
   });
 }
 
-export function UsersPage() {
+export function UsersPage(): JSX.Element {
   const currentUser = useAuthStore((s) => s.user);
   const isSuperadmin = currentUser?.role === 'superadmin';
   const { data: users, isLoading, isError, error } = useUsers();

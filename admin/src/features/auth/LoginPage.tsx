@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
@@ -24,14 +25,14 @@ import { Input } from '@/components/ui/input';
 import { loginSchema, type LoginValues } from './auth.schemas';
 import { useLogin } from './useAuthMutations';
 
-export function LoginPage() {
+export function LoginPage(): JSX.Element {
   const login = useLogin();
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
 
-  const onSubmit = (values: LoginValues) => login.mutate(values);
+  const onSubmit = (values: LoginValues): void => login.mutate(values);
 
   return (
     <div className="flex min-h-svh items-center justify-center bg-muted/40 p-4">

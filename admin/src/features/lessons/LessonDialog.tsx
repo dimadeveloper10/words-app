@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type JSX, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -52,7 +52,7 @@ export function LessonDialog({
   fixedTopic,
   open,
   onOpenChange,
-}: LessonDialogProps) {
+}: LessonDialogProps): JSX.Element {
   const createLesson = useCreateLesson();
   const updateLesson = useUpdateLesson();
   const uploadImage = useUploadImage();
@@ -81,7 +81,7 @@ export function LessonDialog({
     topicOptions.push({ id: selectedTopic.id, name: selectedTopic.name });
   }
 
-  const onSubmit = async (values: LessonFormValues) => {
+  const onSubmit = async (values: LessonFormValues): Promise<void> => {
     try {
       const valuesWithFixedTopic = fixedTopic
         ? { ...values, topicId: fixedTopic.id }

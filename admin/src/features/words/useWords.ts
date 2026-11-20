@@ -1,12 +1,16 @@
 import {
   keepPreviousData,
   useMutation,
+  type UseMutationResult,
   useQuery,
   useQueryClient,
+  type UseQueryResult,
 } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { getApiErrorMessage } from '@/lib/api';
+import type { Paginated } from '@/types/pagination';
+import type { Word } from './words.types';
 import {
   createWord,
   deleteWord,
@@ -22,7 +26,11 @@ interface WordMutationInput {
   imageId?: string;
 }
 
-export function useCreateWord() {
+export function useCreateWord(): UseMutationResult<
+  Word,
+  Error,
+  WordMutationInput
+> {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -39,7 +47,11 @@ export function useCreateWord() {
   });
 }
 
-export function useUpdateWord() {
+export function useUpdateWord(): UseMutationResult<
+  Word,
+  Error,
+  WordMutationInput & { id: string }
+> {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -56,7 +68,9 @@ export function useUpdateWord() {
   });
 }
 
-export function useWords(params: ListWordsParams) {
+export function useWords(
+  params: ListWordsParams,
+): UseQueryResult<Paginated<Word>> {
   return useQuery({
     queryKey: ['words', params.q ?? '', params.page, params.limit],
     queryFn: () => listWords(params),
@@ -65,7 +79,7 @@ export function useWords(params: ListWordsParams) {
   });
 }
 
-export function useDeleteWord() {
+export function useDeleteWord(): UseMutationResult<void, Error, string> {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -80,7 +94,7 @@ export function useDeleteWord() {
   });
 }
 
-export function useDeleteWords() {
+export function useDeleteWords(): UseMutationResult<void, Error, string[]> {
   const queryClient = useQueryClient();
 
   return useMutation({

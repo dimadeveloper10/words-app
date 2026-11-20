@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { type JSX, useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
 import { AlertCircle, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -33,7 +33,7 @@ import type { Topic } from './topics.types';
 
 const PAGE_SIZE = 20;
 
-export function TopicsPage() {
+export function TopicsPage(): JSX.Element {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<{ topic?: Topic } | null>(null);
@@ -52,7 +52,7 @@ export function TopicsPage() {
     }
   }, [data, page]);
 
-  const confirmDelete = () => {
+  const confirmDelete = (): void => {
     if (!topicToDelete) {
       return;
     }

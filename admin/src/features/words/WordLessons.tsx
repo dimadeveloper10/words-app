@@ -13,7 +13,7 @@ export function WordLessons({
   lessons = [],
   empty = null,
   className,
-}: WordLessonsProps) {
+}: WordLessonsProps): ReactNode {
   if (lessons.length === 0) {
     return empty;
   }

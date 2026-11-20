@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
@@ -24,14 +25,14 @@ import { Input } from '@/components/ui/input';
 import { registerSchema, type RegisterValues } from './auth.schemas';
 import { useRegister } from './useAuthMutations';
 
-export function RegisterPage() {
+export function RegisterPage(): JSX.Element {
   const register = useRegister();
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { email: '', password: '', name: '' },
   });
 
-  const onSubmit = (values: RegisterValues) => register.mutate(values);
+  const onSubmit = (values: RegisterValues): void => register.mutate(values);
 
   return (
     <div className="flex min-h-svh items-center justify-center bg-muted/40 p-4">

@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { Badge } from '@/components/ui/badge';
 import {
   Table,
@@ -16,7 +17,7 @@ import {
   groupByPartOfSpeech,
 } from '@/features/words/words.utils';
 
-function TranslationsCell({ word }: { word: Word }) {
+function TranslationsCell({ word }: { word: Word }): JSX.Element {
   const groups = groupByPartOfSpeech(word.translations);
 
   if (groups.length === 0) {
@@ -45,7 +46,7 @@ function TranslationsCell({ word }: { word: Word }) {
   );
 }
 
-export function LessonWordsTable({ words }: { words: Word[] }) {
+export function LessonWordsTable({ words }: { words: Word[] }): JSX.Element {
   return (
     <Table>
       <TableHeader>

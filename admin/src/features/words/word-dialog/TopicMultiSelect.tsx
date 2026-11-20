@@ -1,5 +1,5 @@
 import { ChevronsUpDown, Search } from 'lucide-react';
-import { useState } from 'react';
+import { type JSX, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,7 @@ export function TopicMultiSelect({
   onChange,
   disabled = false,
   placeholder = 'Select topics',
-}: TopicMultiSelectProps) {
+}: TopicMultiSelectProps): JSX.Element {
   const [search, setSearch] = useState('');
   const normalizedSearch = search.trim().toLowerCase();
   const filteredTopics = topics.filter((topic) =>
@@ -35,7 +35,7 @@ export function TopicMultiSelect({
   const selectedTopics = topics.filter((topic) => value.includes(topic.id));
   const unavailableCount = value.length - selectedTopics.length;
 
-  const toggleTopic = (topicId: string, checked: boolean) => {
+  const toggleTopic = (topicId: string, checked: boolean): void => {
     onChange(
       checked
         ? [...value, topicId]

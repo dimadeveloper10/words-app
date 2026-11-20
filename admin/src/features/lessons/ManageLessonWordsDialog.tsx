@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type JSX, useState } from 'react';
 import { Loader2, Search } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -39,7 +39,7 @@ function ManageLessonWordsForm({
   currentWords,
   open,
   onOpenChange,
-}: ManageLessonWordsFormProps) {
+}: ManageLessonWordsFormProps): JSX.Element {
   const [search, setSearch] = useState('');
   const [showOnlyWithoutLesson, setShowOnlyWithoutLesson] = useState(false);
   const [selectedIds, setSelectedIds] = useState(() =>
@@ -76,7 +76,7 @@ function ManageLessonWordsForm({
       ? 'indeterminate'
       : false;
 
-  const toggleWord = (wordId: string, checked: boolean) => {
+  const toggleWord = (wordId: string, checked: boolean): void => {
     setSelectedIds((currentIds) =>
       checked
         ? [...currentIds, wordId]
@@ -84,7 +84,7 @@ function ManageLessonWordsForm({
     );
   };
 
-  const toggleAllVisibleWords = (checked: boolean) => {
+  const toggleAllVisibleWords = (checked: boolean): void => {
     setSelectedIds((currentIds) => {
       if (checked) {
         return [...new Set([...currentIds, ...visibleWordIds])];
@@ -95,7 +95,7 @@ function ManageLessonWordsForm({
     });
   };
 
-  const save = async () => {
+  const save = async (): Promise<void> => {
     try {
       await updateLessonWords.mutateAsync({
         id: lesson.id,
@@ -282,7 +282,7 @@ export function ManageLessonWordsDialog({
   currentWords: initialWords,
   open,
   onOpenChange,
-}: ManageLessonWordsDialogProps) {
+}: ManageLessonWordsDialogProps): JSX.Element {
   const currentWordsQuery = useLessonWords(lesson.id);
   const currentWords = initialWords ?? currentWordsQuery.data;
 

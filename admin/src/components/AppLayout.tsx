@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { BookOpen, GraduationCap, LogOut, Tags, Users } from 'lucide-react';
@@ -6,13 +7,13 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth';
 
-export function AppLayout() {
+export function AppLayout(): JSX.Element {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const clear = useAuthStore((s) => s.clear);
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     clear();
     queryClient.clear();
     void navigate('/login', { replace: true });

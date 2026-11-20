@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -18,7 +19,11 @@ interface RoleCellProps {
   isSelf: boolean;
 }
 
-export function RoleCell({ user, editable, isSelf }: RoleCellProps) {
+export function RoleCell({
+  user,
+  editable,
+  isSelf,
+}: RoleCellProps): JSX.Element {
   const updateRole = useUpdateUserRole();
 
   if (!editable || isSelf) {

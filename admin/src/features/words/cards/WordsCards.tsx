@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { Layers, MessageSquareQuote, Pencil, Trash2 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +13,7 @@ import { WordTopics } from '../WordTopics';
 import { formatTranscription, groupByPartOfSpeech } from '../words.utils';
 import type { Word, WordsViewProps } from '../words.types';
 
-function TranslationsInline({ word }: { word: Word }) {
+function TranslationsInline({ word }: { word: Word }): JSX.Element {
   const groups = groupByPartOfSpeech(word.translations);
 
   if (groups.length === 0) {
@@ -47,7 +48,7 @@ function CountBadge({
   icon: React.ReactNode;
   count: number;
   tooltip: string;
-}) {
+}): JSX.Element {
   return (
     <Tooltip>
       <TooltipTrigger className="cursor-help">
@@ -61,7 +62,7 @@ function CountBadge({
   );
 }
 
-function CardMeta({ word }: { word: Word }) {
+function CardMeta({ word }: { word: Word }): JSX.Element | null {
   if (word.forms.length === 0 && word.examples.length === 0) {
     return null;
   }
@@ -91,7 +92,7 @@ export function WordsCards({
   rangeFrom,
   onEdit,
   onDelete,
-}: WordsViewProps) {
+}: WordsViewProps): JSX.Element {
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3 px-6">
       {words.map((word, index) => (

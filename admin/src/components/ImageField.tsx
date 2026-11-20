@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { type JSX, useEffect, useRef, useState } from 'react';
 import { ImageOff, ImagePlus, RefreshCw, X } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -31,7 +31,7 @@ export function ImageField({
   onChange,
   currentImageId,
   alt,
-}: ImageFieldProps) {
+}: ImageFieldProps): JSX.Element {
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -49,7 +49,7 @@ export function ImageField({
     return () => URL.revokeObjectURL(url);
   }, [value]);
 
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0] ?? null;
 
     if (file) {

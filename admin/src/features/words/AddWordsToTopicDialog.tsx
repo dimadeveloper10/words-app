@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type JSX, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -32,13 +32,13 @@ export function AddWordsToTopicDialog({
   open,
   onOpenChange,
   onAdded,
-}: AddWordsToTopicDialogProps) {
+}: AddWordsToTopicDialogProps): JSX.Element {
   const [topicId, setTopicId] = useState('');
   const topicsQuery = useTopics({ page: 1, limit: 100 });
   const addWordsToTopic = useAddWordsToTopic();
   const topics = topicsQuery.data?.items ?? [];
 
-  const save = async () => {
+  const save = async (): Promise<void> => {
     try {
       await addWordsToTopic.mutateAsync({ topicId, wordIds });
       onAdded();

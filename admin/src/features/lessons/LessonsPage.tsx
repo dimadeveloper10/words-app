@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { type JSX, useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
 import { AlertCircle, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -41,7 +41,7 @@ function formatDate(iso: string): string {
   });
 }
 
-export function LessonsPage() {
+export function LessonsPage(): JSX.Element {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<{ lesson?: Lesson } | null>(null);
@@ -60,7 +60,7 @@ export function LessonsPage() {
     }
   }, [data, page]);
 
-  const confirmDelete = () => {
+  const confirmDelete = (): void => {
     if (!lessonToDelete) {
       return;
     }

@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Plus, Trash2 } from 'lucide-react';
 
@@ -24,7 +25,7 @@ import { makeTranslation, type WordFormValues } from '../words.schemas';
 const VISIBLE_PARTS_OF_SPEECH = PARTS_OF_SPEECH.slice(0, 4);
 const OTHER_PARTS_OF_SPEECH = PARTS_OF_SPEECH.slice(4);
 
-export function TranslationsField() {
+export function TranslationsField(): JSX.Element {
   const { control } = useFormContext<WordFormValues>();
   const { fields, append, remove } = useFieldArray({
     control,

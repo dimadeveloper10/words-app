@@ -14,7 +14,17 @@ export function formatTranscription(transcription: string): string {
   return `[${unwrapped}]`;
 }
 
-export function groupByPartOfSpeech(translations: WordTranslation[]) {
+type PartOfSpeechOption = (typeof PARTS_OF_SPEECH)[number];
+
+export interface PartOfSpeechGroup {
+  label: PartOfSpeechOption['shortLabel'];
+  fullLabel: PartOfSpeechOption['label'];
+  items: WordTranslation[];
+}
+
+export function groupByPartOfSpeech(
+  translations: WordTranslation[],
+): PartOfSpeechGroup[] {
   return PARTS_OF_SPEECH.map((p) => ({
     label: p.shortLabel,
     fullLabel: p.label,

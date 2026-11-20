@@ -1,11 +1,17 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  type UseMutationResult,
+  useQuery,
+  useQueryClient,
+  type UseQueryResult,
+} from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { getApiErrorMessage } from '@/lib/api';
-import type { Role } from '@/types/auth';
+import type { Role, User } from '@/types/auth';
 import { listUsers, updateUserRole } from './users.api';
 
-export function useUsers() {
+export function useUsers(): UseQueryResult<User[]> {
   return useQuery({
     queryKey: ['users'],
     queryFn: listUsers,
@@ -13,7 +19,11 @@ export function useUsers() {
   });
 }
 
-export function useUpdateUserRole() {
+export function useUpdateUserRole(): UseMutationResult<
+  User,
+  Error,
+  { id: string; role: Role }
+> {
   const queryClient = useQueryClient();
 
   return useMutation({

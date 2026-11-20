@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type JSX, useState } from 'react';
 import { isAxiosError } from 'axios';
 import {
   AlertCircle,
@@ -20,7 +20,7 @@ import { LessonDialog } from './LessonDialog';
 import { ManageLessonWordsDialog } from './ManageLessonWordsDialog';
 import { useLesson, useLessonWords } from './useLessons';
 
-export function LessonDetailsPage() {
+export function LessonDetailsPage(): JSX.Element {
   const [editOpen, setEditOpen] = useState(false);
   const [manageWordsOpen, setManageWordsOpen] = useState(false);
   const { id = '' } = useParams<{ id: string }>();

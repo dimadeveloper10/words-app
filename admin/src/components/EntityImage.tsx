@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { ImageOff } from 'lucide-react';
 
 import { getImageUrl } from '@/lib/images';
@@ -15,7 +16,7 @@ export function EntityImage({
   alt,
   className,
   iconClassName,
-}: EntityImageProps) {
+}: EntityImageProps): JSX.Element {
   if (!imageId) {
     return (
       <div

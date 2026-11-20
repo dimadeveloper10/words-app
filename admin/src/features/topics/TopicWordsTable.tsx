@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { Pencil } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +20,7 @@ import {
   groupByPartOfSpeech,
 } from '@/features/words/words.utils';
 
-function TranslationsCell({ word }: { word: Word }) {
+function TranslationsCell({ word }: { word: Word }): JSX.Element {
   const groups = groupByPartOfSpeech(word.translations);
 
   if (groups.length === 0) {
@@ -53,7 +54,10 @@ interface TopicWordsTableProps {
   onEdit?: (word: Word) => void;
 }
 
-export function TopicWordsTable({ words, onEdit }: TopicWordsTableProps) {
+export function TopicWordsTable({
+  words,
+  onEdit,
+}: TopicWordsTableProps): JSX.Element {
   return (
     <Table>
       <TableHeader>

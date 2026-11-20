@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { type JSX, useEffect, useRef, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
@@ -49,7 +49,7 @@ export function WordDialog({
   fixedTopic,
   open,
   onOpenChange,
-}: WordDialogProps) {
+}: WordDialogProps): JSX.Element {
   const createWord = useCreateWord();
   const updateWord = useUpdateWord();
   const uploadImage = useUploadImage();
@@ -101,7 +101,7 @@ export function WordDialog({
     watchedWord,
   ]);
 
-  const onSubmit = async (values: WordFormValues) => {
+  const onSubmit = async (values: WordFormValues): Promise<void> => {
     try {
       const valuesWithFixedTopic = fixedTopic
         ? { ...values, topicIds: [fixedTopic.id] }

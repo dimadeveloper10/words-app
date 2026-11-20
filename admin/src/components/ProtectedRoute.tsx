@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useEffect } from 'react';
+import { type JSX, useEffect } from 'react';
 
 import { getMe } from '@/features/auth/auth.api';
 import { useAuthStore } from '@/stores/auth';
 
-export function ProtectedRoute() {
+export function ProtectedRoute(): JSX.Element {
   const token = useAuthStore((s) => s.token);
   const setUser = useAuthStore((s) => s.setUser);
 

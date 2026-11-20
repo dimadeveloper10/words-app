@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { type JSX, useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
 import { AlertCircle, Loader2, Plus, Search } from 'lucide-react';
 import {
@@ -28,7 +28,7 @@ import { WordsSelectionBar } from './WordsSelectionBar';
 
 const PAGE_SIZE = 20;
 
-export function WordsPage() {
+export function WordsPage(): JSX.Element {
   const [editing, setEditing] = useState<{ word?: Word } | null>(null);
   const [wordToDelete, setWordToDelete] = useState<Word | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -53,7 +53,7 @@ export function WordsPage() {
     }
   }, [data, page]);
 
-  const confirmDelete = () => {
+  const confirmDelete = (): void => {
     if (!wordToDelete) {
       return;
     }
@@ -67,7 +67,7 @@ export function WordsPage() {
     });
   };
 
-  const toggleWord = (wordId: string, checked: boolean) => {
+  const toggleWord = (wordId: string, checked: boolean): void => {
     setSelectedIds((currentIds) =>
       checked
         ? [...currentIds, wordId]
@@ -75,7 +75,7 @@ export function WordsPage() {
     );
   };
 
-  const togglePage = (wordIds: string[], checked: boolean) => {
+  const togglePage = (wordIds: string[], checked: boolean): void => {
     setSelectedIds((currentIds) => {
       if (!checked) {
         return currentIds.filter((id) => !wordIds.includes(id));
@@ -85,7 +85,7 @@ export function WordsPage() {
     });
   };
 
-  const confirmBulkDelete = () => {
+  const confirmBulkDelete = (): void => {
     deleteWords.mutate(selectedIds, {
       onSuccess: () => {
         setSelectedIds([]);
