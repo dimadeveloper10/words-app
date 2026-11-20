@@ -13,6 +13,23 @@ English → Ukrainian dictionary application for learning English words.
 Each application is an independent npm project with its own `package.json`,
 setup, and commands. The repository root only holds the shared Git hooks.
 
+## How the apps fit together
+
+```text
+admin panel ──┐
+              ├──► API ──► PostgreSQL
+web app ──────┘
+```
+
+- **API** is the single source of data and rules: authentication, roles, the
+  dictionary, topics, lessons, and learners' answers.
+- **Admin panel** is for editors: admins fill the dictionary and organize words
+  into topics and lessons, and superadmins manage users and roles.
+- **Web app** is for learners: they browse topics and lessons, study word cards
+  with images and pronunciation, and practise with exercises such as "Compile
+  word". The catalog is cached on the device, so the app keeps working offline,
+  and exercise answers sync to the API once the connection is back.
+
 ## Getting started
 
 Start the API first, then the client you need. Follow the README of each
