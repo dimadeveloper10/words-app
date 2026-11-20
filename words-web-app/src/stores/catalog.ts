@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create, type StoreApi } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { getAllLessons } from '../features/lessons/lessons.api';
 import type { Lesson } from '../features/lessons/lessons.types';
@@ -25,7 +25,56 @@ type PersistedCatalog = Pick<
   'topics' | 'lessons' | 'words' | 'syncedAt'
 >;
 
+type SetCatalog = StoreApi<CatalogState>['setState'];
+type GetCatalog = StoreApi<CatalogState>['getState'];
+
 let currentRefresh: Promise<void> | null = null;
+
+function createLoad(set: SetCatalog, get: GetCatalog): CatalogState['load'] {
+  return async () => {
+    const { status } = get();
+    if (status === 'loading' || status === 'ready') {
+      return;
+    }
+
+    set({ status: 'loading', error: null });
+    await waitForHydration(useCatalogStore.persist);
+
+    if (get().syncedAt !== null) {
+      set({ status: 'ready' });
+      void get()
+        .refresh()
+        .catch((error: unknown) => {
+          console.warn('Background catalog refresh failed', error);
+        });
+      return;
+    }
+
+    try {
+      await get().refresh();
+      set({ status: 'ready' });
+    } catch (error) {
+      set({ status: 'error', error });
+    }
+  };
+}
+
+function createRefresh(set: SetCatalog): CatalogState['refresh'] {
+  return () => {
+    currentRefresh ??= Promise.all([
+      getAllTopics(),
+      getAllLessons(),
+      getAllWords(),
+    ])
+      .then(([topics, lessons, words]) => {
+        set({ topics, lessons, words, syncedAt: new Date().toISOString() });
+      })
+      .finally(() => {
+        currentRefresh = null;
+      });
+    return currentRefresh;
+  };
+}
 
 export const useCatalogStore = create<CatalogState>()(
   devtools(
@@ -37,51 +86,8 @@ export const useCatalogStore = create<CatalogState>()(
         syncedAt: null,
         status: 'idle',
         error: null,
-        load: async () => {
-          const { status } = get();
-          if (status === 'loading' || status === 'ready') {
-            return;
-          }
-
-          set({ status: 'loading', error: null });
-          await waitForHydration(useCatalogStore.persist);
-
-          if (get().syncedAt !== null) {
-            set({ status: 'ready' });
-            void get()
-              .refresh()
-              .catch((error: unknown) => {
-                console.warn('Background catalog refresh failed', error);
-              });
-            return;
-          }
-
-          try {
-            await get().refresh();
-            set({ status: 'ready' });
-          } catch (error) {
-            set({ status: 'error', error });
-          }
-        },
-        refresh: () => {
-          currentRefresh ??= Promise.all([
-            getAllTopics(),
-            getAllLessons(),
-            getAllWords(),
-          ])
-            .then(([topics, lessons, words]) => {
-              set({
-                topics,
-                lessons,
-                words,
-                syncedAt: new Date().toISOString(),
-              });
-            })
-            .finally(() => {
-              currentRefresh = null;
-            });
-          return currentRefresh;
-        },
+        load: createLoad(set, get),
+        refresh: createRefresh(set),
       }),
       {
         name: 'catalog',

@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create, type StoreApi } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import {
   getAllWordAnswers,
@@ -28,6 +28,8 @@ export interface AnswersState {
 }
 
 type PersistedAnswers = Pick<AnswersState, 'userId' | 'answers'>;
+type SetAnswers = StoreApi<AnswersState>['setState'];
+type GetAnswers = StoreApi<AnswersState>['getState'];
 
 const initialData = {
   userId: null,
@@ -80,66 +82,76 @@ async function runSync(): Promise<SyncResult> {
   return { rejected };
 }
 
+function refreshInBackground(set: SetAnswers, loadId: number) {
+  getAllWordAnswers()
+    .then((serverAnswers) => {
+      if (loadId === currentLoad) {
+        set((state) => ({
+          answers: mergeAnswers(markSynced(serverAnswers), state.answers),
+        }));
+      }
+    })
+    .catch((error: unknown) => {
+      console.warn('Background answers refresh failed', error);
+    });
+}
+
+async function loadFresh(set: SetAnswers, userId: string, loadId: number) {
+  set({ ...initialData, status: 'loading' });
+  try {
+    const answers = await getAllWordAnswers();
+    if (loadId === currentLoad) {
+      set({ userId, answers: markSynced(answers), status: 'ready' });
+    }
+  } catch (error) {
+    if (loadId === currentLoad) {
+      set({ status: 'error', error });
+    }
+  }
+}
+
+function createLoad(set: SetAnswers, get: GetAnswers): AnswersState['load'] {
+  return async (userId) => {
+    const { status } = get();
+    if (status === 'loading' || status === 'ready') {
+      return;
+    }
+
+    const loadId = ++currentLoad;
+    set({ status: 'loading', error: null });
+    await waitForHydration(useAnswersStore.persist);
+    if (loadId !== currentLoad) {
+      return;
+    }
+
+    if (get().userId === userId) {
+      set({ status: 'ready' });
+      refreshInBackground(set, loadId);
+      return;
+    }
+    await loadFresh(set, userId, loadId);
+  };
+}
+
+function createEnqueue(set: SetAnswers): AnswersState['enqueue'] {
+  return (newAnswers) => {
+    set((state) => {
+      const knownIds = new Set(state.answers.map((answer) => answer.id));
+      const added = newAnswers
+        .filter((answer) => !knownIds.has(answer.id))
+        .map((answer) => ({ ...answer, isSynced: false }));
+      return added.length > 0 ? { answers: [...state.answers, ...added] } : {};
+    });
+  };
+}
+
 export const useAnswersStore = create<AnswersState>()(
   devtools(
     persist(
       (set, get) => ({
         ...initialData,
-        load: async (userId) => {
-          const { status } = get();
-          if (status === 'loading' || status === 'ready') {
-            return;
-          }
-
-          const loadId = ++currentLoad;
-          set({ status: 'loading', error: null });
-          await waitForHydration(useAnswersStore.persist);
-          if (loadId !== currentLoad) {
-            return;
-          }
-
-          if (get().userId === userId) {
-            set({ status: 'ready' });
-            getAllWordAnswers()
-              .then((serverAnswers) => {
-                if (loadId === currentLoad) {
-                  set((state) => ({
-                    answers: mergeAnswers(
-                      markSynced(serverAnswers),
-                      state.answers,
-                    ),
-                  }));
-                }
-              })
-              .catch((error: unknown) => {
-                console.warn('Background answers refresh failed', error);
-              });
-            return;
-          }
-
-          set({ ...initialData, status: 'loading' });
-          try {
-            const answers = await getAllWordAnswers();
-            if (loadId === currentLoad) {
-              set({ userId, answers: markSynced(answers), status: 'ready' });
-            }
-          } catch (error) {
-            if (loadId === currentLoad) {
-              set({ status: 'error', error });
-            }
-          }
-        },
-        enqueue: (newAnswers) => {
-          set((state) => {
-            const knownIds = new Set(state.answers.map((answer) => answer.id));
-            const added = newAnswers
-              .filter((answer) => !knownIds.has(answer.id))
-              .map((answer) => ({ ...answer, isSynced: false }));
-            return added.length > 0
-              ? { answers: [...state.answers, ...added] }
-              : {};
-          });
-        },
+        load: createLoad(set, get),
+        enqueue: createEnqueue(set),
         sync: () => {
           currentSync ??= runSync().finally(() => {
             currentSync = null;

@@ -47,7 +47,6 @@ export default tseslint.config(
   },
   {
     files: ['src/**/*.ts'],
-    ignores: ['src/stores/**'],
     rules: {
       'max-lines-per-function': [
         'error',
