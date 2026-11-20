@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type JSX, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsyncedAnswersCount } from '../features/word-answers/useWordAnswers';
 import { useOnlineStatus } from '../lib/useOnlineStatus';
@@ -16,7 +16,7 @@ function unsyncedTitle(count: number): string {
     : `${count} answers haven't synced yet`;
 }
 
-export function AppHeader({ email, onLogout }: AppHeaderProps) {
+export function AppHeader({ email, onLogout }: AppHeaderProps): JSX.Element {
   const isOnline = useOnlineStatus();
   const unsyncedCount = useUnsyncedAnswersCount();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -25,7 +25,7 @@ export function AppHeader({ email, onLogout }: AppHeaderProps) {
     setConfirmOpen(false);
   }
 
-  function handleSignOut() {
+  function handleSignOut(): void {
     if (unsyncedCount > 0) {
       setConfirmOpen(true);
     } else {

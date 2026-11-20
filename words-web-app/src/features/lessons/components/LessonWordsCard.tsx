@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import '../../../components/Carousel.css';
 
@@ -6,7 +7,10 @@ interface LessonWordsCardProps {
   wordCount: number;
 }
 
-export function LessonWordsCard({ lessonId, wordCount }: LessonWordsCardProps) {
+export function LessonWordsCard({
+  lessonId,
+  wordCount,
+}: LessonWordsCardProps): JSX.Element {
   return (
     <Link
       to={`/lessons/${lessonId}/words`}

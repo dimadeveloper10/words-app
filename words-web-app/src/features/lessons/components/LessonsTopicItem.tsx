@@ -1,13 +1,14 @@
+import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import type { Topic } from '../../topics/topics.types';
 import { LessonsCarousel } from './LessonsCarousel';
 import { useTopicLessons } from '../useLessons';
 
-function formatLessonCount(count: number) {
+function formatLessonCount(count: number): string {
   return `${count} ${count === 1 ? 'lesson' : 'lessons'}`;
 }
 
-export function LessonsTopicItem({ topic }: { topic: Topic }) {
+export function LessonsTopicItem({ topic }: { topic: Topic }): JSX.Element {
   const lessons = useTopicLessons(topic.id);
 
   return (

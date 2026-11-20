@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { JSX, ReactNode } from 'react';
 import './Carousel.css';
 
 interface CarouselProps<T> {
@@ -13,7 +13,7 @@ export function Carousel<T>({
   getKey,
   renderItem,
   label,
-}: CarouselProps<T>) {
+}: CarouselProps<T>): JSX.Element {
   return (
     <section className="carousel" aria-label={label} tabIndex={0}>
       <ul className="carousel-track">

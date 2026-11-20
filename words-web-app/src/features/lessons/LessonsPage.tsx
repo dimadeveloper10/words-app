@@ -1,9 +1,10 @@
+import type { JSX } from 'react';
 import { PageHeader } from '../../components/PageHeader';
 import { useTopics } from '../topics/useTopics';
 import { LessonsTopicItem } from './components/LessonsTopicItem';
 import './LessonsPage.css';
 
-export function LessonsPage() {
+export function LessonsPage(): JSX.Element {
   const topics = useTopics();
 
   return (

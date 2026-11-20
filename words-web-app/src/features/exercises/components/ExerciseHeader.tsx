@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from 'react';
+import { type JSX, type ReactNode, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ConfirmDialog } from '../../../components/ConfirmDialog';
 import { useGoBack } from '../../../components/useGoBack';
@@ -36,7 +36,7 @@ export function ExerciseHeader({
   confirmClose,
   onConfirmClose,
   actions,
-}: ExerciseHeaderProps) {
+}: ExerciseHeaderProps): JSX.Element {
   const goBack = useGoBack();
   const [confirmOpen, setConfirmOpen] = useState(false);
 

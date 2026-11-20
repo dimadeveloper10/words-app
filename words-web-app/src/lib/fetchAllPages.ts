@@ -7,7 +7,7 @@ export async function fetchAllPages<T>(
   url: string,
   signal?: AbortSignal,
 ): Promise<T[]> {
-  const fetchPage = async (page: number) => {
+  const fetchPage = async (page: number): Promise<Paginated<T>> => {
     const { data } = await api.get<Paginated<T>>(url, {
       params: { page, limit: PAGE_SIZE },
       signal,

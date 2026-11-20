@@ -7,27 +7,28 @@ import {
   selectUnsyncedCount,
   selectWordAnswers,
 } from '../../stores/answers.selectors';
+import type { WordAnswer } from './word-answer.types';
 
-export function useWordAnswers() {
+export function useWordAnswers(): WordAnswer[] {
   return useAnswersStore(selectAnswers);
 }
 
-export function useLessonAnswers(lessonId: string) {
+export function useLessonAnswers(lessonId: string): WordAnswer[] {
   return useAnswersStore(
     useShallow((state) => selectLessonAnswers(state, lessonId)),
   );
 }
 
-export function useWordAnswersOf(wordId: string) {
+export function useWordAnswersOf(wordId: string): WordAnswer[] {
   return useAnswersStore(
     useShallow((state) => selectWordAnswers(state, wordId)),
   );
 }
 
-export function useLessonPoints(lessonId: string) {
+export function useLessonPoints(lessonId: string): number {
   return useAnswersStore((state) => selectLessonPoints(state, lessonId));
 }
 
-export function useUnsyncedAnswersCount() {
+export function useUnsyncedAnswersCount(): number {
   return useAnswersStore(selectUnsyncedCount);
 }

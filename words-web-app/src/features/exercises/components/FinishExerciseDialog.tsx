@@ -1,4 +1,4 @@
-import type { MouseEvent, SyntheticEvent } from 'react';
+import type { JSX, MouseEvent, SyntheticEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useModalDialog } from '../../../components/useModalDialog';
 import './FinishExerciseDialog.css';
@@ -17,10 +17,10 @@ export function FinishExerciseDialog({
   finishTo,
   onFinish,
   onPlayAgain,
-}: FinishExerciseDialogProps) {
+}: FinishExerciseDialogProps): JSX.Element {
   const dialogRef = useModalDialog(open);
 
-  function preventDismiss(event: SyntheticEvent<HTMLDialogElement>) {
+  function preventDismiss(event: SyntheticEvent<HTMLDialogElement>): void {
     event.preventDefault();
   }
 

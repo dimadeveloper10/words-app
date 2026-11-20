@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import { CardImage } from '../../../components/CardImage';
 import { useLessonPoints } from '../../word-answers/useWordAnswers';
@@ -10,7 +11,10 @@ interface LessonCardProps {
   headingLevel?: 'h2' | 'h3';
 }
 
-export function LessonCard({ lesson, headingLevel = 'h3' }: LessonCardProps) {
+export function LessonCard({
+  lesson,
+  headingLevel = 'h3',
+}: LessonCardProps): JSX.Element {
   const Heading = headingLevel;
   const points = useLessonPoints(lesson.id);
 

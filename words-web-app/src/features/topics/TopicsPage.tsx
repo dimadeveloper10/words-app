@@ -1,9 +1,10 @@
+import type { JSX } from 'react';
 import { PageHeader } from '../../components/PageHeader';
 import { TopicListItem } from './components/TopicListItem';
 import { useTopics } from './useTopics';
 import './TopicsPage.css';
 
-export function TopicsPage() {
+export function TopicsPage(): JSX.Element {
   const topics = useTopics();
 
   return (

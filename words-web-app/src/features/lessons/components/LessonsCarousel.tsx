@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { Carousel } from '../../../components/Carousel';
 import { LessonCard } from './LessonCard';
 import type { Lesson } from '../lessons.types';
@@ -10,7 +11,7 @@ interface LessonsCarouselProps {
 export function LessonsCarousel({
   lessons,
   label = 'Lesson cards',
-}: LessonsCarouselProps) {
+}: LessonsCarouselProps): JSX.Element {
   if (lessons.length === 0) {
     return <p>No lessons yet.</p>;
   }

@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
+import { type JSX, useEffect } from 'react';
 import { formatTranslation } from '../formatTranslation';
 import { Picture } from '../../../components/Picture';
 import type { Word } from '../words.types';
 import { canSpeak, speakWord, stopSpeaking } from '../speakWord';
 import './WordCard.css';
 
-export function WordCard({ word }: { word: Word }) {
+export function WordCard({ word }: { word: Word }): JSX.Element {
   useEffect(() => {
     speakWord(word.word);
     return stopSpeaking;

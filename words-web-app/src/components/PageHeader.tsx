@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import { useGoBack } from './useGoBack';
 import './PageHeader.css';
@@ -8,7 +9,11 @@ interface PageHeaderProps {
   backTo: string;
 }
 
-export function PageHeader({ id, title, backTo }: PageHeaderProps) {
+export function PageHeader({
+  id,
+  title,
+  backTo,
+}: PageHeaderProps): JSX.Element {
   const goBack = useGoBack();
 
   return (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type JSX, useState } from 'react';
 import './LetterPicker.css';
 
 interface Tile {
@@ -62,17 +62,17 @@ export function LetterPicker({
   word,
   onAnswerChange,
   onComplete,
-}: LetterPickerProps) {
+}: LetterPickerProps): JSX.Element {
   const [tiles] = useState(() => createTiles(word));
   const [pickedIds, setPickedIds] = useState<number[]>([]);
 
-  function toAnswer(ids: number[]) {
+  function toAnswer(ids: number[]): string {
     return ids
       .map((id) => tiles.find((tile) => tile.id === id)?.char ?? '')
       .join('');
   }
 
-  function pick(tile: Tile) {
+  function pick(tile: Tile): void {
     const next = [...pickedIds, tile.id];
     const value = toAnswer(next);
     setPickedIds(next);
@@ -82,7 +82,7 @@ export function LetterPicker({
     }
   }
 
-  function removeLast() {
+  function removeLast(): void {
     const next = pickedIds.slice(0, -1);
     setPickedIds(next);
     onAnswerChange(toAnswer(next));

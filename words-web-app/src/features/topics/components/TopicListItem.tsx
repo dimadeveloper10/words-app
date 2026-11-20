@@ -1,11 +1,12 @@
+import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import type { Topic } from '../topics.types';
 
-function formatLessonCount(count: number) {
+function formatLessonCount(count: number): string {
   return `${count} ${count === 1 ? 'lesson' : 'lessons'}`;
 }
 
-export function TopicListItem({ topic }: { topic: Topic }) {
+export function TopicListItem({ topic }: { topic: Topic }): JSX.Element {
   return (
     <li>
       <Link to={`/topics/${topic.id}`} className="topic-list-item">

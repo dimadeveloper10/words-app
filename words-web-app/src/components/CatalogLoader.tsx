@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { type JSX, useCallback, useEffect } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
 import { useLogout } from '../features/auth/useLogout';
 import { useAnswersSync } from '../features/word-answers/useAnswersSync';
@@ -8,7 +8,7 @@ import { useCatalogStore } from '../stores/catalog';
 import type { User } from '../types/auth';
 import { AppHeader } from './AppHeader';
 
-export function CatalogLoader() {
+export function CatalogLoader(): JSX.Element {
   const user = useOutletContext<User>();
   const logout = useLogout();
   useAnswersSync();

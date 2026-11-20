@@ -1,4 +1,10 @@
-import { type FormEvent, type MouseEvent, useRef, useState } from 'react';
+import {
+  type FormEvent,
+  type JSX,
+  type MouseEvent,
+  useRef,
+  useState,
+} from 'react';
 import { useParams } from 'react-router-dom';
 import { PageHeader } from '../../components/PageHeader';
 import { useGoBack } from '../../components/useGoBack';
@@ -26,7 +32,7 @@ function readInputMode(): InputMode {
   }
 }
 
-function saveInputMode(mode: InputMode) {
+function saveInputMode(mode: InputMode): void {
   try {
     localStorage.setItem(INPUT_MODE_KEY, mode);
   } catch {
@@ -66,7 +72,7 @@ interface CompileWordExerciseProps {
   words: Word[];
 }
 
-export function CompileWordPage() {
+export function CompileWordPage(): JSX.Element {
   const { lessonId = '' } = useParams();
   const words = useLessonWords(lessonId);
 
@@ -86,7 +92,10 @@ export function CompileWordPage() {
   return <CompileWordExercise lessonId={lessonId} words={words} />;
 }
 
-function CompileWordExercise({ lessonId, words }: CompileWordExerciseProps) {
+function CompileWordExercise({
+  lessonId,
+  words,
+}: CompileWordExerciseProps): JSX.Element {
   const lessonPath = `/lessons/${lessonId}`;
   const goBack = useGoBack();
   const {
@@ -106,7 +115,7 @@ function CompileWordExercise({ lessonId, words }: CompileWordExerciseProps) {
   const [inputMode, setInputMode] = useState<InputMode>(readInputMode);
   const isLetters = inputMode === 'letters';
 
-  function toggleInputMode() {
+  function toggleInputMode(): void {
     const next: InputMode = isLetters ? 'keyboard' : 'letters';
     setInputMode(next);
     saveInputMode(next);
@@ -115,12 +124,12 @@ function CompileWordExercise({ lessonId, words }: CompileWordExerciseProps) {
     }
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
     submitAnswer();
   }
 
-  function handlePlayAgain() {
+  function handlePlayAgain(): void {
     saveAnswers(answers);
     setFinishOpen(false);
     playAgain();
@@ -129,7 +138,7 @@ function CompileWordExercise({ lessonId, words }: CompileWordExerciseProps) {
     }
   }
 
-  function handleFinish(event: MouseEvent<HTMLAnchorElement>) {
+  function handleFinish(event: MouseEvent<HTMLAnchorElement>): void {
     saveAnswers(answers);
     goBack(event);
   }

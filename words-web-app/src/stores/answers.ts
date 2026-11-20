@@ -82,7 +82,7 @@ async function runSync(): Promise<SyncResult> {
   return { rejected };
 }
 
-function refreshInBackground(set: SetAnswers, loadId: number) {
+function refreshInBackground(set: SetAnswers, loadId: number): void {
   getAllWordAnswers()
     .then((serverAnswers) => {
       if (loadId === currentLoad) {
@@ -96,7 +96,11 @@ function refreshInBackground(set: SetAnswers, loadId: number) {
     });
 }
 
-async function loadFresh(set: SetAnswers, userId: string, loadId: number) {
+async function loadFresh(
+  set: SetAnswers,
+  userId: string,
+  loadId: number,
+): Promise<void> {
   set({ ...initialData, status: 'loading' });
   try {
     const answers = await getAllWordAnswers();

@@ -1,9 +1,10 @@
+import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import { CardImage } from '../../../components/CardImage';
 import { Carousel } from '../../../components/Carousel';
 import type { Topic } from '../topics.types';
 
-export function TopicsCarousel({ topics }: { topics: Topic[] }) {
+export function TopicsCarousel({ topics }: { topics: Topic[] }): JSX.Element {
   if (topics.length === 0) {
     return <p>No topics yet.</p>;
   }

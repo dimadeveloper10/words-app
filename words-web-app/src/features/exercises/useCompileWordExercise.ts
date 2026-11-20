@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  type RefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { speakWord, stopSpeaking } from '../words/speakWord';
 import type { Word } from '../words/words.types';
 import type { PendingWordAnswer } from '../word-answers/word-answer.types';
@@ -10,7 +16,32 @@ export type AnswerStatus = 'typing' | 'correct' | 'wrong';
 
 type Round = ReturnType<typeof useRound>;
 
-function normalize(value: string) {
+type AnswerInput = {
+  answer: string;
+  changeAnswer: (value: string) => void;
+  getStartedAt: () => Date | null;
+  reset: () => void;
+};
+
+type AnswerLog = {
+  answers: PendingWordAnswer[];
+  submitAnswer: (value?: string) => void;
+  clear: () => void;
+};
+
+export type CompileWordExerciseState = {
+  word: Word;
+  step: number;
+  answer: string;
+  answers: PendingWordAnswer[];
+  status: AnswerStatus;
+  correctCount: number;
+  changeAnswer: (value: string) => void;
+  submitAnswer: (value?: string) => void;
+  playAgain: () => void;
+};
+
+function normalize(value: string): string {
   return value.trim().toLowerCase();
 }
 
@@ -33,7 +64,7 @@ function createPendingAnswer(
   };
 }
 
-function useAnswerTimer(step: number) {
+function useAnswerTimer(step: number): RefObject<Date | null> {
   const startedAt = useRef<Date | null>(null);
 
   useEffect(() => {
@@ -46,7 +77,7 @@ function useAnswerTimer(step: number) {
   return startedAt;
 }
 
-function useAutoAdvance(status: AnswerStatus, nextWord: () => void) {
+function useAutoAdvance(status: AnswerStatus, nextWord: () => void): void {
   useEffect(() => {
     if (status !== 'correct') {
       return;
@@ -56,7 +87,7 @@ function useAutoAdvance(status: AnswerStatus, nextWord: () => void) {
   }, [status, nextWord]);
 }
 
-function useAnswerInput(step: number, status: AnswerStatus) {
+function useAnswerInput(step: number, status: AnswerStatus): AnswerInput {
   const [answer, setAnswer] = useState('');
   const startedAt = useAnswerTimer(step);
 
@@ -65,21 +96,27 @@ function useAnswerInput(step: number, status: AnswerStatus) {
     setAnswer('');
   }, [startedAt]);
 
-  function changeAnswer(value: string) {
+  function changeAnswer(value: string): void {
     if (status === 'typing') {
       startedAt.current ??= new Date();
       setAnswer(value);
     }
   }
 
-  function getStartedAt() {
+  function getStartedAt(): Date | null {
     return startedAt.current;
   }
 
   return { answer, changeAnswer, getStartedAt, reset };
 }
 
-function useRound(words: Word[]) {
+function useRound(words: Word[]): Omit<AnswerInput, 'reset'> & {
+  word: Word;
+  step: number;
+  status: AnswerStatus;
+  markAnswered: (isCorrect: boolean) => void;
+  nextWord: () => void;
+} {
   const [word, setWord] = useState(() => pickRandom(words));
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState<AnswerStatus>('typing');
@@ -94,18 +131,18 @@ function useRound(words: Word[]) {
 
   useAutoAdvance(status, nextWord);
 
-  function markAnswered(isCorrect: boolean) {
+  function markAnswered(isCorrect: boolean): void {
     setStatus(isCorrect ? 'correct' : 'wrong');
   }
 
   return { ...input, word, step, status, markAnswered, nextWord };
 }
 
-function useAnswerLog(round: Round) {
+function useAnswerLog(round: Round): AnswerLog {
   const [answers, setAnswers] = useState<PendingWordAnswer[]>([]);
   const answeredStep = useRef<number | null>(null);
 
-  function submitAnswer(value: string = round.answer) {
+  function submitAnswer(value: string = round.answer): void {
     const { word, status, step } = round;
     if (
       status !== 'typing' ||
@@ -130,13 +167,15 @@ function useAnswerLog(round: Round) {
   return { answers, submitAnswer, clear: () => setAnswers([]) };
 }
 
-export function useCompileWordExercise(words: Word[]) {
+export function useCompileWordExercise(
+  words: Word[],
+): CompileWordExerciseState {
   const round = useRound(words);
   const log = useAnswerLog(round);
 
   useEffect(() => stopSpeaking, []);
 
-  function playAgain() {
+  function playAgain(): void {
     round.nextWord();
     log.clear();
   }

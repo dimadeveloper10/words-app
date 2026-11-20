@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { useParams } from 'react-router-dom';
 import { PageHeader } from '../../components/PageHeader';
 import { useLessonPoints } from '../word-answers/useWordAnswers';
@@ -7,7 +8,7 @@ import { LessonWordsCard } from './components/LessonWordsCard';
 import { useLesson } from './useLessons';
 import './LessonPage.css';
 
-export function LessonPage() {
+export function LessonPage(): JSX.Element {
   const { lessonId = '' } = useParams();
   const lesson = useLesson(lessonId);
   const points = useLessonPoints(lessonId);

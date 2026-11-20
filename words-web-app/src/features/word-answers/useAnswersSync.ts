@@ -17,7 +17,7 @@ export function syncAnswers(): void {
     });
 }
 
-export function useAnswersSync() {
+export function useAnswersSync(): void {
   const status = useAnswersStore((state) => state.status);
 
   useEffect(() => {

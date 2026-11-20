@@ -5,17 +5,18 @@ import {
   selectLessons,
   selectTopicLessons,
 } from '../../stores/catalog.selectors';
+import type { Lesson } from './lessons.types';
 
-export function useLessons() {
+export function useLessons(): Lesson[] {
   return useCatalogStore(selectLessons);
 }
 
-export function useTopicLessons(topicId: string) {
+export function useTopicLessons(topicId: string): Lesson[] {
   return useCatalogStore(
     useShallow((state) => selectTopicLessons(state, topicId)),
   );
 }
 
-export function useLesson(id: string) {
+export function useLesson(id: string): Lesson | undefined {
   return useCatalogStore((state) => selectLesson(state, id));
 }

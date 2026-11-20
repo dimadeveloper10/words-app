@@ -1,7 +1,12 @@
+import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import '../../../components/Carousel.css';
 
-export function CompileWordCard({ lessonId }: { lessonId: string }) {
+export function CompileWordCard({
+  lessonId,
+}: {
+  lessonId: string;
+}): JSX.Element {
   return (
     <Link
       to={`/lessons/${lessonId}/compile-word`}

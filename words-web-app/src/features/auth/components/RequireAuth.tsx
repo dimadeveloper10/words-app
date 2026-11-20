@@ -1,10 +1,11 @@
+import type { JSX } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Navigate, Outlet } from 'react-router-dom';
 import { getApiErrorMessage } from '../../../lib/api';
 import { useAuthStore } from '../../../stores/auth';
 import { getMe } from '../auth.api';
 
-export function RequireAuth() {
+export function RequireAuth(): JSX.Element {
   const queryClient = useQueryClient();
   const token = useAuthStore((state) => state.token);
   const session = useQuery({

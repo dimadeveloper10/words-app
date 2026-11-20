@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { FALLBACK_FORMAT, IMAGE_FORMATS, getImageUrl } from '../lib/images';
 
 interface PictureProps {
@@ -6,7 +7,11 @@ interface PictureProps {
   className?: string;
 }
 
-export function Picture({ imageId, alt, className }: PictureProps) {
+export function Picture({
+  imageId,
+  alt,
+  className,
+}: PictureProps): JSX.Element {
   return (
     <picture className={className}>
       {IMAGE_FORMATS.map((format) => (

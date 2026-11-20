@@ -1,11 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
+import { useMutation, type UseMutationResult } from '@tanstack/react-query';
+import type { BaseSyntheticEvent } from 'react';
+import { useForm, type UseFormReturn } from 'react-hook-form';
+import type { AuthResult } from '../../types/auth';
 import { login } from './auth.api';
 import { loginSchema, type LoginValues } from './auth.schemas';
 import { useAuthSuccess } from './useAuthSuccess';
 
-export function useLoginForm() {
+type LoginForm = {
+  form: UseFormReturn<LoginValues>;
+  mutation: UseMutationResult<AuthResult, Error, LoginValues>;
+  onSubmit: (event?: BaseSyntheticEvent) => Promise<void>;
+};
+
+export function useLoginForm(): LoginForm {
   const onSuccess = useAuthSuccess();
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),

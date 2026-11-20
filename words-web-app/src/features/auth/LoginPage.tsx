@@ -1,10 +1,11 @@
+import type { JSX } from 'react';
 import { Link } from 'react-router-dom';
 import { getApiErrorMessage } from '../../lib/api';
 import { AuthField } from './components/AuthField';
 import { useLoginForm } from './useLoginForm';
 import './AuthPage.css';
 
-export function LoginPage() {
+export function LoginPage(): JSX.Element {
   const { form, mutation, onSubmit } = useLoginForm();
   const { errors, isSubmitting } = form.formState;
   const pending = isSubmitting || mutation.isPending;

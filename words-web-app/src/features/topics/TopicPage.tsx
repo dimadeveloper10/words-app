@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { useParams } from 'react-router-dom';
 import { PageHeader } from '../../components/PageHeader';
 import { LessonCard } from '../lessons/components/LessonCard';
@@ -5,7 +6,7 @@ import { useTopicLessons } from '../lessons/useLessons';
 import { useTopic } from './useTopics';
 import './TopicPage.css';
 
-export function TopicPage() {
+export function TopicPage(): JSX.Element {
   const { topicId = '' } = useParams();
   const topic = useTopic(topicId);
   const lessons = useTopicLessons(topicId);

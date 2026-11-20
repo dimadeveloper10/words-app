@@ -4,7 +4,7 @@ export const canSpeak =
 const SPEAK_DELAY_MS = 150;
 let scheduledSpeak: ReturnType<typeof setTimeout> | undefined;
 
-export function stopSpeaking() {
+export function stopSpeaking(): void {
   if (!canSpeak) {
     return;
   }
@@ -16,7 +16,7 @@ export function stopSpeaking() {
   }
 }
 
-export function speakWord(text: string) {
+export function speakWord(text: string): void {
   if (!canSpeak) {
     return;
   }

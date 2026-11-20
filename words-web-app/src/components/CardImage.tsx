@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { Picture } from './Picture';
 
 interface CardImageProps {
@@ -5,7 +6,7 @@ interface CardImageProps {
   name: string;
 }
 
-export function CardImage({ imageId, name }: CardImageProps) {
+export function CardImage({ imageId, name }: CardImageProps): JSX.Element {
   return (
     <div className="carousel-card-image">
       {imageId ? (

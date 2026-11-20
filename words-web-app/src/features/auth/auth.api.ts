@@ -2,7 +2,10 @@ import { api } from '../../lib/api';
 import type { AuthResult, User } from '../../types/auth';
 import type { LoginValues, RegisterValues } from './auth.schemas';
 
-export async function login({ email, password }: LoginValues) {
+export async function login({
+  email,
+  password,
+}: LoginValues): Promise<AuthResult> {
   const { data } = await api.post<AuthResult>('/auth/login', {
     email,
     password,
@@ -10,7 +13,11 @@ export async function login({ email, password }: LoginValues) {
   return data;
 }
 
-export async function register({ email, password, name }: RegisterValues) {
+export async function register({
+  email,
+  password,
+  name,
+}: RegisterValues): Promise<AuthResult> {
   const { data } = await api.post<AuthResult>('/auth/register', {
     email,
     password,
@@ -19,7 +26,7 @@ export async function register({ email, password, name }: RegisterValues) {
   return data;
 }
 
-export async function getMe() {
+export async function getMe(): Promise<User> {
   const { data } = await api.get<User>('/auth/me');
   return data;
 }

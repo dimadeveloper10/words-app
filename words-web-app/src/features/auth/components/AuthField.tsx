@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef } from 'react';
+import type { ComponentPropsWithRef, JSX } from 'react';
 import './AuthField.css';
 
 interface AuthFieldProps extends ComponentPropsWithRef<'input'> {
@@ -14,7 +14,7 @@ export function AuthField({
   error,
   hint,
   ...props
-}: AuthFieldProps) {
+}: AuthFieldProps): JSX.Element {
   return (
     <div className="form-field">
       <label htmlFor={id}>{label}</label>

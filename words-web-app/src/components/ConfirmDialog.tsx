@@ -1,4 +1,5 @@
 import {
+  type JSX,
   type MouseEvent,
   type ReactNode,
   type SyntheticEvent,
@@ -21,16 +22,16 @@ export function ConfirmDialog({
   description,
   onCancel,
   children,
-}: ConfirmDialogProps) {
+}: ConfirmDialogProps): JSX.Element {
   const dialogRef = useModalDialog(open);
   const titleId = useId();
 
-  function handleCancel(event: SyntheticEvent<HTMLDialogElement>) {
+  function handleCancel(event: SyntheticEvent<HTMLDialogElement>): void {
     event.preventDefault();
     onCancel();
   }
 
-  function handleBackdropClick(event: MouseEvent<HTMLDialogElement>) {
+  function handleBackdropClick(event: MouseEvent<HTMLDialogElement>): void {
     if (event.target === event.currentTarget) {
       onCancel();
     }

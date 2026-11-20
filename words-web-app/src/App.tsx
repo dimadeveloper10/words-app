@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from 'react-router-dom';
 import { Toaster } from 'sonner';
@@ -5,7 +6,7 @@ import { router } from './router';
 
 const queryClient = new QueryClient();
 
-export default function App() {
+export default function App(): JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
